@@ -1,7 +1,7 @@
 <?php
 $radius = 200;
 $margin = 20;
-$pagecount = 3;
+$pagecount = 300;
 
 $ps = ps_new();
 
@@ -24,7 +24,7 @@ while($pagecount-- > 0) {
 
 	ps_translate($ps, $radius + $margin, $radius + $margin);
 	ps_save($ps);
-	ps_setrgbcolor($ps, 0.0, 0.0, 1.0);
+	ps_setcolor($ps, "both", "rgb", 0.0, 0.0, 1.0, 0.0);
 
 	/* minute strokes */
 	ps_setlinewidth($ps, 2.0);
@@ -87,7 +87,7 @@ while($pagecount-- > 0) {
 	ps_end_page($ps);
 
 	# to see some difference
-	sleep(1);
+//	sleep(1);
 }
 
 /*$buf = ps_get_buffer($ps);
