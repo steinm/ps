@@ -9,7 +9,7 @@ Testing hyphenation
 <?php 
 $word = "Koordinatensystem";
 $psdoc = ps_new();
-ps_set_parameter($psdoc, "hyphendict", "hyph_de.dic");
+ps_set_parameter($psdoc, "hyphendict", "tests/hyph_de.dic");
 $hyphens = ps_hyphenate($psdoc, $word);
 for($i=0; $i<strlen($word); $i++) {
 	echo $word[$i];
