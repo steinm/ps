@@ -17,7 +17,7 @@
     <date>2004-06-02</date>
     <license>PHP License</license>
     <state>stable</state>
-    <notes>ps_hyphenate() didn't return an array but true.</notes>
+    <notes>ps_hyphenate() did not return an array but true. Added more tests.</notes>
     <deps>
       <dep type="php" rel="ge" version="4.3.0"/>
     </deps>
