@@ -17,7 +17,7 @@
     <date>2004-07-27</date>
     <license>PHP License</license>
     <state>stable</state>
-    <notes>Added function ps_shfill(), ps_shading(), ps_shading_pattern(), ps_get_buffer(). New example file shading.php. Renamed undocumented function ps_setoverprint() to ps_setoverprintmode(). </notes>
+    <notes>Added function ps_shfill(), ps_shading(), ps_shading_pattern(), ps_get_buffer(). New example files shading.php and image.php. Renamed undocumented function ps_setoverprint() to ps_setoverprintmode(). </notes>
     <deps>
       <dep type="php" rel="ge" version="4.3.0"/>
     </deps>
@@ -40,6 +40,7 @@
       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
       <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
       <file role="doc" baseinstalldir="/" name="examples/shading.php"/>
+      <file role="doc" baseinstalldir="/" name="examples/image.php"/>
       <file role="test" name="tests/001.phpt"/>
       <file role="test" name="tests/002.phpt"/>
       <file role="test" name="tests/003.phpt"/>
