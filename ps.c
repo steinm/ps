@@ -133,6 +133,8 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_begin_template, NULL)
 	PHP_FE(ps_end_template, NULL)
 	PHP_FE(ps_shfill, NULL)
+	PHP_FE(ps_shading, NULL)
+	PHP_FE(ps_shading_pattern, NULL)
 
 #ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
@@ -1432,6 +1434,7 @@ PHP_FUNCTION(ps_shading)
 	RETURN_LONG(shadingid);
 }
 /* }}} */
+
 /* {{{ proto void ps_shfill(int ps, int psshading)
    Fill an area with a gradient fill */
 PHP_FUNCTION(ps_shfill)
@@ -1452,6 +1455,27 @@ PHP_FUNCTION(ps_shfill)
 }
 /* }}} */
 
+/* {{{ proto int ps_shading_pattern(int ps, int psshading)
+   Create a shading pattern */
+PHP_FUNCTION(ps_shading_pattern)
+{
+	zval *zps;
+	int patternid, shadingid;
+	char *optlist;
+	int olen;
+	PSDoc *ps;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rls", &zps, &shadingid, &optlist, &olen)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	patternid = PS_shading_pattern(ps, shadingid, optlist);
+
+	RETURN_LONG(patternid);
+}
+/* }}} */
 /* {{{ proto void ps_add_weblink(int psdoc, double llx, double lly, double urx, double ury, string url)
    Adds link to web resource */
 PHP_FUNCTION(ps_add_weblink)

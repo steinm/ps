@@ -96,6 +96,7 @@ PHP_FUNCTION(ps_close_image);
 PHP_FUNCTION(ps_place_image);
 PHP_FUNCTION(ps_shading);
 PHP_FUNCTION(ps_shfill);
+PHP_FUNCTION(ps_shading_pattern);
 PHP_FUNCTION(ps_add_bookmark);
 PHP_FUNCTION(ps_set_info);
 PHP_FUNCTION(ps_attach_file);
