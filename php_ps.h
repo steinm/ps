@@ -105,6 +105,10 @@ PHP_FUNCTION(ps_set_border_style);
 PHP_FUNCTION(ps_set_border_color);
 PHP_FUNCTION(ps_set_border_dash);
 PHP_FUNCTION(ps_setcolor);
+PHP_FUNCTION(ps_begin_pattern);
+PHP_FUNCTION(ps_end_pattern);
+PHP_FUNCTION(ps_begin_template);
+PHP_FUNCTION(ps_end_template);
 
 /* Function without an equivalent in pdflib */
 PHP_FUNCTION(ps_hyphenate);

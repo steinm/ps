@@ -126,6 +126,10 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_set_border_color, NULL)
 	PHP_FE(ps_set_border_dash, NULL)
 	PHP_FE(ps_setcolor, NULL)
+	PHP_FE(ps_begin_pattern, NULL)
+	PHP_FE(ps_end_pattern, NULL)
+	PHP_FE(ps_begin_template, NULL)
+	PHP_FE(ps_end_template, NULL)
 
 #ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
@@ -2254,6 +2258,89 @@ PHP_FUNCTION(ps_setmatrix) {
 	RETURN_TRUE;
 } /* }}} */
 #endif
+
+/* {{{ proto void ps_begin_pattern(int psdoc, double width, double height, double xstep, double ystep, int painttype)
+   Starts pattern */
+PHP_FUNCTION(ps_begin_pattern) 
+{
+	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6;
+	PSDoc *ps;
+
+	if (ZEND_NUM_ARGS() != 6 || zend_get_parameters_ex(6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	convert_to_double_ex(arg2);
+	convert_to_double_ex(arg3);
+	convert_to_double_ex(arg4);
+	convert_to_double_ex(arg5);
+	convert_to_long_ex(arg6);
+	PS_begin_pattern(ps, (float) Z_DVAL_PP(arg2),
+	                     (float) Z_DVAL_PP(arg3),
+	                     (float) Z_DVAL_PP(arg4),
+	                     (float) Z_DVAL_PP(arg5),
+	                     (int) Z_LVAL_PP(arg6));
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto void ps_end_pattern(int psdoc)
+   Ends pattern */
+PHP_FUNCTION(ps_end_pattern) 
+{
+	zval **arg1;
+	PSDoc *ps;
+
+	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	PS_end_pattern(ps);
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto void ps_begin_template(int psdoc, double width, double height)
+   Starts template */
+PHP_FUNCTION(ps_begin_template) 
+{
+	zval **arg1, **arg2, **arg3;
+	PSDoc *ps;
+
+	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	convert_to_double_ex(arg2);
+	convert_to_double_ex(arg3);
+	PS_begin_template(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3));
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto void ps_end_template(int psdoc)
+   Ends template */
+PHP_FUNCTION(ps_end_template) 
+{
+	zval **arg1;
+	PSDoc *ps;
+
+	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	PS_end_template(ps);
+	RETURN_TRUE;
+}
+/* }}} */
 
 /* Function without an equivalent in pdflib */
 
