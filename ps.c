@@ -89,7 +89,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_show_xy, NULL)
 	PHP_FE(ps_show2, NULL)
 	PHP_FE(ps_show_xy2, NULL)
-//	PHP_FE(ps_continue_text, NULL)
+	PHP_FE(ps_continue_text, NULL)
 	PHP_FE(ps_show_boxed, NULL)
 	PHP_FE(ps_stringwidth, NULL)	/* new parameters: [int font, float size] */
 //	PHP_FE(ps_set_text_pos, NULL)
@@ -217,6 +217,16 @@ ZEND_GET_MODULE(ps)
  */
 static void _free_ps_doc(zend_rsrc_list_entry *rsrc)
 {
+	PSDoc *psdoc = (PSDoc *)rsrc->ptr;
+	PS_delete(psdoc);
+}
+/* }}} */
+
+/* {{{ _free_ps_font
+ */
+static void _free_ps_font(zend_rsrc_list_entry *rsrc)
+{
+	PSFont *psfont = (PSFont *)rsrc->ptr;
 }
 /* }}} */
 
@@ -252,7 +262,6 @@ static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg)
 		case PS_UnknownError:
 #endif
 		default:
-			if (p !=NULL) PS_delete(p); /* clean up PSlib */
 			php_error(E_ERROR,"PSlib error: %s", shortmsg);
 		}
 }
@@ -315,7 +324,7 @@ PHP_MINFO_FUNCTION(ps)
 PHP_MINIT_FUNCTION(ps)
 {
 	le_psdoc = zend_register_list_destructors_ex(_free_ps_doc, NULL, "ps document", module_number);
-	le_psfont = zend_register_list_destructors_ex(_free_ps_doc, NULL, "ps font", module_number);
+	le_psfont = zend_register_list_destructors_ex(_free_ps_font, NULL, "ps font", module_number);
 
 	REGISTER_LONG_CONSTANT("PS_LINECAP_BUTT", PS_LINECAP_BUTT, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PS_LINECAP_ROUND", PS_LINECAP_ROUND, CONST_CS | CONST_PERSISTENT);
@@ -1384,7 +1393,6 @@ PHP_FUNCTION(ps_set_word_spacing)
 }
 /* }}} */
 
-#ifdef notimplementedyet
 /* {{{ proto void ps_set_text_pos(int psdoc, double x, double y)
    Sets the position of text for the next ps_show call */
 PHP_FUNCTION(ps_set_text_pos) 
@@ -1423,7 +1431,6 @@ PHP_FUNCTION(ps_continue_text)
 	RETURN_TRUE;
 }
 /* }}} */
-#endif
 
 /* {{{ proto double ps_stringwidth(int psdoc, string text [, int font, double size])
    Returns width of text in current font */
@@ -2295,7 +2302,6 @@ PHP_FUNCTION(ps_delete) {
 
 	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 
-	PS_delete(ps);
 	zend_list_delete(Z_LVAL_PP(arg1));
 
 	RETURN_TRUE;
