@@ -406,6 +406,7 @@ PHP_FUNCTION(ps_get_parameter)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
+	/* FIXME: Do we need convert_to_double_ex(zmod)? */
 	if(zmod) {
 		value = (char *) PS_get_parameter(ps, name, (float) Z_DVAL_P(zmod));
 	} else {
@@ -960,7 +961,7 @@ PHP_FUNCTION(ps_curveto)
 	double x1, y1, x2, y2, x3, y3;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddddd", &zps, &x1, &y2, &x2, &y2, &x3, &y3)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddddd", &zps, &x1, &y1, &x2, &y2, &x3, &y3)) {
 		return;
 	}
 
@@ -1047,7 +1048,7 @@ PHP_FUNCTION(ps_stringwidth)
 	int font = 0;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, font, size)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, &font, &size)) {
 		return;
 	}
 
@@ -1059,7 +1060,7 @@ PHP_FUNCTION(ps_stringwidth)
 }
 /* }}} */
 
-/* {{{ proto double ps_string_geometry(int psdoc, string text [, int font, double size])
+/* {{{ proto array ps_string_geometry(int psdoc, string text [, int font, double size])
    Returns geometry of text in current font */
 PHP_FUNCTION(ps_string_geometry)
 {
@@ -1071,7 +1072,7 @@ PHP_FUNCTION(ps_string_geometry)
 	float dimension[3];
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, font, size)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, &font, &size)) {
 		return;
 	}
 
@@ -1134,7 +1135,7 @@ PHP_FUNCTION(ps_arc)
 	double x, y, radius, start, end;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddd", &zps, &x, &y, &radius, start, end)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddd", &zps, &x, &y, &radius, &start, &end)) {
 		return;
 	}
 
@@ -1235,7 +1236,7 @@ PHP_FUNCTION(ps_add_bookmark)
 	int parentid = 0, open = 0, id;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ll", &zps, &text, &text_len, parentid, open)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ll", &zps, &text, &text_len, &parentid, &open)) {
 		return;
 	}
 
@@ -1248,17 +1249,17 @@ PHP_FUNCTION(ps_add_bookmark)
 }
 /* }}} */
 
-/* {{{ proto int ps_open_image_file(int ps, string type, string file, string stringparam, int intparam)
+/* {{{ proto int ps_open_image_file(int ps, string type, string file[, string stringparam, int intparam])
    Opens an image file of the given type and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_image_file)
 {
 	zval *zps;
 	char *type, *filename, *image, *stringparam = NULL;
-	int *type_len, filename_len, stringparam_len;
+	int type_len, filename_len, stringparam_len;
 	int imageid, intparam = 0;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss|sl", &zps, &type, &type_len, &filename, &filename_len, &stringparam, &stringparam_len, intparam)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss|sl", &zps, &type, &type_len, &filename, &filename_len, &stringparam, &stringparam_len, &intparam)) {
 		return;
 	}
 
@@ -1435,18 +1436,20 @@ PHP_FUNCTION(ps_add_pdflink)
    Sets style of box surounding all kinds of annotations and link */
 PHP_FUNCTION(ps_set_border_style)
 {
-	zval **arg1, **arg2, **arg3;
+	zval *zps;
+	char *style;
+	int style_len;
+	double width;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsd", &zps, &style, &style_len, &width)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_string_ex(arg2);
-	convert_to_double_ex(arg3);
-	PS_set_border_style(ps, Z_STRVAL_PP(arg2), (float) Z_DVAL_PP(arg3));
+	PS_set_border_style(ps, style, (float) width);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1455,19 +1458,18 @@ PHP_FUNCTION(ps_set_border_style)
    Sets color of box surounded all kinds of annotations and links */
 PHP_FUNCTION(ps_set_border_color)
 {
-	zval **arg1, **arg2, **arg3, **arg4;
+	zval *zps;
+	double red, green, blue;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 4 || zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddd", &zps, &red, &green, &blue)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	PS_set_border_color(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4));
+	PS_set_border_color(ps, (float) red, (float) green, (float) blue);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1476,18 +1478,18 @@ PHP_FUNCTION(ps_set_border_color)
    Sets the border dash style of all kinds of annotations and links */
 PHP_FUNCTION(ps_set_border_dash)
 {
-	zval **arg1, **arg2, **arg3;
+	zval *zps;
+	double black, white;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddd", &zps, &black, &white)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	PS_set_border_dash(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3));
+	PS_set_border_dash(ps, (float) black, (float) white);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1704,43 +1706,27 @@ PHP_FUNCTION(ps_open_ccitt) {
 /* {{{ proto int ps_open_image(int ps, string type, string source, string data, long length, int width, int height, int components, int bpc, string params)
    Opens an image of the given type and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_image) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7, **arg8, **arg9, **arg10;
-	PSDoc *ps;
+	zval *zps;
+	char *type, *params, *source, *data;
+	int type_len, params_len, source_len, data_len;
+	int length, width, height, components, bpc;
 	int imageid;
 	char *image;
+	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 10 || zend_get_parameters_ex(10, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8, &arg9, &arg10) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsssllllls", &zps, &type, &type_len, &source, &source_len, &data, &data_len, &length, &width, &height, &components, &bpc, &params, &params_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_string_ex(arg2);
-	convert_to_string_ex(arg3);
-	convert_to_string_ex(arg4);
-	convert_to_long_ex(arg5);
-	convert_to_long_ex(arg6);
-	convert_to_long_ex(arg7);
-	convert_to_long_ex(arg8);
-	convert_to_long_ex(arg9);
-	convert_to_string_ex(arg10);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 #ifdef VIRTUAL_DIR
-	virtual_filepath(Z_STRVAL_PP(arg4), &image);
+	virtual_filepath(data, &image);
 #else
-	image = Z_STRVAL_PP(arg4);
+	image = data;
 #endif
 
-	imageid = PS_open_image(ps,
-		Z_STRVAL_PP(arg2),
-		Z_STRVAL_PP(arg3),
-		image,
-		Z_LVAL_PP(arg5),
-		Z_LVAL_PP(arg6),
-		Z_LVAL_PP(arg7),
-		Z_LVAL_PP(arg8),
-		Z_LVAL_PP(arg9),
-		Z_STRVAL_PP(arg10));
+	imageid = PS_open_image(ps, type, source, image, length, width, height, components, bpc, params);
 
 	RETURN_LONG(imageid);
 }
@@ -1750,35 +1736,28 @@ PHP_FUNCTION(ps_open_image) {
 /* {{{ proto void ps_attach_file(int ps, double lly, double lly, double urx, double ury, string filename, string description, string author, string mimetype, string icon)
    Adds a file attachment annotation at the rectangle specified by his lower left and upper right corners */
 PHP_FUNCTION(ps_attach_file) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7, **arg8, **arg9, **arg10;
+	zval *zps;
+	double llx, lly, urx, ury;
+	char *filename, *description, *author, *mimetype, *icon;
+	int filename_len, description_len, author_len, mimetype_len, icon_len;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 10 || zend_get_parameters_ex(10, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8, &arg9, &arg10) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddsssss", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len, &description, &description_len, &author, &author_len, &mimetype, &mimetype_len, &icon, &icon_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_long_ex(arg2);
-	convert_to_long_ex(arg3);
-	convert_to_long_ex(arg4);
-	convert_to_long_ex(arg5);
-	convert_to_string_ex(arg6);
-	convert_to_string_ex(arg7);
-	convert_to_string_ex(arg8);
-	convert_to_string_ex(arg9);
-	convert_to_string_ex(arg10);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	PS_attach_file(ps,
-		(float) Z_DVAL_PP(arg2),
-		(float) Z_DVAL_PP(arg3),
-		(float) Z_DVAL_PP(arg4),
-		(float) Z_DVAL_PP(arg5),
-		Z_STRVAL_PP(arg6),
-		Z_STRVAL_PP(arg7),
-		Z_STRVAL_PP(arg8),
-		Z_STRVAL_PP(arg9),
-		Z_STRVAL_PP(arg10));
+		(float) llx,
+		(float) lly,
+		(float) urx,
+		(float) ury,
+		filename,
+		description,
+		author,
+		mimetype,
+		icon);
 
 	RETURN_TRUE;
 }
@@ -1788,33 +1767,20 @@ PHP_FUNCTION(ps_attach_file) {
 /* {{{ proto void ps_add_note(int psdoc, double llx, double lly, double urx, double ury, string contents, string title, string icon, int open)
    Sets annotation */
 PHP_FUNCTION(ps_add_note) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7, **arg8, **arg9;
+	zval *zps;
+	double llx, lly, urx, ury;
+	char *contents, *title, *icon;
+	int contents_len, title_len, icon_len;
+	int open;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 9 || zend_get_parameters_ex(9, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8, &arg9) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddsssl", &zps, &llx, &lly, &urx, &ury, &contents, &contents_len, &title, &title_len, &icon, &icon_len, &open)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_string_ex(arg6);
-	convert_to_string_ex(arg7);
-	convert_to_string_ex(arg8);
-	convert_to_long_ex(arg9);
-
-	PS_add_note(ps,
-		 (float) Z_DVAL_PP(arg2),
-		 (float) Z_DVAL_PP(arg3),
-		 (float) Z_DVAL_PP(arg4),
-		 (float) Z_DVAL_PP(arg5),
-		 Z_STRVAL_PP(arg6),
-		 Z_STRVAL_PP(arg7),
-		 Z_STRVAL_PP(arg8),
-		 Z_LVAL_PP(arg9));
+	PS_add_note(ps, (float) llx, (float) lly, (float) urx, (float) ury, contents, title, icon, open);
 
 	RETURN_TRUE;
 }
@@ -1823,29 +1789,20 @@ PHP_FUNCTION(ps_add_note) {
 /* {{{ proto void ps_add_locallink(int psdoc, double llx, double lly, double urx, double ury, int page, string dest)
    Adds link to web resource */
 PHP_FUNCTION(ps_add_locallink) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7;
+	zval *zps;
+	double llx, lly, urx, ury;
+	char *dest;
+	int dest_len;
+	int page;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 7 || zend_get_parameters_ex(7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddls", &zps, &llx, &lly, &urx, &ury, &page, &dest, &dest_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_long_ex(arg6);
-	convert_to_string_ex(arg7);
-
-	PS_add_locallink(ps,
-		(float) Z_DVAL_PP(arg2),
-		(float) Z_DVAL_PP(arg3),
-		(float) Z_DVAL_PP(arg4),
-		(float) Z_DVAL_PP(arg5),
-		Z_LVAL_PP(arg6),
-		Z_STRVAL_PP(arg7));
+	PS_add_locallink(ps, (float) llx, (float) lly, (float) urx, (float) ury, page, dest);
 
 	RETURN_TRUE;
 }
@@ -1854,27 +1811,19 @@ PHP_FUNCTION(ps_add_locallink) {
 /* {{{ proto void ps_add_launchlink(int psdoc, double llx, double lly, double urx, double ury, string filename)
    Adds link to web resource */
 PHP_FUNCTION(ps_add_launchlink) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6;
+	zval *zps;
+	double llx, lly, urx, ury;
+	char *filename;
+	int filename_len;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 6 || zend_get_parameters_ex(6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddds", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_string_ex(arg6);
-
-	PS_add_launchlink(ps,
-		(float) Z_DVAL_PP(arg2),
-		(float) Z_DVAL_PP(arg3),
-		(float) Z_DVAL_PP(arg4),
-		(float) Z_DVAL_PP(arg5),
-		Z_STRVAL_PP(arg6));
+	PS_add_launchlink(ps, (float) llx, (float) lly, (float) urx, (float) ury, filename);
 
 	RETURN_TRUE;
 }
@@ -1883,38 +1832,19 @@ PHP_FUNCTION(ps_add_launchlink) {
 /* {{{ proto void ps_setcolor(int ps, string type, string colorspace, double c1, double c2, double c3, double c4);
  * Set the current color space and color. */
 PHP_FUNCTION(ps_setcolor) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7;
+	zval *zps;
+	double c1, c2, c3, c4;
+	char *type, *colorspace;
+	int type_len, colorspace_len;
 	PSDoc *ps;
-	double c1;
 
-	if (ZEND_NUM_ARGS() != 7 || zend_get_parameters_ex(7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssdddd", &zps, &type, &type_len, &colorspace, &colorspace_len, &c1, &c2, &c3, &c4)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_string_ex(arg2);
-	convert_to_string_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_double_ex(arg6);
-	convert_to_double_ex(arg7);
-
-	if (0 == (strcmp(Z_STRVAL_PP(arg3), "spot"))) {
-		c1 = Z_DVAL_PP(arg4);
-	} else if(0 == (strcmp(Z_STRVAL_PP(arg3), "pattern"))) {
-		c1 = Z_DVAL_PP(arg4);
-	} else {
-		c1 = Z_DVAL_PP(arg4);
-	}
-
-	PS_setcolor(ps,
-		Z_STRVAL_PP(arg2),
-		Z_STRVAL_PP(arg3),
-		(float) c1,
-		(float) Z_DVAL_PP(arg5),
-		(float) Z_DVAL_PP(arg6),
-		(float) Z_DVAL_PP(arg7));
+	PS_setcolor(ps, type, colorspace, (float) c1, (float) c2, (float) c3, (float) c4);
 
 	RETURN_TRUE;
 } /* }}} */
@@ -1923,23 +1853,21 @@ PHP_FUNCTION(ps_setcolor) {
 /* {{{ proto int ps_makespotcolor(int ps, string spotname);
  * Make a named spot color from the current color. */
 PHP_FUNCTION(ps_makespotcolor) {
-	zval **arg1, **arg2;
+	zval *zps;
+	char *spotname;
+	int spotname_len;
+	int spot;
 	PSDoc *ps;
-	int spotcolor;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &spotname, &spotname_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_string_ex(arg2);
+	spotr = PS_makespotcolor(ps, spotcolor, spotcolor_len);
 
-	spotcolor = PS_makespotcolor(ps,
-		Z_STRVAL_PP(arg2),
-		Z_STRLEN_PP(arg2));
-
-	RETURN_LONG(spotcolor+PSLIB_SPOT_OFFSET);
+	RETURN_LONG(spot+PSLIB_SPOT_OFFSET);
 } /* }}} */
 #endif
 
@@ -1950,7 +1878,7 @@ PHP_FUNCTION(ps_arcn) {
 	double x, y, radius, start, end;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddd", &zps, &x, &y, &radius, start, end)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddd", &zps, &x, &y, &radius, &start, &end)) {
 		return;
 	}
 
@@ -1982,18 +1910,17 @@ PHP_FUNCTION(ps_initgraphics) {
 /* {{{ proto void ps_add_thumbnail(int ps, int image);
  * Add an existing image as thumbnail for the current page. */
 PHP_FUNCTION(ps_add_thumbnail) {
-	zval **arg1, **arg2;
+	zval *zps;
+	int imageid;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &imageid)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_long_ex(arg2);
-
-	PS_add_thumbnail(ps, Z_LVAL_PP(arg2));
+	PS_add_thumbnail(ps, imageid);
 
 	RETURN_TRUE;
 } /* }}} */
