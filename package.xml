@@ -35,6 +35,7 @@
       <file role="test" name="tests/003.phpt"/>
       <file role="test" name="tests/004.phpt"/>
       <file role="test" name="tests/005.phpt"/>
+      <file role="test" name="tests/hyph_de.dic"/>
     </filelist>
   </release>
   <changelog>
