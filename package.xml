@@ -13,13 +13,11 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>1.2.0</version>
-    <date>2004-04-26</date>
+    <version>1.2.1</version>
+    <date>2004-06-02</date>
     <license>PHP License</license>
     <state>stable</state>
-    <notes>Added new function ps_string_geometry(), ps_set_text_pos(),
-ps_symbol(), ps_symbol_name(), ps_symbol_width(), ps_begin_pattern(),
-ps_end_pattern(), ps_begin_template(), ps_end_template().</notes>
+    <notes>ps_hyphenate() didn't return an array but true.</notes>
     <deps>
       <dep type="php" rel="ge" version="4.3.0"/>
     </deps>
@@ -33,9 +31,36 @@ ps_end_pattern(), ps_begin_template(), ps_end_template().</notes>
       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
       <file role="test" name="tests/001.phpt"/>
+      <file role="test" name="tests/002.phpt"/>
+      <file role="test" name="tests/003.phpt"/>
+      <file role="test" name="tests/004.phpt"/>
+      <file role="test" name="tests/005.phpt"/>
     </filelist>
   </release>
   <changelog>
+   <release>
+     <version>1.2.0</version>
+     <date>2004-04-26</date>
+     <license>PHP License</license>
+     <state>stable</state>
+     <notes>Added new function ps_string_geometry(), ps_set_text_pos(),
+ ps_symbol(), ps_symbol_name(), ps_symbol_width(), ps_begin_pattern(),
+ ps_end_pattern(), ps_begin_template(), ps_end_template().</notes>
+     <deps>
+       <dep type="php" rel="ge" version="4.3.0"/>
+     </deps>
+     <filelist>
+       <file role="doc" name="CREDITS"/>
+       <file role="src" name="config.m4"/>
+       <file role="doc" name="php_ps.h"/>
+       <file role="src" name="ps.c"/>
+       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
+       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
+       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
+       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
+       <file role="test" name="tests/001.phpt"/>
+     </filelist>
+   </release>
     <release>
       <version>1.1.1</version>
       <date>2004-04-21</date>
