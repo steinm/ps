@@ -2360,7 +2360,7 @@ PHP_FUNCTION(ps_hyphenate) {
 
 	convert_to_string_ex(arg2);
 
-	if(NULL == (buffer = emalloc(strlen(Z_STRVAL_PP(arg2))+1))) {
+	if(NULL == (buffer = emalloc(strlen(Z_STRVAL_PP(arg2))+3))) {
 		RETURN_FALSE;
 	}
 	if(0 > PS_hyphenate(ps, Z_STRVAL_PP(arg2), &buffer)) {
@@ -2377,8 +2377,6 @@ PHP_FUNCTION(ps_hyphenate) {
 		}
 	}
 	efree(buffer);
-	RETURN_TRUE;
-
 } /* }}} */
 
 /* {{{ proto void ps_symbol(int ps, int ord)
