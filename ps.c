@@ -1856,7 +1856,7 @@ PHP_FUNCTION(ps_open_file) {
 		ps_file = PS_open_file(ps, "");
 	}
 
-	if (ps_file == -1)
+	if (ps_file < 0)
 	    RETURN_FALSE;
 
 	RETURN_TRUE;
@@ -2360,7 +2360,11 @@ PHP_FUNCTION(ps_hyphenate) {
 	if(NULL == (buffer = emalloc(strlen(Z_STRVAL_PP(arg2))+1))) {
 		RETURN_FALSE;
 	}
-	PS_hyphenate(ps, Z_STRVAL_PP(arg2), &buffer);
+	if(0 > PS_hyphenate(ps, Z_STRVAL_PP(arg2), &buffer)) {
+		efree(buffer);
+		RETURN_FALSE;
+	}
+
 	array_init(return_value);
 	j = 0;
 	for(i=0; i<strlen(buffer); i++) {
@@ -2370,6 +2374,7 @@ PHP_FUNCTION(ps_hyphenate) {
 		}
 	}
 	efree(buffer);
+	RETURN_TRUE;
 
 } /* }}} */
 #endif /* 0 */
