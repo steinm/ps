@@ -72,7 +72,7 @@ ps_set_value($ps, "leading", 20);
 ps_set_parameter($ps, "hyphenation", "true");
 ps_set_parameter($ps, "hyphendict", "/usr/lib/scribus/dicts/hyph_en.dic");
 ps_set_value($ps, "hyphenminchars", 2);
-$text = "You wonder if hyphenation is supported? Yes, of course and it uses the hyphenation files from scribus. Scribus provides hyphenation dictionaries for 14 languages. Another nice feature is Protution. This means that certain characters reach over the left or right margin. This is very useful for hyphens or punctuation to make straight looking margin like the one in the first column (it is very exaggerated).";
+$text = "You wonder if hyphenation is supported? Yes, of course and it uses the hyphenation files from scribus. Scribus provides hyphenation dictionaries for 14 languages. Another nice feature is Protution. This means that certain characters reach over the left or right margin. This is very useful for hyphens or punctuation to make straight looking margins like the one in the first column (it is very exaggerated).";
 ps_set_parameter($ps, "RightMarginKerning", "hyphen=1000");
 $len = ps_show_boxed($ps, $text, 100, 90, 100, 200, "justify");
 $len = ps_show_boxed($ps, substr($text, strlen($text)-$len), 235, 90, 100, 200, "right");
