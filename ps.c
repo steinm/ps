@@ -59,10 +59,10 @@ static int le_psdoc;
 /* {{{ ps_functions[]
  */
 function_entry ps_functions[] = {
-	PHP_FE(ps_new, NULL)		/* new function */
-	PHP_FE(ps_delete, NULL)	/* new function */
-	PHP_FE(ps_open_file, NULL)	/* new function */
-//	PHP_FE(ps_get_buffer, NULL)	/* new function */
+	PHP_FE(ps_new, NULL)
+	PHP_FE(ps_delete, NULL)
+	PHP_FE(ps_open_file, NULL)
+//	PHP_FE(ps_get_buffer, NULL)
 	PHP_FE(ps_close, NULL)
 	PHP_FE(ps_begin_page, NULL)
 	PHP_FE(ps_end_page, NULL)
@@ -70,18 +70,19 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_set_value, NULL)
 	PHP_FE(ps_get_parameter, NULL)
 	PHP_FE(ps_set_parameter, NULL)
-	PHP_FE(ps_findfont, NULL)	/* new function */
-	PHP_FE(ps_setfont, NULL)	/* new function */
+	PHP_FE(ps_findfont, NULL)
+	PHP_FE(ps_setfont, NULL)
 	PHP_FE(ps_show, NULL)
 	PHP_FE(ps_show_xy, NULL)
 	PHP_FE(ps_show2, NULL)
 	PHP_FE(ps_show_xy2, NULL)
 	PHP_FE(ps_continue_text, NULL)
 	PHP_FE(ps_show_boxed, NULL)
-	PHP_FE(ps_stringwidth, NULL)	/* new parameters: [int font, float size] */
+	PHP_FE(ps_stringwidth, NULL)
+	PHP_FE(ps_string_geometry, NULL) /* not available in pdf extension */
 //	PHP_FE(ps_set_text_pos, NULL)
 	PHP_FE(ps_setdash, NULL)
-	PHP_FE(ps_setpolydash, NULL)	/* new function: not yet finished */
+	PHP_FE(ps_setpolydash, NULL)
 	PHP_FE(ps_setflat, NULL)
 	PHP_FE(ps_setlinejoin, NULL)
 	PHP_FE(ps_setlinecap, NULL)
@@ -108,26 +109,24 @@ function_entry ps_functions[] = {
 //	PHP_FE(ps_closepath_fill_stroke, NULL)
 	PHP_FE(ps_clip, NULL)
 //	PHP_FE(ps_endpath, NULL)
-	PHP_FE(ps_open_image_file, NULL)  /* new parameters: [char *stringpram, int intparam] */
-//	PHP_FE(ps_open_ccitt, NULL)	/* new function */
-	PHP_FE(ps_open_image, NULL)	/* new function */
+	PHP_FE(ps_open_image_file, NULL) 
+//	PHP_FE(ps_open_ccitt, NULL)
+	PHP_FE(ps_open_image, NULL)
 	PHP_FE(ps_close_image, NULL)
 	PHP_FE(ps_place_image, NULL)
 	PHP_FE(ps_add_bookmark, NULL)
 	PHP_FE(ps_set_info, NULL)
-//	PHP_FE(ps_attach_file, NULL)	/* new function */
-	PHP_FE(ps_add_note, NULL)	/* new function */
+//	PHP_FE(ps_attach_file, NULL)
+	PHP_FE(ps_add_note, NULL)
 	PHP_FE(ps_add_pdflink, NULL)
-	PHP_FE(ps_add_locallink, NULL)	/* new function */
-	PHP_FE(ps_add_launchlink, NULL)/* new function */
+	PHP_FE(ps_add_locallink, NULL)
+	PHP_FE(ps_add_launchlink, NULL)
 	PHP_FE(ps_add_weblink, NULL)
 	PHP_FE(ps_set_border_style, NULL)
 	PHP_FE(ps_set_border_color, NULL)
 	PHP_FE(ps_set_border_dash, NULL)
 	PHP_FE(ps_setcolor, NULL)
 	PHP_FE(ps_hyphenate, NULL)
-
-	/* End of the official PSLIB V3.x API */
 
 #ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
@@ -1160,6 +1159,55 @@ PHP_FUNCTION(ps_stringwidth)
 		(float)size);
 
 	RETURN_DOUBLE((double) width);
+}
+/* }}} */
+
+/* {{{ proto double ps_string_geometry(int psdoc, string text [, int font, double size])
+   Returns geometry of text in current font */
+PHP_FUNCTION(ps_string_geometry)
+{
+	zval **arg1, **arg2, **arg3, **arg4;
+	double width, size;
+	float dimension[3];
+	PSDoc *ps;
+	int font;
+
+	switch (ZEND_NUM_ARGS()) {
+	case 2:
+		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE)
+			WRONG_PARAM_COUNT;
+		break;
+	case 4:
+		if (zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE)
+			WRONG_PARAM_COUNT;
+		break;
+	default:
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	convert_to_string_ex(arg2);
+	if (ZEND_NUM_ARGS() == 2) {
+			font = 0;
+			size = 0;
+	} else {
+	    convert_to_long_ex(arg3);
+			font = Z_LVAL_PP(arg3);
+	    convert_to_double_ex(arg4);
+	    size = Z_DVAL_PP(arg4);
+	}
+	width = (double) PS_string_geometry(ps,
+		Z_STRVAL_PP(arg2),
+		Z_STRLEN_PP(arg2),
+		font,
+		(float)size,
+		dimension);
+
+	array_init(return_value);
+	add_assoc_double(return_value, "width", (double) dimension[0]);
+	add_assoc_double(return_value, "descender", (double) dimension[1]);
+	add_assoc_double(return_value, "ascender", (double) dimension[2]);
 }
 /* }}} */
 

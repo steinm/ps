@@ -37,10 +37,10 @@ extern zend_module_entry ps_module_entry;
 extern PHP_MINFO_FUNCTION(ps);
 extern PHP_MINIT_FUNCTION(ps);
 extern PHP_MSHUTDOWN_FUNCTION(ps);
-PHP_FUNCTION(ps_new);		/* new function */
-PHP_FUNCTION(ps_delete);	/* new function */
+PHP_FUNCTION(ps_new);	
+PHP_FUNCTION(ps_delete);
 PHP_FUNCTION(ps_open_file);
-PHP_FUNCTION(ps_get_buffer);	/* new function */
+PHP_FUNCTION(ps_get_buffer);
 PHP_FUNCTION(ps_close);
 PHP_FUNCTION(ps_begin_page);
 PHP_FUNCTION(ps_end_page);
@@ -48,19 +48,20 @@ PHP_FUNCTION(ps_get_value);
 PHP_FUNCTION(ps_set_value);
 PHP_FUNCTION(ps_get_parameter);
 PHP_FUNCTION(ps_set_parameter);
-PHP_FUNCTION(ps_findfont);	/* new function */
-PHP_FUNCTION(ps_stringwidth);	/* new function */
-PHP_FUNCTION(ps_setfont);	/* new function */
+PHP_FUNCTION(ps_findfont);
+PHP_FUNCTION(ps_stringwidth);
+PHP_FUNCTION(ps_string_geometry);
+PHP_FUNCTION(ps_setfont);
 PHP_FUNCTION(ps_show);
 PHP_FUNCTION(ps_show_xy);
 PHP_FUNCTION(ps_show2);
 PHP_FUNCTION(ps_show_xy2);
 PHP_FUNCTION(ps_continue_text);
 PHP_FUNCTION(ps_show_boxed);
-PHP_FUNCTION(ps_stringwidth);	/* new parameters: [int font, float size] */
+PHP_FUNCTION(ps_stringwidth);
 PHP_FUNCTION(ps_set_text_pos);
 PHP_FUNCTION(ps_setdash);
-PHP_FUNCTION(ps_setpolydash);	/* new function: not yet finished */
+PHP_FUNCTION(ps_setpolydash);
 PHP_FUNCTION(ps_setflat);
 PHP_FUNCTION(ps_setlinejoin);
 PHP_FUNCTION(ps_setlinecap);
@@ -72,7 +73,7 @@ PHP_FUNCTION(ps_translate);
 PHP_FUNCTION(ps_scale);
 PHP_FUNCTION(ps_rotate);
 PHP_FUNCTION(ps_skew);
-PHP_FUNCTION(ps_concat);	/* new function */
+PHP_FUNCTION(ps_concat);
 PHP_FUNCTION(ps_moveto);
 PHP_FUNCTION(ps_lineto);
 PHP_FUNCTION(ps_curveto);
@@ -93,18 +94,18 @@ PHP_FUNCTION(ps_setgray);
 PHP_FUNCTION(ps_setrgbcolor_fill);
 PHP_FUNCTION(ps_setrgbcolor_stroke);
 PHP_FUNCTION(ps_setrgbcolor);
-PHP_FUNCTION(ps_open_image_file);  /* new parameters: [char *stringpram, int intparam] */
-PHP_FUNCTION(ps_open_ccitt);	/* new function */
-PHP_FUNCTION(ps_open_image);	/* new function: checkit not yet completeted :( */
+PHP_FUNCTION(ps_open_image_file); 
+PHP_FUNCTION(ps_open_ccitt);
+PHP_FUNCTION(ps_open_image);
 PHP_FUNCTION(ps_close_image);
 PHP_FUNCTION(ps_place_image);
 PHP_FUNCTION(ps_add_bookmark);
 PHP_FUNCTION(ps_set_info);
-PHP_FUNCTION(ps_attach_file);	/* new function */
-PHP_FUNCTION(ps_add_note);	/* new function */
+PHP_FUNCTION(ps_attach_file);
+PHP_FUNCTION(ps_add_note);
 PHP_FUNCTION(ps_add_pdflink);
-PHP_FUNCTION(ps_add_locallink);	/* new function */
-PHP_FUNCTION(ps_add_launchlink);	/* new function */
+PHP_FUNCTION(ps_add_locallink);
+PHP_FUNCTION(ps_add_launchlink);
 PHP_FUNCTION(ps_add_weblink);
 PHP_FUNCTION(ps_set_border_style);
 PHP_FUNCTION(ps_set_border_color);
