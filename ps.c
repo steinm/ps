@@ -231,7 +231,7 @@ static void _free_ps_font(zend_rsrc_list_entry *rsrc)
 
 /* {{{ custom_errorhandler
  */
-static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg)
+static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg, void *data)
 {
 	switch (type){
 		case PS_Warning:
@@ -455,7 +455,7 @@ PHP_FUNCTION(ps_open)
 	if(fp) {
 		if (PS_open_fp(ps, fp) < 0) RETURN_FALSE;
 	} else {
-		PS_open_mem(ps, ps_flushwrite);
+		if (PS_open_mem(ps, ps_flushwrite) < 0) RETURN_FALSE;
 	}
 
 //	PS_set_parameter(ps, "imagewarning", "true");
