@@ -12,6 +12,6 @@ echo "$psdoc\n";
 ps_delete($psdoc);
 echo "Done\n";
 ?>
---EXPECT--
+--EXPECTF--
 Resource id #%d
 Done

@@ -12,6 +12,6 @@ echo ps_get_parameter($psdoc, "dottedversion", 0.0)."\n";
 ps_delete($psdoc);
 echo "Done\n";
 ?>
---EXPECT--
+--EXPECTF--
 %d.%d.%d
 Done
