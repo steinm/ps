@@ -33,7 +33,7 @@ ps_set_info($ps, "BoundingBox", "0 0 596 842");
 	ps_set_parameter($ps, "hyphenation", "true");
 	ps_set_parameter($ps, "hyphendict", "hyph_en.dic");
 
-	$psfont = ps_findfont($ps, "Helvetica", "", 1);
+	$psfont = ps_findfont($ps, "Helvetica", "", 0);
 	printf("Creating %d pages\n", $_SERVER["argc"]-1);
 	for($k=1; $k<$_SERVER["argc"]; $k++) {
 		printf("Creating page for %s\n", $_SERVER["argv"][$k]);
