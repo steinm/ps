@@ -46,5 +46,5 @@ if test "$PHP_PSLIB" != "no"; then
   PHP_SUBST(PSLIB_SHARED_LIBADD)
 
   AC_DEFINE(HAVE_PSLIB,1,[Whether to include the pslib extension])
-  PHP_NEW_EXTENSION(pslib, ps.c, $ext_shared)
+  PHP_NEW_EXTENSION(ps, ps.c, $ext_shared)
 fi
