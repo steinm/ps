@@ -126,6 +126,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_set_border_color, NULL)
 	PHP_FE(ps_set_border_dash, NULL)
 	PHP_FE(ps_setcolor, NULL)
+	PHP_FE(ps_makespotcolor, NULL)
 	PHP_FE(ps_begin_pattern, NULL)
 	PHP_FE(ps_end_pattern, NULL)
 	PHP_FE(ps_begin_template, NULL)
@@ -1849,7 +1850,6 @@ PHP_FUNCTION(ps_setcolor) {
 	RETURN_TRUE;
 } /* }}} */
 
-#ifdef notimplementedyet
 /* {{{ proto int ps_makespotcolor(int ps, string spotname);
  * Make a named spot color from the current color. */
 PHP_FUNCTION(ps_makespotcolor) {
@@ -1857,19 +1857,19 @@ PHP_FUNCTION(ps_makespotcolor) {
 	char *spotname;
 	int spotname_len;
 	int spot;
+	double reserved = 0.0;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &spotname, &spotname_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|d", &zps, &spotname, &spotname_len, &reserved)) {
 		return;
 	}
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	spotr = PS_makespotcolor(ps, spotcolor, spotcolor_len);
+	spot = PS_makespotcolor(ps, spotname, reserved);
 
-	RETURN_LONG(spot+PSLIB_SPOT_OFFSET);
+	RETURN_LONG(spot);
 } /* }}} */
-#endif
 
 /* {{{ proto void ps_arcn(int ps, double x, double y, double r, double alpha, double beta);
  * Draw a clockwise circular arc from alpha to beta degrees. */
