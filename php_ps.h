@@ -21,6 +21,12 @@
 #ifndef PHP_PS_H
 #define PHP_PS_H
 
+#ifdef PHP_WIN32
+#define PHP_PS_API __declspec(dllexport)
+#else
+#define PHP_PS_API
+#endif
+
 #if HAVE_PS
 
 #include <libps/pslib.h>
@@ -146,12 +152,14 @@ PHP_FUNCTION(ps_add_annotation);
 PHP_FUNCTION(ps_open_memory_image);
 #endif
 
+ZEND_BEGIN_MODULE_GLOBALS(ps)
+	long dummy;
+ZEND_END_MODULE_GLOBALS(ps)
+
 #ifdef ZTS
-#define PSG(v) (ps_globals->v)
-#define PSLS_FETCH() php_ps_globals *ps_globals = ts_resource(ps_globals_id)
+# define PsSG(v) TSRMG(ps_globals_id, zend_ps_globals *, v)
 #else
-#define PSG(v) (ps_globals.v)
-#define PSLS_FETCH()
+# define PsSG(v) (ps_globals.v)
 #endif
 
 

@@ -55,7 +55,6 @@ static int le_gd;
 #include "php_ps.h"
 
 static int le_psdoc;
-static int le_psfont;
 
 /*
  * to adopt the php way of error handling to PSlib
@@ -119,13 +118,13 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_fill, NULL)
 	PHP_FE(ps_fill_stroke, NULL)
 //	PHP_FE(ps_closepath_fill_stroke, NULL)
-//	PHP_FE(ps_clip, NULL)
+	PHP_FE(ps_clip, NULL)
 //	PHP_FE(ps_endpath, NULL)
-//	PHP_FE(ps_open_image_file, NULL)  /* new parameters: [char *stringpram, int intparam] */
+	PHP_FE(ps_open_image_file, NULL)  /* new parameters: [char *stringpram, int intparam] */
 //	PHP_FE(ps_open_ccitt, NULL)	/* new function */
-//	PHP_FE(ps_open_image, NULL)	/* new function */
-//	PHP_FE(ps_close_image, NULL)
-//	PHP_FE(ps_place_image, NULL)
+	PHP_FE(ps_open_image, NULL)	/* new function */
+	PHP_FE(ps_close_image, NULL)
+	PHP_FE(ps_place_image, NULL)
 	PHP_FE(ps_add_bookmark, NULL)
 	PHP_FE(ps_set_info, NULL)
 //	PHP_FE(ps_attach_file, NULL)	/* new function */
@@ -141,38 +140,11 @@ function_entry ps_functions[] = {
 
 	/* End of the official PSLIB V3.x API */
 
-	/* aliases for compatibility reasons */
-//	PHP_FALIAS(ps_add_outline, ps_add_bookmark, NULL)
-
 	/* old font handling */
-//	PHP_FE(ps_set_font, NULL)		/* deprecated */
-	PHP_FE(ps_get_font, NULL)		/* deprecated */
-	PHP_FE(ps_get_fontname, NULL)		/* deprecated */
-	PHP_FE(ps_get_fontsize, NULL)		/* deprecated */
+//	PHP_FE(ps_get_font, NULL)		/* deprecated, see below */
 
-	/* old way of starting a PS document */
-	PHP_FE(ps_open, NULL)			/* deprecated */
-
-	/* old stuff for setting infos */
-	PHP_FE(ps_set_info_creator, NULL)	/* deprecated */
-	PHP_FE(ps_set_info_title, NULL)	/* deprecated */
-	PHP_FE(ps_set_info_subject, NULL)	/* deprecated */
-	PHP_FE(ps_set_info_author, NULL)	/* deprecated */
-	PHP_FE(ps_set_info_keywords, NULL)	/* deprecated */
-//	PHP_FE(ps_set_leading, NULL)   	/* deprecated */
-//	PHP_FE(ps_set_text_rendering, NULL)	/* deprecated */
-//	PHP_FE(ps_set_horiz_scaling, NULL)	/* deprecated */
-//	PHP_FE(ps_set_text_rise, NULL)		/* deprecated */
-//	PHP_FE(ps_set_char_spacing, NULL)	/* deprecated */
-//	PHP_FE(ps_set_word_spacing, NULL)	/* deprecated */
-//	PHP_FE(ps_get_image_height, NULL)	/* deprecated */
-//	PHP_FE(ps_get_image_width, NULL)	/* deprecated */
-
-	/* old stuff for opening images */
-//	PHP_FE(ps_open_jpeg, NULL)		/* deprecated */
-//	PHP_FE(ps_open_tiff, NULL)		/* deprecated */
-//	PHP_FE(ps_open_png, NULL)		/* deprecated */
-//	PHP_FE(ps_open_gif, NULL)		/* deprecated */
+	PHP_FE(ps_get_image_height, NULL)	/* deprecated */
+	PHP_FE(ps_get_image_width, NULL)	/* deprecated */
 
 	/* some more stuff for compatibility */
 //	PHP_FE(ps_add_annotation, NULL)
@@ -217,15 +189,6 @@ static void _free_ps_doc(zend_rsrc_list_entry *rsrc)
 {
 	PSDoc *psdoc = (PSDoc *)rsrc->ptr;
 	PS_delete(psdoc);
-}
-/* }}} */
-
-/* {{{ _free_ps_font
- */
-static void _free_ps_font(zend_rsrc_list_entry *rsrc)
-{
-	PSFont *psfont = (PSFont *)rsrc->ptr;
-//	PS_deletefont(PS_getdocoffont(psfont), psfont);
 }
 /* }}} */
 
@@ -323,7 +286,6 @@ PHP_MINFO_FUNCTION(ps)
 PHP_MINIT_FUNCTION(ps)
 {
 	le_psdoc = zend_register_list_destructors_ex(_free_ps_doc, NULL, "ps document", module_number);
-	le_psfont = zend_register_list_destructors_ex(_free_ps_font, NULL, "ps font", module_number);
 
 	REGISTER_LONG_CONSTANT("PS_LINECAP_BUTT", PS_LINECAP_BUTT, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PS_LINECAP_ROUND", PS_LINECAP_ROUND, CONST_CS | CONST_PERSISTENT);
@@ -346,26 +308,6 @@ PHP_MSHUTDOWN_FUNCTION(ps)
 }
 /* }}} */
 
-/* {{{ _php_ps_set_info
- */
-static void _php_ps_set_info(INTERNAL_FUNCTION_PARAMETERS, char *field) 
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_string_ex(arg2);
-	PS_set_info(ps, field, Z_STRVAL_PP(arg2));
-
-	RETURN_TRUE;
-}
-/* }}} */
-
 /* {{{ proto bool ps_set_info(int psdoc, string fieldname, string value)
    Fills an info field of the document */
 PHP_FUNCTION(ps_set_info) 
@@ -385,85 +327,6 @@ PHP_FUNCTION(ps_set_info)
 
 	RETURN_TRUE;
 }
-/* }}} */
-
-/* {{{ proto bool ps_set_info_creator(int psdoc, string creator)
-   Fills the creator field of the document */
-PHP_FUNCTION(ps_set_info_creator)
-{
-	_php_ps_set_info(INTERNAL_FUNCTION_PARAM_PASSTHRU, "Creator");
-}
-/* }}} */
-
-/* {{{ proto bool ps_set_info_title(int psdoc, string title)
-   Fills the title field of the document */
-PHP_FUNCTION(ps_set_info_title) 
-{
-	_php_ps_set_info(INTERNAL_FUNCTION_PARAM_PASSTHRU, "Title");
-}
-/* }}} */
-
-/* {{{ proto bool ps_set_info_subject(int psdoc, string subject)
-   Fills the subject field of the document */
-PHP_FUNCTION(ps_set_info_subject) 
-{
-	_php_ps_set_info(INTERNAL_FUNCTION_PARAM_PASSTHRU, "Subject");
-}
-/* }}} */
-
-/* {{{ proto bool ps_set_info_author(int psdoc, string author)
-   Fills the author field of the document */
-PHP_FUNCTION(ps_set_info_author) 
-{
-	_php_ps_set_info(INTERNAL_FUNCTION_PARAM_PASSTHRU, "Author");
-}
-/* }}} */
-
-/* {{{ proto bool ps_set_info_keywords(int psdoc, string keywords)
-   Fills the keywords field of the document */
-PHP_FUNCTION(ps_set_info_keywords) {
-	_php_ps_set_info(INTERNAL_FUNCTION_PARAM_PASSTHRU, "Keywords");
-}
-/* }}} */
-
-/* {{{ proto int ps_open([int filedesc])
-   Opens a new ps document. If filedesc is NULL, document is created in memory. This is the old interface, only for compatibility use ps_new + ps_open_file instead */
-PHP_FUNCTION(ps_open) 
-{
-	zval **file;
-	void *what;
-	int type;
-	FILE *fp = NULL;
-	PSDoc *ps;
-	int argc = ZEND_NUM_ARGS();
-
-	if(argc > 1) 
-		WRONG_PARAM_COUNT;
-	if (argc != 1 || zend_get_parameters_ex(1, &file) == FAILURE) {
-		fp = NULL;
-	} else {
-		what = zend_fetch_resource(file TSRMLS_CC, -1, "File-Handle", &type, 1, php_file_le_stream());
-		ZEND_VERIFY_RESOURCE(what);
-		if (php_stream_cast((php_stream*)what, PHP_STREAM_AS_STDIO, (void*)&fp, 1) == FAILURE)  {
-			RETURN_FALSE;
-		}
-		/* XXX should do a zend_list_addref for <fp> here! */
-	}
-
-	ps = PS_new2(custom_errorhandler, ps_emalloc, ps_erealloc, ps_efree, NULL);
-
-	if(fp) {
-		if (PS_open_fp(ps, fp) < 0) RETURN_FALSE;
-	} else {
-		if (PS_open_mem(ps, ps_flushwrite) < 0) RETURN_FALSE;
-	}
-
-//	PS_set_parameter(ps, "imagewarning", "true");
-//	PS_set_parameter(ps, "binding", "PHP");
-
-	ZEND_REGISTER_RESOURCE(return_value, ps, le_psdoc);
-}
-
 /* }}} */
 
 /* {{{ proto void ps_close(int psdoc)
@@ -615,27 +478,28 @@ PHP_FUNCTION(ps_get_value)
 /*
 	if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "imagewidth"))) {
 		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2])-PSLIB_IMAGE_OFFSET);
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
 	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "imageheight"))) {
 		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2])-PSLIB_IMAGE_OFFSET);
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
 	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "resx"))) {
 		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2])-PSLIB_IMAGE_OFFSET);
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
 	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "resy"))) {
 		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2])-PSLIB_IMAGE_OFFSET);
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
 	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "capheight"))) {
 		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2])-PSLIB_FONT_OFFSET);
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
 	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "ascender"))) {
 		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2])-PSLIB_FONT_OFFSET);
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
 	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "descender"))) {
 		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2])-PSLIB_FONT_OFFSET);
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
 	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "font"))) {
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), 0.0)+PSLIB_FONT_OFFSET;
+		// See PS_get_font() for more info 
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), 0.0);
 	} else { */
 		if(argc < 3) {
 		    value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), 0.0);
@@ -736,7 +600,7 @@ PHP_FUNCTION(ps_findfont) {
 	int embed;
 	const char *fontname, *encoding;
 	PSDoc *ps;
-	PSFont *font;
+	int font;
 
 	switch (ZEND_NUM_ARGS()) {
 	case 3:
@@ -765,14 +629,14 @@ PHP_FUNCTION(ps_findfont) {
 	encoding = Z_STRVAL_PP(arg3);
 
 	font = PS_findfont(ps, fontname, encoding, embed);
-	if (font == NULL) {
+	if (font == 0) {
 		/* pslib will do this for you, will throw some exception
 		php_error(E_WARNING,"Font %s not found", fontname);
 		*/
 		RETURN_FALSE;
 	}
 
-	ZEND_REGISTER_RESOURCE(return_value, font, le_psfont);
+	RETURN_LONG(font);
 }
 /* }}} */
 
@@ -782,7 +646,6 @@ PHP_FUNCTION(ps_setfont) {
 	zval **arg1, **arg2, **arg3;
 	float fontsize;
 	PSDoc *ps;
-	PSFont *font;
 
 	if(ZEND_NUM_ARGS() != 3)
 		WRONG_PARAM_COUNT;
@@ -790,12 +653,12 @@ PHP_FUNCTION(ps_setfont) {
 		WRONG_PARAM_COUNT;
 
 	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-	ZEND_FETCH_RESOURCE(font, PSFont *, arg2, -1, "ps font", le_psfont);
 
+	convert_to_long_ex(arg2);
 	convert_to_double_ex(arg3);
 	fontsize = (float)Z_DVAL_PP(arg3);
 
-	PS_setfont(ps, font, fontsize);
+	PS_setfont(ps, Z_LVAL_PP(arg2), fontsize);
 
 	RETURN_TRUE;
 }
@@ -1262,32 +1125,13 @@ PHP_FUNCTION(ps_show_boxed)
 }
 /* }}} */
 
-/* _php_ps_set_value() {{{
- */
-static void _php_ps_set_value(INTERNAL_FUNCTION_PARAMETERS, char *field) 
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	PS_set_value(ps, field, (float)Z_DVAL_PP(arg2));
-
-	RETURN_TRUE;
-}
-/* }}} */
-
+#ifdef notimplementedyet
 /* {{{ proto int ps_get_font(int psdoc)
-   Gets the current font */
+   Gets the current font.
+*/
 PHP_FUNCTION(ps_get_font) 
 {
 	zval **arg1;
-//	int font;
 	PSDoc *ps;
 
 	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
@@ -1296,99 +1140,12 @@ PHP_FUNCTION(ps_get_font)
 
 	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 
-	/* FIXME: Might be better to return the existing resource */
-	ZEND_REGISTER_RESOURCE(return_value, PS_getfont(ps), le_psfont);
-//	font = (int) PS_get_value(ps, "font", 0);
-//	RETURN_LONG(font+PSLIB_FONT_OFFSET);
+	RETURN_LONG(PS_getfont(ps));
 }
 /* }}} */
+#endif
 
-/* {{{ proto string ps_get_fontname(int psdoc)
-   Gets the current font name */
-PHP_FUNCTION(ps_get_fontname) 
-{
-	zval **arg1;
-	char *fontname;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	fontname = (char *) PS_get_parameter(ps, "fontname", 0);
-	RETURN_STRING(fontname, 1);
-}
-/* }}} */
-
-/* {{{ proto double ps_get_fontsize(int psdoc)
-   Gets the current font size */
-PHP_FUNCTION(ps_get_fontsize) 
-{
-	zval **arg1;
-	float fontsize;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	fontsize = PS_get_value(ps, "fontsize", 0);
-	RETURN_DOUBLE(fontsize);
-}
-/* }}} */
-
-/* {{{ proto void ps_set_leading(int psdoc, double distance)
-   Sets distance between text lines */
-PHP_FUNCTION(ps_set_leading) 
-{
-	_php_ps_set_value(INTERNAL_FUNCTION_PARAM_PASSTHRU, "leading");
-}
-/* }}} */
-
-/* {{{ proto void ps_set_text_rendering(int psdoc, int mode)
-   Determines how text is rendered */
-PHP_FUNCTION(ps_set_text_rendering) 
-{
-	_php_ps_set_value(INTERNAL_FUNCTION_PARAM_PASSTHRU, "textrendering");
-}
-/* }}} */
-
-/* {{{ proto void ps_set_horiz_scaling(int psdoc, double scale)
-   Sets horizontal scaling of text */
-PHP_FUNCTION(ps_set_horiz_scaling) 
-{
-	_php_ps_set_value(INTERNAL_FUNCTION_PARAM_PASSTHRU, "horizscaling");
-}
-/* }}} */
-
-/* {{{ proto void ps_set_text_rise(int psdoc, double value)
-   Sets the text rise */
-PHP_FUNCTION(ps_set_text_rise) 
-{
-	_php_ps_set_value(INTERNAL_FUNCTION_PARAM_PASSTHRU, "textrise");
-}
-/* }}} */
-
-/* {{{ proto void ps_set_char_spacing(int psdoc, double space)
-   Sets character spacing */
-PHP_FUNCTION(ps_set_char_spacing)
-{
-	_php_ps_set_value(INTERNAL_FUNCTION_PARAM_PASSTHRU, "charspacing");
-}
-/* }}} */
-
-/* {{{ proto void ps_set_word_spacing(int psdoc, double space)
-   Sets spacing between words */
-PHP_FUNCTION(ps_set_word_spacing)
-{
-	_php_ps_set_value(INTERNAL_FUNCTION_PARAM_PASSTHRU, "wordspacing");
-}
-/* }}} */
-
+#ifdef notimplementedyet
 /* {{{ proto void ps_set_text_pos(int psdoc, double x, double y)
    Sets the position of text for the next ps_show call */
 PHP_FUNCTION(ps_set_text_pos) 
@@ -1408,6 +1165,7 @@ PHP_FUNCTION(ps_set_text_pos)
 	RETURN_TRUE;
 }
 /* }}} */
+#endif
 
 /* {{{ proto void ps_continue_text(int psdoc, string text)
    Output text in next line */
@@ -1433,7 +1191,6 @@ PHP_FUNCTION(ps_continue_text)
 PHP_FUNCTION(ps_stringwidth)
 {
 	zval **arg1, **arg2, **arg3, **arg4;
-	PSFont *font;
 	double width, size;
 	PSDoc *ps;
 
@@ -1454,10 +1211,11 @@ PHP_FUNCTION(ps_stringwidth)
 
 	convert_to_string_ex(arg2);
 	if (ZEND_NUM_ARGS() == 2) {
-			font = NULL;
+			font = 0;
 			size = 0;
 	} else {
-			ZEND_FETCH_RESOURCE(font, PSFont *, arg3, -1, "ps font", le_psfont);
+	    convert_to_long_ex(arg3);
+			font = Z_LVAL_PP(arg3);
 	    convert_to_double_ex(arg4);
 	    size = Z_DVAL_PP(arg4);
 	}
@@ -1788,75 +1546,14 @@ PHP_FUNCTION(ps_add_bookmark)
 }
 /* }}} */
 
-#ifdef notimplementedyet
-/* _php_ps_open_image() {{{
- */
-static void _php_ps_open_image(INTERNAL_FUNCTION_PARAMETERS, char *type) 
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-	int ps_image;
-	char *image;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_string_ex(arg2);
-
-#ifdef VIRTUAL_DIR
-	virtual_filepath(Z_STRVAL_PP(arg2), &image);
-#else
-	image = Z_STRVAL_PP(arg2);
-#endif  
-        
-	ps_image = PS_open_image_file(ps, type, image, "", 0);
-
-	RETURN_LONG(ps_image+PSLIB_IMAGE_OFFSET);
-}
-/* }}} */
-
-/* {{{ proto int ps_open_gif(int ps, string giffile)
-   Opens a GIF file and returns an image for placement in a ps document */
-PHP_FUNCTION(ps_open_gif)
-{
-	_php_ps_open_image(INTERNAL_FUNCTION_PARAM_PASSTHRU,"gif");
-}
-/* }}} */
-
-/* {{{ proto int ps_open_jpeg(int ps, string jpegfile)
-   Opens a JPEG file and returns an image for placement in a PS document */
-PHP_FUNCTION(ps_open_jpeg)
-{
-	_php_ps_open_image(INTERNAL_FUNCTION_PARAM_PASSTHRU,"jpeg");
-}
-/* }}} */
-
-/* {{{ proto int ps_open_png(int ps, string pngfile)
-   Opens a PNG file and returns an image for placement in a PS document */
-PHP_FUNCTION(ps_open_png)
-{
-	_php_ps_open_image(INTERNAL_FUNCTION_PARAM_PASSTHRU,"png");
-}
-/* }}} */
-
-/* {{{ proto int ps_open_tiff(int ps, string tifffile)
-   Opens a TIFF file and returns an image for placement in a PS document */
-PHP_FUNCTION(ps_open_tiff)
-{
-	_php_ps_open_image(INTERNAL_FUNCTION_PARAM_PASSTHRU,"tiff");
-}
-/* }}} */
-
 /* {{{ proto int ps_open_image_file(int ps, string type, string file, string stringparam, int intparam)
    Opens an image file of the given type and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_image_file)
 {
 	zval **arg1, **arg2, **arg3, **arg4, **arg5;
 	PSDoc *ps;
-	int ps_image, argc;
+	int imageid;
+	int argc;
 	char *image;
 
 	switch ((argc = ZEND_NUM_ARGS())) {
@@ -1884,24 +1581,22 @@ PHP_FUNCTION(ps_open_image_file)
 #endif  
 
 	if (argc == 3) {
-		ps_image = PS_open_image_file(ps, Z_STRVAL_PP(arg2), image, "", 0);
+		imageid = PS_open_image_file(ps, Z_STRVAL_PP(arg2), image, "", 0);
 	} else {
-	    convert_to_string_ex(arg4);
-	    convert_to_long_ex(arg5);
-		ps_image = PS_open_image_file(ps, Z_STRVAL_PP(arg2), image, Z_STRVAL_PP(arg4), Z_LVAL_PP(arg5));
+		convert_to_string_ex(arg4);
+		convert_to_long_ex(arg5);
+		imageid = PS_open_image_file(ps, Z_STRVAL_PP(arg2), image, Z_STRVAL_PP(arg4), Z_LVAL_PP(arg5));
 	}
 
-	if (ps_image == -1) {
+	if (imageid == 0) {
 	    /* pslib will do this for you, will throw some exception
 	    php_error(E_WARNING, "Could not open image: %s", image);
 	    */
 	    RETURN_FALSE;
 	}
-	RETURN_LONG(ps_image+PSLIB_IMAGE_OFFSET);
-
+	RETURN_LONG(imageid);
 }
 /* }}} */
-#endif /* notimplementedyet */
 
 #ifdef _HAVE_LIBGD13
 /* {{{ proto int ps_open_memory_image(int ps, int image)
@@ -1910,7 +1605,7 @@ PHP_FUNCTION(ps_open_memory_image)
 {
 	zval **arg1, **arg2;
 	int i, j, color, count;
-	int ps_image;
+	int imageid;
 	gdImagePtr im;
 	unsigned char *buffer, *ptr;
 	PSDoc *ps;
@@ -1956,22 +1651,21 @@ PHP_FUNCTION(ps_open_memory_image)
 		}
 	}
 
-	ps_image = PS_open_image(ps, "raw", "memory", buffer, im->sx*im->sy*3, im->sx, im->sy, 3, 8, NULL);
+	imageid = PS_open_image(ps, "raw", "memory", buffer, im->sx*im->sy*3, im->sx, im->sy, 3, 8, NULL);
 	efree(buffer);
 
-	if(ps_image == -1) {
+	if(imageid == 0) {
 		/* pslib will do this for you, will throw some exception
 		php_error(E_WARNING, "Could not open image");
 		*/
 		RETURN_FALSE;
 	}
 
-	RETURN_LONG(ps_image+PSLIB_IMAGE_OFFSET);
+	RETURN_LONG(imageid);
 }
 /* }}} */
 #endif /* HAVE_LIBGD13 */
 
-#ifdef notimplementedyet
 /* {{{ proto void ps_close_image(int ps, int psimage)
    Closes the PS image */
 PHP_FUNCTION(ps_close_image)
@@ -1986,7 +1680,7 @@ PHP_FUNCTION(ps_close_image)
 	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 	convert_to_long_ex(arg2);
 
-	PS_close_image(ps, Z_LVAL_PP(arg2)-PSLIB_IMAGE_OFFSET);
+	PS_close_image(ps, Z_LVAL_PP(arg2));
 }
 /* }}} */
 
@@ -2008,11 +1702,12 @@ PHP_FUNCTION(ps_place_image)
 	convert_to_double_ex(arg4);
 	convert_to_double_ex(arg5);
 
-	PS_place_image(ps, Z_LVAL_PP(arg2)-PSLIB_IMAGE_OFFSET, (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4), (float) Z_DVAL_PP(arg5));
+	PS_place_image(ps, Z_LVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4), (float) Z_DVAL_PP(arg5));
 	RETURN_TRUE;
 }
 /* }}} */
 
+#ifdef notimplementedyet
 /* {{{ proto int ps_get_image_width(int ps, int psimage)
    Returns the width of an image */
 PHP_FUNCTION(ps_get_image_width)
@@ -2028,7 +1723,7 @@ PHP_FUNCTION(ps_get_image_width)
 	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 	convert_to_long_ex(arg2);
 
-	width = (int) PS_get_value(ps, "imagewidth", (float)Z_LVAL_PP(arg2)-PSLIB_IMAGE_OFFSET);
+	width = (int) PS_get_value(ps, "imagewidth", (float)Z_LVAL_PP(arg2));
 	RETURN_LONG(width);
 }
 /* }}} */
@@ -2048,7 +1743,7 @@ PHP_FUNCTION(ps_get_image_height)
 	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 	convert_to_long_ex(arg2);
 
-	height = (int) PS_get_value(ps, "imageheight", (float)Z_LVAL_PP(arg2)-PSLIB_IMAGE_OFFSET);
+	height = (int) PS_get_value(ps, "imageheight", (float)Z_LVAL_PP(arg2));
 	RETURN_LONG(height);
 }
 /* }}} */
@@ -2205,7 +1900,6 @@ PHP_FUNCTION(ps_add_annotation)
 	RETURN_TRUE;
 }
 /* }}} */
-
 
 /* {{{ proto int ps_new()
    Creates a new PS object */
@@ -2381,8 +2075,8 @@ PHP_FUNCTION(ps_concat) {
 PHP_FUNCTION(ps_open_ccitt) {
 	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7;
 	PSDoc *ps;
-	int ps_image;
 	char *image;
+	int imageid;
 
 	if (ZEND_NUM_ARGS() != 7 || zend_get_parameters_ex(7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7) == FAILURE) {
 		WRONG_PARAM_COUNT;
@@ -2403,7 +2097,7 @@ PHP_FUNCTION(ps_open_ccitt) {
 	convert_to_long_ex(arg6);
 	convert_to_long_ex(arg7);
 
-	ps_image = PS_open_CCITT(ps,
+	imageid = PS_open_CCITT(ps,
 	    image,
 	    Z_LVAL_PP(arg3),
 	    Z_LVAL_PP(arg4),
@@ -2411,16 +2105,17 @@ PHP_FUNCTION(ps_open_ccitt) {
 	    Z_LVAL_PP(arg6),
 	    Z_LVAL_PP(arg7));
 
-	RETURN_LONG(ps_image+PSLIB_IMAGE_OFFSET);
+	RETURN_LONG(imageid);
 }
 /* }}} */
+#endif
 
 /* {{{ proto int ps_open_image(int ps, string type, string source, string data, long length, int width, int height, int components, int bpc, string params)
    Opens an image of the given type and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_image) {
 	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7, **arg8, **arg9, **arg10;
 	PSDoc *ps;
-	int ps_image;
+	int imageid;
 	char *image;
 
 	if (ZEND_NUM_ARGS() != 10 || zend_get_parameters_ex(10, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8, &arg9, &arg10) == FAILURE) {
@@ -2445,7 +2140,7 @@ PHP_FUNCTION(ps_open_image) {
 	image = Z_STRVAL_PP(arg4);
 #endif  
 
-	ps_image = PS_open_image(ps,
+	imageid = PS_open_image(ps,
 		Z_STRVAL_PP(arg2),
 		Z_STRVAL_PP(arg3),
 		image,
@@ -2456,10 +2151,11 @@ PHP_FUNCTION(ps_open_image) {
 		Z_LVAL_PP(arg9),
 		Z_STRVAL_PP(arg10));
 
-	RETURN_LONG(ps_image+PSLIB_IMAGE_OFFSET);
+	RETURN_LONG(imageid);
 }
 /* }}} */
 
+#ifdef notimplementedyet
 /* {{{ proto void ps_attach_file(int ps, double lly, double lly, double urx, double ury, string filename, string description, string author, string mimetype, string icon)
    Adds a file attachment annotation at the rectangle specified by his lower left and upper right corners */
 PHP_FUNCTION(ps_attach_file) {
@@ -2716,8 +2412,7 @@ PHP_FUNCTION(ps_add_thumbnail) {
 
 	convert_to_long_ex(arg2);
 
-	PS_add_thumbnail(ps,
-		Z_LVAL_PP(arg2)-PSLIB_IMAGE_OFFSET);
+	PS_add_thumbnail(ps, Z_LVAL_PP(arg2));
 
 	RETURN_TRUE;
 } /* }}} */
