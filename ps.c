@@ -332,10 +332,7 @@ PHP_MINIT_FUNCTION(ps)
 	REGISTER_LONG_CONSTANT("PS_LINEJOIN_ROUND", PS_LINEJOIN_ROUND, CONST_CS | CONST_PERSISTENT);
 	REGISTER_LONG_CONSTANT("PS_LINEJOIN_BEVEL", PS_LINEJOIN_BEVEL, CONST_CS | CONST_PERSISTENT);
 
-	/* this does something like setlocale("C", ...) in PDFlib 3.x */
-	/* but it does segm fault the web server, so keep in commented
 	PS_boot();
-	*/
 	return SUCCESS;
 }
 /* }}} */
