@@ -12,7 +12,7 @@
    | obtain it through the world-wide-web, please send a note to          |
    | license@php.net so we can mail you a copy immediately.               |
    +----------------------------------------------------------------------+
-   | Authors: Uwe Steinmann <Uwe.Steinmann@fernuni-hagen.de>              |
+   | Authors: Uwe Steinmann <steinm@debian.org>                           |
    +----------------------------------------------------------------------+
 */
 
@@ -55,18 +55,6 @@ static int le_gd;
 #include "php_ps.h"
 
 static int le_psdoc;
-
-/*
- * to adopt the php way of error handling to PSlib
- * The image related functions in PSlib return -1 on error
- * but they may return 0 (FALSE) in normal cases
- * so this offset will repair this
- */
-#define PSLIB_IMAGE_OFFSET	1
-#define PSLIB_FONT_OFFSET	1
-#define PSLIB_PDI_OFFSET	1
-#define PSLIB_PATTERN_OFFSET	1
-#define PSLIB_SPOT_OFFSET	1
 
 /* {{{ ps_functions[]
  */
@@ -140,14 +128,6 @@ function_entry ps_functions[] = {
 
 	/* End of the official PSLIB V3.x API */
 
-	/* old font handling */
-//	PHP_FE(ps_get_font, NULL)		/* deprecated, see below */
-
-	PHP_FE(ps_get_image_height, NULL)	/* deprecated */
-	PHP_FE(ps_get_image_width, NULL)	/* deprecated */
-
-	/* some more stuff for compatibility */
-//	PHP_FE(ps_add_annotation, NULL)
 #ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
 #endif
@@ -398,7 +378,7 @@ PHP_FUNCTION(ps_set_parameter)
 		WRONG_PARAM_COUNT;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps object", le_psdoc);
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 
 	convert_to_string_ex(arg2);
 	convert_to_string_ex(arg3);
@@ -421,7 +401,7 @@ PHP_FUNCTION(ps_get_parameter)
 		WRONG_PARAM_COUNT;
 	}
 	
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, argv[0], -1, "ps object", le_psdoc);
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, argv[0], -1, "ps document", le_psdoc);
 
 	convert_to_string_ex(argv[1]);
 	if(argc == 3) {
@@ -446,7 +426,7 @@ PHP_FUNCTION(ps_set_value)
 		WRONG_PARAM_COUNT;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps object", le_psdoc);
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 
 	convert_to_string_ex(arg2);
 	convert_to_double_ex(arg3);
@@ -469,44 +449,16 @@ PHP_FUNCTION(ps_get_value)
 		WRONG_PARAM_COUNT;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, argv[0], -1, "ps object", le_psdoc);
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, argv[0], -1, "ps document", le_psdoc);
 
 	convert_to_string_ex(argv[1]);
-	if(argc == 3)
-	    convert_to_double_ex(argv[2]);
 
-/*
-	if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "imagewidth"))) {
-		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
-	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "imageheight"))) {
-		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
-	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "resx"))) {
-		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
-	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "resy"))) {
-		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
-	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "capheight"))) {
-		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
-	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "ascender"))) {
-		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
-	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "descender"))) {
-		if(argc < 3) WRONG_PARAM_COUNT;
-		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
-	} else if(0 == (strcmp(Z_STRVAL_PP(argv[1]), "font"))) {
-		// See PS_get_font() for more info 
+	if(argc < 3) {
 		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), 0.0);
-	} else { */
-		if(argc < 3) {
-		    value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), 0.0);
-		} else {
-			value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
-		}
-/*	} */
+	} else {
+		convert_to_double_ex(argv[2]);
+		value = PS_get_value(ps, Z_STRVAL_PP(argv[1]), (float)Z_DVAL_PP(argv[2]));
+	}
 
 	RETURN_DOUBLE(value);
 }
@@ -740,7 +692,7 @@ PHP_FUNCTION(ps_setdash)
 		WRONG_PARAM_COUNT;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps object", le_psdoc);
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 
 	convert_to_double_ex(arg2);
 	convert_to_double_ex(arg3);
@@ -1124,26 +1076,6 @@ PHP_FUNCTION(ps_show_boxed)
 	RETURN_LONG(nr);
 }
 /* }}} */
-
-#ifdef notimplementedyet
-/* {{{ proto int ps_get_font(int psdoc)
-   Gets the current font.
-*/
-PHP_FUNCTION(ps_get_font) 
-{
-	zval **arg1;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	RETURN_LONG(PS_getfont(ps));
-}
-/* }}} */
-#endif
 
 #ifdef notimplementedyet
 /* {{{ proto void ps_set_text_pos(int psdoc, double x, double y)
@@ -1708,48 +1640,6 @@ PHP_FUNCTION(ps_place_image)
 }
 /* }}} */
 
-#ifdef notimplementedyet
-/* {{{ proto int ps_get_image_width(int ps, int psimage)
-   Returns the width of an image */
-PHP_FUNCTION(ps_get_image_width)
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-	int width;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-	convert_to_long_ex(arg2);
-
-	width = (int) PS_get_value(ps, "imagewidth", (float)Z_LVAL_PP(arg2));
-	RETURN_LONG(width);
-}
-/* }}} */
-
-/* {{{ proto int ps_get_image_height(int ps, int psimage)
-   Returns the height of an image */
-PHP_FUNCTION(ps_get_image_height)
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-	int height;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-	convert_to_long_ex(arg2);
-
-	height = (int) PS_get_value(ps, "imageheight", (float)Z_LVAL_PP(arg2));
-	RETURN_LONG(height);
-}
-/* }}} */
-#endif
-
 /* {{{ proto void ps_add_weblink(int psdoc, double llx, double lly, double urx, double ury, string url)
    Adds link to web resource */
 PHP_FUNCTION(ps_add_weblink)
@@ -1907,7 +1797,8 @@ PHP_FUNCTION(ps_add_annotation)
 PHP_FUNCTION(ps_new) {
 	PSDoc *ps;
 
-	ps = PS_new2(custom_errorhandler, ps_emalloc, ps_erealloc, ps_efree, NULL);
+	if(NULL == (ps = PS_new2(custom_errorhandler, ps_emalloc, ps_erealloc, ps_efree, NULL)))
+		RETURN_FALSE;
 	PS_set_parameter(ps, "imagewarning", "true");
 	PS_set_parameter(ps, "binding", "PHP");
 
@@ -2311,9 +2202,9 @@ PHP_FUNCTION(ps_setcolor) {
 	convert_to_double_ex(arg7);
 
 	if (0 == (strcmp(Z_STRVAL_PP(arg3), "spot"))) {
-	    c1 = Z_DVAL_PP(arg4)-PSLIB_SPOT_OFFSET;
+	    c1 = Z_DVAL_PP(arg4);
 	} else if(0 == (strcmp(Z_STRVAL_PP(arg3), "pattern"))) {
-	    c1 = Z_DVAL_PP(arg4)-PSLIB_PATTERN_OFFSET;
+	    c1 = Z_DVAL_PP(arg4);
 	} else {
 	    c1 = Z_DVAL_PP(arg4);
 	}

@@ -111,43 +111,10 @@ PHP_FUNCTION(ps_set_border_color);
 PHP_FUNCTION(ps_set_border_dash);
 PHP_FUNCTION(ps_setcolor);
 
-/* RJS:
-   End of the official PSLIB V3.x API */
-
-/* old font handling */
-PHP_FUNCTION(ps_set_font);		/* deprecated */
-PHP_FUNCTION(ps_get_font);		/* deprecated */
-PHP_FUNCTION(ps_get_fontname);		/* deprecated */
-PHP_FUNCTION(ps_get_fontsize);		/* deprecated */
-
 /* old way of starting a PS document */
 PHP_FUNCTION(ps_open);			/* deprecated */
 
-/* old stuff for setting infos */
-PHP_FUNCTION(ps_set_info_creator);	/* deprecated */
-PHP_FUNCTION(ps_set_info_title);	/* deprecated */
-PHP_FUNCTION(ps_set_info_subject);	/* deprecated */
-PHP_FUNCTION(ps_set_info_author);	/* deprecated */
-PHP_FUNCTION(ps_set_info_keywords);	/* deprecated */
-PHP_FUNCTION(ps_set_leading);   	/* deprecated */
-PHP_FUNCTION(ps_set_text_rendering);	/* deprecated */
-PHP_FUNCTION(ps_set_horiz_scaling);	/* deprecated */
-PHP_FUNCTION(ps_set_text_rise);		/* deprecated */
-PHP_FUNCTION(ps_set_char_spacing);	/* deprecated */
-PHP_FUNCTION(ps_set_word_spacing);	/* deprecated */
-PHP_FUNCTION(ps_set_transition);	/* deprecated */
-PHP_FUNCTION(ps_set_duration);		/* deprecated */
-PHP_FUNCTION(ps_get_image_height);	/* deprecated */
-PHP_FUNCTION(ps_get_image_width);	/* deprecated */
-
-/* old stuff for opening images */
-PHP_FUNCTION(ps_open_jpeg);		/* deprecated */
-PHP_FUNCTION(ps_open_tiff);		/* deprecated */
-PHP_FUNCTION(ps_open_png);		/* deprecated */
-PHP_FUNCTION(ps_open_gif);		/* deprecated */
-
 /* some more stuff for compatibility */
-PHP_FUNCTION(ps_add_annotation);
 #if HAVE_LIBGD13
 PHP_FUNCTION(ps_open_memory_image);
 #endif
