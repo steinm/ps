@@ -38,6 +38,7 @@
       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
+      <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
       <file role="test" name="tests/001.phpt"/>
       <file role="test" name="tests/002.phpt"/>
       <file role="test" name="tests/003.phpt"/>
