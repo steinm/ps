@@ -126,17 +126,17 @@ function_entry ps_functions[] = {
 //	PHP_FE(ps_open_image, NULL)	/* new function */
 //	PHP_FE(ps_close_image, NULL)
 //	PHP_FE(ps_place_image, NULL)
-//	PHP_FE(ps_add_bookmark, NULL)
+	PHP_FE(ps_add_bookmark, NULL)
 	PHP_FE(ps_set_info, NULL)
 //	PHP_FE(ps_attach_file, NULL)	/* new function */
-//	PHP_FE(ps_add_note, NULL)	/* new function */
-//	PHP_FE(ps_add_pslink, NULL)
-//	PHP_FE(ps_add_locallink, NULL)	/* new function */
-//	PHP_FE(ps_add_launchlink, NULL)/* new function */
-//	PHP_FE(ps_add_weblink, NULL)
-//	PHP_FE(ps_set_border_style, NULL)
-//	PHP_FE(ps_set_border_color, NULL)
-//	PHP_FE(ps_set_border_dash, NULL)
+	PHP_FE(ps_add_note, NULL)	/* new function */
+	PHP_FE(ps_add_pdflink, NULL)
+	PHP_FE(ps_add_locallink, NULL)	/* new function */
+	PHP_FE(ps_add_launchlink, NULL)/* new function */
+	PHP_FE(ps_add_weblink, NULL)
+	PHP_FE(ps_set_border_style, NULL)
+	PHP_FE(ps_set_border_color, NULL)
+	PHP_FE(ps_set_border_dash, NULL)
 	PHP_FE(ps_setcolor, NULL)
 
 	/* End of the official PSLIB V3.x API */
@@ -165,8 +165,6 @@ function_entry ps_functions[] = {
 //	PHP_FE(ps_set_text_rise, NULL)		/* deprecated */
 //	PHP_FE(ps_set_char_spacing, NULL)	/* deprecated */
 //	PHP_FE(ps_set_word_spacing, NULL)	/* deprecated */
-//	PHP_FE(ps_set_transition, NULL)	/* deprecated */
-//	PHP_FE(ps_set_duration, NULL)		/* deprecated */
 //	PHP_FE(ps_get_image_height, NULL)	/* deprecated */
 //	PHP_FE(ps_get_image_width, NULL)	/* deprecated */
 
@@ -227,6 +225,7 @@ static void _free_ps_doc(zend_rsrc_list_entry *rsrc)
 static void _free_ps_font(zend_rsrc_list_entry *rsrc)
 {
 	PSFont *psfont = (PSFont *)rsrc->ptr;
+//	PS_deletefont(PS_getdocoffont(psfont), psfont);
 }
 /* }}} */
 
@@ -1738,7 +1737,6 @@ PHP_FUNCTION(ps_setrgbcolor)
 }
 /* }}} */
 
-#ifdef notimplementedyet
 /* {{{ proto int ps_add_bookmark(int psdoc, string text [, int parent, int open])
    Adds bookmark for current page */
 PHP_FUNCTION(ps_add_bookmark)
@@ -1793,73 +1791,7 @@ PHP_FUNCTION(ps_add_bookmark)
 }
 /* }}} */
 
-/* {{{ proto void ps_set_transition(int psdoc, int transition)
-   Sets transition between pages */
-PHP_FUNCTION(ps_set_transition)
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_long_ex(arg2);
-
-	switch(Z_LVAL_PP(arg2)) {
-		case 0:
-			PS_set_parameter(ps, "transition", "none");
-			break;
-		case 1:
-			PS_set_parameter(ps, "transition", "split");
-			break;
-		case 2:
-			PS_set_parameter(ps, "transition", "blinds");
-			break;
-		case 3:
-			PS_set_parameter(ps, "transition", "box");
-			break;
-		case 4:
-			PS_set_parameter(ps, "transition", "wipe");
-			break;
-		case 5:
-			PS_set_parameter(ps, "transition", "dissolve");
-			break;
-		case 6:
-			PS_set_parameter(ps, "transition", "glitter");
-			break;
-		case 7:
-			PS_set_parameter(ps, "transition", "replace");
-			break;
-		default:
-			PS_set_parameter(ps, "transition", "none");
-	}
-
-	RETURN_TRUE;
-}
-/* }}} */
-
-/* {{{ proto void ps_set_duration(int psdoc, double duration)
-   Sets duration between pages */
-PHP_FUNCTION(ps_set_duration)
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	PS_set_value(ps, "duration", (float) Z_DVAL_PP(arg2));
-	RETURN_TRUE;
-}
-/* }}} */
-
+#ifdef notimplementedyet
 /* _php_ps_open_image() {{{
  */
 static void _php_ps_open_image(INTERNAL_FUNCTION_PARAMETERS, char *type) 
@@ -2123,6 +2055,7 @@ PHP_FUNCTION(ps_get_image_height)
 	RETURN_LONG(height);
 }
 /* }}} */
+#endif
 
 /* {{{ proto void ps_add_weblink(int psdoc, double llx, double lly, double urx, double ury, string url)
    Adds link to web resource */
@@ -2151,9 +2084,9 @@ PHP_FUNCTION(ps_add_weblink)
 }
 /* }}} */
 
-/* {{{ proto void ps_add_pslink(int psdoc, double llx, double lly, double urx, double ury, string filename, int page, string dest)
+/* {{{ proto void ps_add_pdflink(int psdoc, double llx, double lly, double urx, double ury, string filename, int page, string dest)
    Adds link to PS document */
-PHP_FUNCTION(ps_add_pslink)
+PHP_FUNCTION(ps_add_pdflink)
 {
 	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7, **arg8;
 	PSDoc *ps;
@@ -2171,7 +2104,7 @@ PHP_FUNCTION(ps_add_pslink)
 	convert_to_string_ex(arg6);
 	convert_to_long_ex(arg7);
 	convert_to_string_ex(arg8);
-	PS_add_pslink(ps, (float) Z_DVAL_PP(arg2), 
+	PS_add_pdflink(ps, (float) Z_DVAL_PP(arg2), 
 						 (float) Z_DVAL_PP(arg3), 
 						 (float) Z_DVAL_PP(arg4), 
 						 (float) Z_DVAL_PP(arg5),
@@ -2275,7 +2208,7 @@ PHP_FUNCTION(ps_add_annotation)
 	RETURN_TRUE;
 }
 /* }}} */
-#endif
+
 
 /* {{{ proto int ps_new()
    Creates a new PS object */
@@ -2566,6 +2499,7 @@ PHP_FUNCTION(ps_attach_file) {
 	RETURN_TRUE;
 }
 /* }}} */
+#endif
 
 /* {{{ proto void ps_add_note(int psdoc, double llx, double lly, double urx, double ury, string contents, string title, string icon, int open)
    Sets annotation */
@@ -2661,7 +2595,6 @@ PHP_FUNCTION(ps_add_launchlink) {
 	RETURN_TRUE;
 }
 /* }}} */
-#endif
 
 /* {{{ proto void ps_setcolor(int ps, string type, string colorspace, double c1, double c2, double c3, double c4);
  * Set the current color space and color. */
@@ -2724,6 +2657,7 @@ PHP_FUNCTION(ps_makespotcolor) {
 
 	RETURN_LONG(spotcolor+PSLIB_SPOT_OFFSET);
 } /* }}} */
+#endif
 
 /* {{{ proto void ps_arcn(int ps, double x, double y, double r, double alpha, double beta);
  * Draw a clockwise circular arc from alpha to beta degrees. */
@@ -2753,6 +2687,7 @@ PHP_FUNCTION(ps_arcn) {
 	RETURN_TRUE;
 } /* }}} */
 
+#ifdef notimplementedyet
 /* {{{ proto void ps_initgraphics(int ps);
  * Reset all implicit color and graphics state parameters to their defaults. */
 PHP_FUNCTION(ps_initgraphics) {
