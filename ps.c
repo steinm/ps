@@ -171,7 +171,7 @@ ZEND_GET_MODULE(ps)
 
 /* {{{ _free_ps_doc
  */
-static void _free_ps_doc(zend_rsrc_list_entry *rsrc)
+static void _free_ps_doc(zend_rsrc_list_entry *rsrc TSRMLS_DC)
 {
 	PSDoc *psdoc = (PSDoc *)rsrc->ptr;
 	PS_delete(psdoc);
@@ -182,6 +182,7 @@ static void _free_ps_doc(zend_rsrc_list_entry *rsrc)
  */
 static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg, void *data)
 {
+	TSRMLS_FETCH();
 	switch (type){
 		case PS_Warning:
 				php_error_docref(NULL TSRMLS_CC, E_WARNING,"PSlib warning: %s", shortmsg);
@@ -244,7 +245,8 @@ static void ps_efree(PSDoc *p, void *mem)
  */
 static size_t ps_flushwrite(PSDoc *p, void *data, size_t size)
 {
-	return(php_write(data, size));
+	TSRMLS_FETCH();
+	return(php_write(data, size TSRMLS_CC));
 	return 0;
 }
 /* }}} */
@@ -1291,7 +1293,7 @@ PHP_FUNCTION(ps_open_image_file)
 	PSDOC_FROM_ZVAL(ps, &zps);
 
 #ifdef VIRTUAL_DIR
-	virtual_filepath(filename, &image);
+	virtual_filepath(filename, &image TSRMLS_CC);
 #else
 	image = filename;
 #endif
@@ -1766,7 +1768,7 @@ PHP_FUNCTION(ps_open_ccitt) {
 
 	convert_to_string_ex(arg2);
 #ifdef VIRTUAL_DIR
-	virtual_filepath(Z_STRVAL_PP(arg2), &image);
+	virtual_filepath(Z_STRVAL_PP(arg2), &image TSRMLS_CC);
 #else
 	image = Z_STRVAL_PP(arg2);
 #endif
@@ -1808,7 +1810,7 @@ PHP_FUNCTION(ps_open_image) {
 	PSDOC_FROM_ZVAL(ps, &zps);
 
 #ifdef VIRTUAL_DIR
-	virtual_filepath(data, &image);
+	virtual_filepath(data, &image TSRMLS_CC);
 #else
 	image = data;
 #endif
