@@ -32,6 +32,12 @@
                 <file role="doc">php_ps.h</file>
                 <file role="src">ps.c</file>
             </dir>
+            <dir name="examples" role="doc" baseinstalldir="/">
+                <file>Dustismo.pfb</file>
+                <file>Dustismo.afm</file>
+                <file>psclock.php</file>
+	               <file>text.php</file>
+            </dir>
         </filelist> 
         <deps>
             <dep type="php" rel="ge" version="4.3.0" />
