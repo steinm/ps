@@ -1193,6 +1193,7 @@ PHP_FUNCTION(ps_stringwidth)
 	zval **arg1, **arg2, **arg3, **arg4;
 	double width, size;
 	PSDoc *ps;
+	int font;
 
 	switch (ZEND_NUM_ARGS()) {
 	case 2:
