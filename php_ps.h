@@ -96,7 +96,7 @@ PHP_FUNCTION(ps_add_bookmark);
 PHP_FUNCTION(ps_set_info);
 PHP_FUNCTION(ps_attach_file);	/* new function */
 PHP_FUNCTION(ps_add_note);	/* new function */
-PHP_FUNCTION(ps_add_pslink);
+PHP_FUNCTION(ps_add_pdflink);
 PHP_FUNCTION(ps_add_locallink);	/* new function */
 PHP_FUNCTION(ps_add_launchlink);	/* new function */
 PHP_FUNCTION(ps_add_weblink);
