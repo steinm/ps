@@ -179,7 +179,7 @@ static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg, void *
 {
 	switch (type){
 		case PS_Warning:
-				php_error(E_WARNING,"PSlib warning: %s", shortmsg);
+				php_error_docref(NULL TSRMLS_CC, E_WARNING,"PSlib warning: %s", shortmsg);
 			break;
 #ifdef notimplemnetedyet
 		case PS_NonfatalError:
@@ -190,7 +190,7 @@ static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg, void *
 			 * ps_set_parameter($p, "warning" 0) to switch off
 			 * the warnings inside PSlib
 			 */
-			php_error(E_WARNING,"Internal PSlib warning: %s", shortmsg);
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,"Internal PSlib warning: %s", shortmsg);
 			return;
 		case PS_MemoryError: /* give up in all other cases */
 		case PS_IOError:
@@ -205,7 +205,7 @@ static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg, void *
 		case PS_UnknownError:
 #endif
 		default:
-			php_error(E_ERROR,"PSlib error: %s", shortmsg);
+			php_error_docref(NULL TSRMLS_CC, E_ERROR,"PSlib error: %s", shortmsg);
 		}
 }
 /* }}} */
@@ -584,7 +584,7 @@ PHP_FUNCTION(ps_findfont) {
 	font = PS_findfont(ps, fontname, encoding, embed);
 	if (font == 0) {
 		/* pslib will do this for you, will throw some exception
-		php_error(E_WARNING,"Font %s not found", fontname);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Font %s not found", fontname);
 		*/
 		RETURN_FALSE;
 	}
@@ -924,7 +924,7 @@ PHP_FUNCTION(ps_setlinejoin)
 	convert_to_long_ex(arg2);
 	/* pslib will do this for you, will throw some exception
 	if((Z_LVAL_PP(arg2) > 2) && (Z_LVAL_PP(arg2) < 0)) {
-		php_error(E_WARNING,"Parameter of ps_setlinejoin() must be between 0 and 2");
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Parameter of ps_setlinejoin() must be between 0 and 2");
 		RETURN_FALSE;
 	}
 	*/
@@ -950,7 +950,7 @@ PHP_FUNCTION(ps_setlinecap)
 	convert_to_long_ex(arg2);
 	/* pslib will do this for you, will throw some exception
 	if((Z_LVAL_PP(arg2) > 2) && (Z_LVAL_PP(arg2) < 0)) {
-		php_error(E_WARNING,"Parameter of ps_setlinecap() must be > 0 and <= 2");
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Parameter of ps_setlinecap() must be > 0 and <= 2");
 		RETURN_FALSE;
 	}
 	*/
@@ -976,7 +976,7 @@ PHP_FUNCTION(ps_setmiterlimit)
 	convert_to_double_ex(arg2);
 	/* pslib will do this for you, will throw some exception
 	if(Z_DVAL_PP(arg2) < 1) {
-		php_error(E_WARNING,"Parameter of ps_setmiterlimit() must be >= 1");
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Parameter of ps_setmiterlimit() must be >= 1");
 		RETURN_FALSE;
 	}
 	*/
@@ -1207,7 +1207,7 @@ PHP_FUNCTION(ps_setflat)
 	convert_to_double_ex(arg2);
 	/* pslib will do this for you, will throw some exception
 	if((Z_LVAL_PP(arg2) > 100) && (Z_LVAL_PP(arg2) < 0)) {
-		php_error(E_WARNING,"Parameter of ps_setflat() has to between 0 and 100");
+		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Parameter of ps_setflat() has to between 0 and 100");
 		RETURN_FALSE;
 	}
 	*/
@@ -1441,7 +1441,7 @@ PHP_FUNCTION(ps_open_image_file)
 
 	if (imageid == 0) {
 		/* pslib will do this for you, will throw some exception
-		php_error(E_WARNING, "Could not open image: %s", image);
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not open image: %s", image);
 		*/
 		RETURN_FALSE;
 	}
@@ -1468,7 +1468,7 @@ PHP_FUNCTION(ps_open_memory_image)
 	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 	ZEND_GET_RESOURCE_TYPE_ID(le_gd, "gd");
 	if(!le_gd) {
-		php_error(E_ERROR, "Unable to find handle for GD image stream. Please check the GD extension is loaded.");
+		php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to find handle for GD image stream. Please check the GD extension is loaded.");
 	}
 	ZEND_FETCH_RESOURCE(im, gdImagePtr, arg2, -1, "Image", le_gd);
 
@@ -1507,7 +1507,7 @@ PHP_FUNCTION(ps_open_memory_image)
 
 	if(imageid == 0) {
 		/* pslib will do this for you, will throw some exception
-		php_error(E_WARNING, "Could not open image");
+		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not open image");
 		*/
 		RETURN_FALSE;
 	}
@@ -1837,7 +1837,7 @@ PHP_FUNCTION(ps_setpolydash) {
 		} else if (keydata->type == IS_LONG) {
 			darray[i] = (float) keydata->value.lval;
 		} else {
-			php_error(E_WARNING,"PSlib set_polydash: illegal darray value");
+			php_error_docref(NULL TSRMLS_CC, E_WARNING,"PSlib set_polydash: illegal darray value");
 		}
 		zend_hash_move_forward(array);
 	}
