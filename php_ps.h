@@ -134,6 +134,7 @@ ZEND_END_MODULE_GLOBALS(ps)
 # define PsSG(v) (ps_globals.v)
 #endif
 
+#define PSDOC_FROM_ZVAL(psdoc, zv)    ZEND_FETCH_RESOURCE(psdoc, PSDoc *, zv, -1, "ps document", le_psdoc)
 
 #else
 #define ps_module_ptr NULL
