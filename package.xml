@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!-- do not use the "Type" attribute here, that one is only for
+     generated package.xml files -->
+<package>
+    <name>ps</name>
+    <summary>An extension to create PostScript files</summary>
+    <description>
+        ps is an extension similar to the pdf extension but for
+        creating PostScript files. Its api is modelled after the
+        pdf extension.
+	   </description>
+    <license>PHP License</license>
+    <maintainers>
+        <maintainer>
+            <user>steinm</user>
+            <name>Uwe Steinmann</name>
+            <email>steinm@php.net</email>
+            <role>lead</role>
+        </maintainer>
+    </maintainers>
+    <release>
+        <version>1.0</version>
+        <date>2003-10-31</date>
+        <state>stable</state>
+        <notes>
+			         Initial Release in PECL
+        </notes>
+        <filelist>
+            <dir role="src" name="/">
+                <file role="doc">CREDITS</file>
+                <file role="src">config.m4</file>
+                <file role="doc">php_ps.h</file>
+                <file role="src">ps.c</file>
+            </dir>
+        </filelist> 
+        <deps>
+            <dep type="php" rel="ge">4.3.0</dep>
+        </deps>
+    </release>
+</package>
