@@ -80,7 +80,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_show_boxed, NULL)
 	PHP_FE(ps_stringwidth, NULL)
 	PHP_FE(ps_string_geometry, NULL) /* not available in pdf extension */
-//	PHP_FE(ps_set_text_pos, NULL)
+	PHP_FE(ps_set_text_pos, NULL)
 	PHP_FE(ps_setdash, NULL)
 	PHP_FE(ps_setpolydash, NULL)
 	PHP_FE(ps_setflat, NULL)
@@ -126,18 +126,15 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_set_border_color, NULL)
 	PHP_FE(ps_set_border_dash, NULL)
 	PHP_FE(ps_setcolor, NULL)
-	PHP_FE(ps_hyphenate, NULL)
 
 #ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
 #endif
-	/* depreciatet after V4.0 of PSlib */
-	PHP_FE(ps_setgray_fill, NULL)
-	PHP_FE(ps_setgray_stroke, NULL)
-	PHP_FE(ps_setgray, NULL)
-//	PHP_FE(ps_setrgbcolor_fill, NULL)
-//	PHP_FE(ps_setrgbcolor_stroke, NULL)
-	PHP_FE(ps_setrgbcolor, NULL)
+	/* Function without an equivalent in pdflib */
+	PHP_FE(ps_hyphenate, NULL)
+	PHP_FE(ps_symbol, NULL)
+	PHP_FE(ps_symbol_name, NULL)
+	PHP_FE(ps_symbol_width, NULL)
 
 	{NULL, NULL, NULL}
 };
@@ -755,25 +752,6 @@ PHP_FUNCTION(ps_fill_stroke)
 }
 /* }}} */
 
-/* {{{ proto void ps_setgray(int psdoc, double value)
-   Sets drawing and filling color to gray value */
-PHP_FUNCTION(ps_setgray)
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	PS_setcolor(ps, "both", "gray", (float) Z_DVAL_PP(arg2), 0, 0, 0);
-	RETURN_TRUE;
-}
-/* }}} */
-
 /* {{{ proto void ps_save(int psdoc)
    Saves current enviroment */
 PHP_FUNCTION(ps_save)
@@ -1077,7 +1055,6 @@ PHP_FUNCTION(ps_show_boxed)
 }
 /* }}} */
 
-#ifdef notimplementedyet
 /* {{{ proto void ps_set_text_pos(int psdoc, double x, double y)
    Sets the position of text for the next ps_show call */
 PHP_FUNCTION(ps_set_text_pos) 
@@ -1097,7 +1074,6 @@ PHP_FUNCTION(ps_set_text_pos)
 	RETURN_TRUE;
 }
 /* }}} */
-#endif
 
 /* {{{ proto void ps_continue_text(int psdoc, string text)
    Output text in next line */
@@ -1147,10 +1123,10 @@ PHP_FUNCTION(ps_stringwidth)
 			font = 0;
 			size = 0;
 	} else {
-	    convert_to_long_ex(arg3);
-			font = Z_LVAL_PP(arg3);
-	    convert_to_double_ex(arg4);
-	    size = Z_DVAL_PP(arg4);
+		convert_to_long_ex(arg3);
+		font = Z_LVAL_PP(arg3);
+		convert_to_double_ex(arg4);
+		size = Z_DVAL_PP(arg4);
 	}
 	width = (double) PS_stringwidth2(ps,
 		Z_STRVAL_PP(arg2),
@@ -1192,10 +1168,10 @@ PHP_FUNCTION(ps_string_geometry)
 			font = 0;
 			size = 0;
 	} else {
-	    convert_to_long_ex(arg3);
-			font = Z_LVAL_PP(arg3);
-	    convert_to_double_ex(arg4);
-	    size = Z_DVAL_PP(arg4);
+		convert_to_long_ex(arg3);
+		font = Z_LVAL_PP(arg3);
+		convert_to_double_ex(arg4);
+		size = Z_DVAL_PP(arg4);
 	}
 	width = (double) PS_string_geometry(ps,
 		Z_STRVAL_PP(arg2),
@@ -1363,117 +1339,6 @@ PHP_FUNCTION(ps_clip)
 }
 /* }}} */
 
-/* {{{ proto void ps_setgray_fill(int psdoc, double value)
-   Sets filling color to gray value */
-PHP_FUNCTION(ps_setgray_fill)
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	PS_setcolor(ps, "fill", "gray", (float) Z_DVAL_PP(arg2), 0, 0, 0);
-	RETURN_TRUE;
-}
-/* }}} */
-
-/* {{{ proto void ps_setgray_stroke(int psdoc, double value)
-   Sets drawing color to gray value */
-PHP_FUNCTION(ps_setgray_stroke) 
-{
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	PS_setcolor(ps, "stroke", "gray", (float) Z_DVAL_PP(arg2), 0, 0, 0);
-	RETURN_TRUE;
-}
-/* }}} */
-
-#ifdef notimplementedyet
-/* {{{ proto void ps_setrgbcolor_fill(int psdoc, double red, double green, double blue)
-   Sets filling color to RGB color value */
-PHP_FUNCTION(ps_setrgbcolor_fill)
-{
-	zval **arg1, **arg2, **arg3, **arg4;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 4 || zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-#if (PSLIB_MAJORVERSION >= 4)
-	PS_setcolor(ps, "fill", "rgb", (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4), 0);
-#else
-	PS_setrgbcolor_fill(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4));
-#endif
-	RETURN_TRUE;
-}
-/* }}} */
-
-/* {{{ proto void ps_setrgbcolor_stroke(int psdoc, double red, double green, double blue)
-   Sets drawing color to RGB color value */
-PHP_FUNCTION(ps_setrgbcolor_stroke)
-{
-	zval **arg1, **arg2, **arg3, **arg4;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 4 || zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-#if (PSLIB_MAJORVERSION >= 4)
-	PS_setcolor(ps, "stroke", "rgb", (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4), 0);
-#else
-	PS_setrgbcolor_stroke(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4));
-#endif
-	RETURN_TRUE;
-}
-/* }}} */
-#endif
-
-/* {{{ proto void ps_setrgbcolor(int psdoc, double red, double green, double blue)
-   Sets drawing and filling color to RGB color value */
-PHP_FUNCTION(ps_setrgbcolor)
-{
-	zval **arg1, **arg2, **arg3, **arg4;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 4 || zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	PS_setcolor(ps, "both", "rgb", (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4), 0);
-	RETURN_TRUE;
-}
-/* }}} */
-
 /* {{{ proto int ps_add_bookmark(int psdoc, string text [, int parent, int open])
    Adds bookmark for current page */
 PHP_FUNCTION(ps_add_bookmark)
@@ -1560,7 +1425,7 @@ PHP_FUNCTION(ps_open_image_file)
 	virtual_filepath(Z_STRVAL_PP(arg3), &image);
 #else
 	image = Z_STRVAL_PP(arg3);
-#endif  
+#endif
 
 	if (argc == 3) {
 		imageid = PS_open_image_file(ps, Z_STRVAL_PP(arg2), image, "", 0);
@@ -1571,10 +1436,10 @@ PHP_FUNCTION(ps_open_image_file)
 	}
 
 	if (imageid == 0) {
-	    /* pslib will do this for you, will throw some exception
-	    php_error(E_WARNING, "Could not open image: %s", image);
-	    */
-	    RETURN_FALSE;
+		/* pslib will do this for you, will throw some exception
+		php_error(E_WARNING, "Could not open image: %s", image);
+		*/
+		RETURN_FALSE;
 	}
 	RETURN_LONG(imageid);
 }
@@ -1901,11 +1766,12 @@ PHP_FUNCTION(ps_open_file) {
 		ps_file = PS_open_file(ps, filename);
 	} else {
 		/* open in memory */
-		ps_file = PS_open_file(ps, "");
+		ps_file = PS_open_mem(ps, ps_flushwrite);
 	}
 
-	if (ps_file < 0)
-	    RETURN_FALSE;
+	if (ps_file < 0) {
+		RETURN_FALSE;
+	}
 
 	RETURN_TRUE;
 }
@@ -1954,22 +1820,22 @@ PHP_FUNCTION(ps_setpolydash) {
 	len = zend_hash_num_elements(array);
 
 	if (NULL == (darray = emalloc(len * sizeof(double)))) {
-	    RETURN_FALSE;
+		RETURN_FALSE;
 	}
 	zend_hash_internal_pointer_reset(array);
 	for (i=0; i<len; i++) {
-	    zval *keydata, **keydataptr;
+		zval *keydata, **keydataptr;
 
-	    zend_hash_get_current_data(array, (void **) &keydataptr);
-	    keydata = *keydataptr;
-	    if (keydata->type == IS_DOUBLE) {
-		darray[i] = (float) keydata->value.dval;
-	    } else if (keydata->type == IS_LONG) {
-		darray[i] = (float) keydata->value.lval;
-	    } else {
-		php_error(E_WARNING,"PSlib set_polydash: illegal darray value");
-	    }
-	    zend_hash_move_forward(array);
+		zend_hash_get_current_data(array, (void **) &keydataptr);
+		keydata = *keydataptr;
+		if (keydata->type == IS_DOUBLE) {
+			darray[i] = (float) keydata->value.dval;
+		} else if (keydata->type == IS_LONG) {
+			darray[i] = (float) keydata->value.lval;
+		} else {
+			php_error(E_WARNING,"PSlib set_polydash: illegal darray value");
+		}
+		zend_hash_move_forward(array);
 	}
 
 	PS_setpolydash(ps, darray, len);
@@ -2030,7 +1896,7 @@ PHP_FUNCTION(ps_open_ccitt) {
 	virtual_filepath(Z_STRVAL_PP(arg2), &image);
 #else
 	image = Z_STRVAL_PP(arg2);
-#endif  
+#endif
 
 	convert_to_long_ex(arg3);
 	convert_to_long_ex(arg4);
@@ -2079,7 +1945,7 @@ PHP_FUNCTION(ps_open_image) {
 	virtual_filepath(Z_STRVAL_PP(arg4), &image);
 #else
 	image = Z_STRVAL_PP(arg4);
-#endif  
+#endif
 
 	imageid = PS_open_image(ps,
 		Z_STRVAL_PP(arg2),
@@ -2251,11 +2117,11 @@ PHP_FUNCTION(ps_setcolor) {
 	convert_to_double_ex(arg7);
 
 	if (0 == (strcmp(Z_STRVAL_PP(arg3), "spot"))) {
-	    c1 = Z_DVAL_PP(arg4);
+		c1 = Z_DVAL_PP(arg4);
 	} else if(0 == (strcmp(Z_STRVAL_PP(arg3), "pattern"))) {
-	    c1 = Z_DVAL_PP(arg4);
+		c1 = Z_DVAL_PP(arg4);
 	} else {
-	    c1 = Z_DVAL_PP(arg4);
+		c1 = Z_DVAL_PP(arg4);
 	}
 
 	PS_setcolor(ps,
@@ -2389,6 +2255,8 @@ PHP_FUNCTION(ps_setmatrix) {
 } /* }}} */
 #endif
 
+/* Function without an equivalent in pdflib */
+
 /* {{{ proto void ps_hyphenate(int ps, string word)
    Hyphenate a given word */
 PHP_FUNCTION(ps_hyphenate) {
@@ -2425,6 +2293,109 @@ PHP_FUNCTION(ps_hyphenate) {
 	RETURN_TRUE;
 
 } /* }}} */
+
+/* {{{ proto void ps_symbol(int ps, int ord)
+   Output single char by its value in the font encoding */
+PHP_FUNCTION(ps_symbol) {
+	zval **arg1, **arg2;
+	PSDoc *ps;
+
+	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	convert_to_long_ex(arg2);
+
+	PS_symbol(ps, (unsigned char) Z_LVAL_PP(arg2));
+
+	RETURN_TRUE;
+
+} /* }}} */
+
+/* {{{ proto double ps_symbol_width(int psdoc, int ord [, int font, double size])
+   Returns width of a glyph in current font */
+PHP_FUNCTION(ps_symbol_width)
+{
+	zval **arg1, **arg2, **arg3, **arg4;
+	double width, size;
+	PSDoc *ps;
+	int font;
+
+	switch (ZEND_NUM_ARGS()) {
+	case 2:
+		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE)
+			WRONG_PARAM_COUNT;
+		break;
+	case 4:
+		if (zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE)
+			WRONG_PARAM_COUNT;
+		break;
+	default:
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	convert_to_long_ex(arg2);
+	if (ZEND_NUM_ARGS() == 2) {
+		font = 0;
+		size = 0;
+	} else {
+		convert_to_long_ex(arg3);
+		font = Z_LVAL_PP(arg3);
+		convert_to_double_ex(arg4);
+		size = Z_DVAL_PP(arg4);
+	}
+	width = (double) PS_symbol_width(ps,
+		(unsigned char) Z_LVAL_PP(arg2),
+		font,
+		(float)size);
+
+	RETURN_DOUBLE((double) width);
+}
+/* }}} */
+
+/* {{{ proto string ps_symbol_name(int psdoc, int ord [, int font])
+   Returns name of a glyph in current font */
+PHP_FUNCTION(ps_symbol_name)
+{
+	zval **arg1, **arg2, **arg3;
+	PSDoc *ps;
+	int font;
+	char glyphname[50];
+
+	switch (ZEND_NUM_ARGS()) {
+	case 2:
+		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE)
+			WRONG_PARAM_COUNT;
+		break;
+	case 3:
+		if (zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE)
+			WRONG_PARAM_COUNT;
+		break;
+	default:
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	convert_to_long_ex(arg2);
+	if (ZEND_NUM_ARGS() == 2) {
+			font = 0;
+	} else {
+		convert_to_long_ex(arg3);
+		font = Z_LVAL_PP(arg3);
+	}
+	PS_symbol_name(ps,
+		(unsigned char) Z_LVAL_PP(arg2),
+		font, glyphname, 50);
+
+	RETURN_STRING(glyphname, 1);
+}
+/* }}} */
+
 #endif /* 0 */
 
 /*

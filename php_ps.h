@@ -88,12 +88,6 @@ PHP_FUNCTION(ps_fill_stroke);
 PHP_FUNCTION(ps_closepath_fill_stroke);
 PHP_FUNCTION(ps_clip);
 PHP_FUNCTION(ps_endpath);
-PHP_FUNCTION(ps_setgray_fill);
-PHP_FUNCTION(ps_setgray_stroke);
-PHP_FUNCTION(ps_setgray);
-PHP_FUNCTION(ps_setrgbcolor_fill);
-PHP_FUNCTION(ps_setrgbcolor_stroke);
-PHP_FUNCTION(ps_setrgbcolor);
 PHP_FUNCTION(ps_open_image_file); 
 PHP_FUNCTION(ps_open_ccitt);
 PHP_FUNCTION(ps_open_image);
@@ -111,7 +105,12 @@ PHP_FUNCTION(ps_set_border_style);
 PHP_FUNCTION(ps_set_border_color);
 PHP_FUNCTION(ps_set_border_dash);
 PHP_FUNCTION(ps_setcolor);
+
+/* Function without an equivalent in pdflib */
 PHP_FUNCTION(ps_hyphenate);
+PHP_FUNCTION(ps_symbol);
+PHP_FUNCTION(ps_symbol_name);
+PHP_FUNCTION(ps_symbol_width);
 
 /* old way of starting a PS document */
 PHP_FUNCTION(ps_open);			/* deprecated */
