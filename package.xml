@@ -17,7 +17,8 @@
     <date>2004-06-02</date>
     <license>PHP License</license>
     <state>stable</state>
-    <notes>ps_hyphenate() did not return an array but true. Added more tests.</notes>
+    <notes>ps_hyphenate() did not return an array but true. Added more tests
+      and examples. Many internal changes.</notes>
     <deps>
       <dep type="php" rel="ge" version="4.3.0"/>
     </deps>
@@ -30,6 +31,13 @@
       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
+      <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
+      <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
+      <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
+      <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
+      <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
+      <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
+      <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
       <file role="test" name="tests/001.phpt"/>
       <file role="test" name="tests/002.phpt"/>
       <file role="test" name="tests/003.phpt"/>
