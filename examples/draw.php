@@ -8,7 +8,7 @@ define("EXAMPLE_BOX_TITLE_HEIGHT", 20);
 function begin_example_box($p, $llx, $lly, $title, $font) {
 	ps_save($p);
 	ps_translate($p, $llx, $lly);
-	ps_setcolor($p, "stroke", "gray", 0.5, 0.0, 0.0, 0.0);
+	ps_setcolor($p, "fill", "gray", 0.5, 0.0, 0.0, 0.0);
 	ps_rect($p, 0, EXAMPLE_BOX_HEIGHT-EXAMPLE_BOX_TITLE_HEIGHT,
 	           EXAMPLE_BOX_WIDTH, EXAMPLE_BOX_TITLE_HEIGHT);
 	ps_fill($p);
@@ -40,6 +40,21 @@ ps_set_parameter($ps, "warning", "true");
 ps_set_info($ps, "Creator", "draw.php");
 ps_set_info($ps, "Author", "Uwe Steinmann");
 ps_set_info($ps, "Title", "Many examples");
+
+$pstemplate = ps_begin_template($ps, 30.0, 30.0);
+ps_moveto($ps, 0, 0);
+ps_lineto($ps, 30, 30);
+ps_moveto($ps, 0, 30);
+ps_lineto($ps, 30, 0);
+ps_stroke($ps);
+ps_end_template($ps);
+
+$pspattern = ps_begin_pattern($ps, 10.0, 10.0, 10.0, 10.0, 1);
+ps_setlinewidth($ps, 0.2);
+ps_moveto($ps, 0, 0);
+ps_lineto($ps, 5, 5);
+ps_stroke($ps);
+ps_end_pattern($ps);
 
 ps_begin_page($ps, 596, 842);
 
@@ -337,21 +352,6 @@ end_example_box($ps);
 
 ps_end_page($ps);
 
-	$psimage = ps_begin_template($ps, 30.0, 30.0);
-	ps_moveto($ps, 0, 0);
-	ps_lineto($ps, 30, 30);
-	ps_moveto($ps, 0, 30);
-	ps_lineto($ps, 30, 0);
-	ps_stroke($ps);
-	ps_end_template($ps);
-
-	$pspattern = ps_begin_pattern($ps, 10.0, 10.0, 10.0, 10.0, 1);
-	ps_setlinewidth($ps, 0.2);
-	ps_moveto($ps, 0, 0);
-	ps_lineto($ps, 5, 5);
-	ps_stroke($ps);
-	ps_end_pattern($ps);
-
 	ps_begin_page($ps, 596, 842);
 
 	ps_set_parameter($ps, "transition", "wipe");
@@ -535,10 +535,10 @@ ps_end_page($ps);
 	$x = 0;
 	$y -= 150;
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Templates", $psfont);
-	ps_place_image($ps, $psimage, 20.0, 20.0, 1.0);
-	ps_place_image($ps, $psimage, 50.0, 30.0, 0.5);
-	ps_place_image($ps, $psimage, 70.0, 70.0, 0.6);
-	ps_place_image($ps, $psimage, 30.0, 50.0, 1.3);
+	ps_place_image($ps, $pstemplate, 20.0, 20.0, 1.0);
+	ps_place_image($ps, $pstemplate, 50.0, 30.0, 0.5);
+	ps_place_image($ps, $pstemplate, 70.0, 70.0, 0.6);
+	ps_place_image($ps, $pstemplate, 30.0, 50.0, 1.3);
 	end_example_box($ps);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Patterns", $psfont);
