@@ -13,7 +13,7 @@ ps_set_info($ps, "Title", "Text output");
 ps_set_info($ps, "BoundingBox", "0 0 596 842");
 ps_set_info($ps, "Orientation", "Portrait");
 
-if(!$font = ps_findfont($ps, "Dustismo", "host", 1)) {
+if(!$font = ps_findfont($ps, "Dustismo", "builtin", 1)) {
 	echo "Could not find font.\n";
 	exit;
 }
@@ -51,7 +51,7 @@ ps_continue_text($ps, "... in the next line ...");
 ps_set_value($ps, "leading", 30);
 ps_continue_text($ps, "... and another one with leading set to 30.");
 
-ps_setrgbcolor($ps, 1.0, 0.0, 0.0);
+ps_setcolor($ps, "both", "rgb", 1.0, 0.0, 0.0, 0.0);
 ps_show_xy($ps, "Text can be written in color.", 100, 340);
 
 ps_end_page($ps);
