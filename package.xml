@@ -13,12 +13,13 @@
     </maintainer>
   </maintainers>
   <release>
-    <version>1.1.2</version>
+    <version>1.2.0</version>
     <date>2004-04-26</date>
     <license>PHP License</license>
     <state>stable</state>
     <notes>Added new function ps_string_geometry(), ps_set_text_pos(),
-ps_symbol(), ps_symbol_name(), ps_symbol_width().</notes>
+ps_symbol(), ps_symbol_name(), ps_symbol_width(), ps_begin_pattern(),
+ps_end_pattern(), ps_begin_template(), ps_end_template().</notes>
     <deps>
       <dep type="php" rel="ge" version="4.3.0"/>
     </deps>
@@ -40,7 +41,7 @@ ps_symbol(), ps_symbol_name(), ps_symbol_width().</notes>
       <date>2004-04-21</date>
       <license>PHP License</license>
       <state>stable</state>
-      <notes>Added new function PS_hyphenate().</notes>
+      <notes>Added new function ps_hyphenate().</notes>
       <deps>
         <dep type="php" rel="ge" version="4.3.0"/>
       </deps>
