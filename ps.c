@@ -125,6 +125,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_set_border_color, NULL)
 	PHP_FE(ps_set_border_dash, NULL)
 	PHP_FE(ps_setcolor, NULL)
+	PHP_FE(ps_hyphenate, NULL)
 
 	/* End of the official PSLIB V3.x API */
 
@@ -2340,6 +2341,37 @@ PHP_FUNCTION(ps_setmatrix) {
 } /* }}} */
 #endif
 
+/* {{{ proto void ps_hyphenate(int ps, string word)
+   Hyphenate a given word */
+PHP_FUNCTION(ps_hyphenate) {
+	zval **arg1, **arg2;
+	PSDoc *ps;
+	char *buffer;
+	int i, j;
+
+	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+
+	convert_to_string_ex(arg2);
+
+	if(NULL == (buffer = emalloc(strlen(Z_STRVAL_PP(arg2))+1))) {
+		RETURN_FALSE;
+	}
+	PS_hyphenate(ps, Z_STRVAL_PP(arg2), &buffer);
+	array_init(return_value);
+	j = 0;
+	for(i=0; i<strlen(buffer); i++) {
+		if(buffer[i] & 1) {
+			add_index_long(return_value, j, i);
+			j++;
+		}
+	}
+	efree(buffer);
+
+} /* }}} */
 #endif /* 0 */
 
 /*

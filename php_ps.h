@@ -110,6 +110,7 @@ PHP_FUNCTION(ps_set_border_style);
 PHP_FUNCTION(ps_set_border_color);
 PHP_FUNCTION(ps_set_border_dash);
 PHP_FUNCTION(ps_setcolor);
+PHP_FUNCTION(ps_hyphenate);
 
 /* old way of starting a PS document */
 PHP_FUNCTION(ps_open);			/* deprecated */
