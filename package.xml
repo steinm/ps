@@ -24,7 +24,7 @@
         <state>stable</state>
         <notes>
 Complete rework. Many old function has been removed. Font and image
-handling is working with memory leaks.
+handling is now working without memory leaks.
         </notes>
         <filelist>
             <dir role="src" name="/">
