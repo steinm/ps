@@ -88,6 +88,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_setlinecap, NULL)
 	PHP_FE(ps_setmiterlimit, NULL)
 	PHP_FE(ps_setlinewidth, NULL)
+	PHP_FE(ps_setoverprint, NULL)
 	PHP_FE(ps_save, NULL)
 	PHP_FE(ps_restore, NULL)
 	PHP_FE(ps_translate, NULL)
@@ -656,6 +657,26 @@ PHP_FUNCTION(ps_setlinewidth)
 	PSDOC_FROM_ZVAL(ps, &zps);
 
 	PS_setlinewidth(ps, (float) width);
+
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto void ps_setoverprint(int psdoc, long mode)
+   Sets overprint mode */
+PHP_FUNCTION(ps_setoverprint)
+{
+	zval *zps;
+	int mode;
+	PSDoc *ps;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &mode)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_setoverprint(ps, mode);
 
 	RETURN_TRUE;
 }

@@ -67,6 +67,7 @@ PHP_FUNCTION(ps_setlinejoin);
 PHP_FUNCTION(ps_setlinecap);
 PHP_FUNCTION(ps_setmiterlimit);
 PHP_FUNCTION(ps_setlinewidth);
+PHP_FUNCTION(ps_setoverprint);
 PHP_FUNCTION(ps_save);
 PHP_FUNCTION(ps_restore);
 PHP_FUNCTION(ps_translate);
