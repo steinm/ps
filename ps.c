@@ -554,7 +554,7 @@ PHP_FUNCTION(ps_show_xy2)
    Prepares the font fontname for later use with ps_setfont() */
 PHP_FUNCTION(ps_findfont) {
 	zval *zps;
-	zend_bool embed;
+	zend_bool embed = 0;
 	char *fontname, *encoding;
 	int fontname_len, encoding_len;
 	PSDoc *ps;
@@ -886,7 +886,6 @@ PHP_FUNCTION(ps_scale)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-
 	PS_scale(ps, (float) x, (float) y);
 
 	RETURN_TRUE;
@@ -897,24 +896,18 @@ PHP_FUNCTION(ps_scale)
    Sets linejoin parameter */
 PHP_FUNCTION(ps_setlinejoin) 
 {
-	zval **arg1, **arg2;
+	zval *zps;
+	int value;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &value)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_long_ex(arg2);
-	/* pslib will do this for you, will throw some exception
-	if((Z_LVAL_PP(arg2) > 2) && (Z_LVAL_PP(arg2) < 0)) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Parameter of ps_setlinejoin() must be between 0 and 2");
-		RETURN_FALSE;
-	}
-	*/
+	PS_setlinejoin(ps, value);
 
-	PS_setlinejoin(ps, Z_LVAL_PP(arg2));
 	RETURN_TRUE;
 }
 /* }}} */
@@ -923,24 +916,18 @@ PHP_FUNCTION(ps_setlinejoin)
    Sets linecap parameter */
 PHP_FUNCTION(ps_setlinecap) 
 {
-	zval **arg1, **arg2;
+	zval *zps;
+	int value;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &value)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_long_ex(arg2);
-	/* pslib will do this for you, will throw some exception
-	if((Z_LVAL_PP(arg2) > 2) && (Z_LVAL_PP(arg2) < 0)) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Parameter of ps_setlinecap() must be > 0 and <= 2");
-		RETURN_FALSE;
-	}
-	*/
+	PS_setlinecap(ps, value);
 
-	PS_setlinecap(ps, Z_LVAL_PP(arg2));
 	RETURN_TRUE;
 }
 /* }}} */
@@ -949,24 +936,18 @@ PHP_FUNCTION(ps_setlinecap)
    Sets miter limit */
 PHP_FUNCTION(ps_setmiterlimit)
 {
-	zval **arg1, **arg2;
+	zval *zps;
+	double value;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &zps, &value)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	/* pslib will do this for you, will throw some exception
-	if(Z_DVAL_PP(arg2) < 1) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Parameter of ps_setmiterlimit() must be >= 1");
-		RETURN_FALSE;
-	}
-	*/
+	PS_setmiterlimit(ps, (float) value);
 
-	PS_setmiterlimit(ps, (float) Z_DVAL_PP(arg2));
 	RETURN_TRUE;
 }
 /* }}} */
@@ -975,28 +956,17 @@ PHP_FUNCTION(ps_setmiterlimit)
    Draws a curve */
 PHP_FUNCTION(ps_curveto)
 {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7;
+	zval *zps;
+	double x1, y1, x2, y2, x3, y3;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 7 || zend_get_parameters_ex(7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddddd", &zps, &x1, &y2, &x2, &y2, &x3, &y3)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_double_ex(arg6);
-	convert_to_double_ex(arg7);
-
-	PS_curveto(ps, (float) Z_DVAL_PP(arg2),
-					 (float) Z_DVAL_PP(arg3),
-					 (float) Z_DVAL_PP(arg4),
-					 (float) Z_DVAL_PP(arg5),
-					 (float) Z_DVAL_PP(arg6),
-					 (float) Z_DVAL_PP(arg7));
+	PS_curveto(ps, (float) x1, (float) y1, (float) x2, (float) y2, (float) x3, (float) y3);
 
 	RETURN_TRUE;
 }
@@ -1006,39 +976,20 @@ PHP_FUNCTION(ps_curveto)
    Output text formated in a boxed */
 PHP_FUNCTION(ps_show_boxed) 
 {
-	zval **argv[8];
-	int argc = ZEND_NUM_ARGS();
+	zval *zps;
+	double x, y, width, height;
+	char *text, *feature, *mode;
+	int text_len, feature_len, mode_len;
 	int nr;
-	char *feature;
 	PSDoc *ps;
 
-	if (((argc < 7) || (argc > 8)) || zend_get_parameters_array_ex(argc, argv) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsdddds|s", &zps, &text, &text_len, &x, &y, &width, &height, &mode, &mode_len, &feature, &feature_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, argv[0], -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_string_ex(argv[1]);
-	convert_to_double_ex(argv[2]);
-	convert_to_double_ex(argv[3]);
-	convert_to_double_ex(argv[4]);
-	convert_to_double_ex(argv[5]);
-	convert_to_string_ex(argv[6]);
-
-	if(argc == 8) {
-		convert_to_string_ex(argv[7]);
-		feature = Z_STRVAL_PP(argv[7]);
-	} else {
-		feature = NULL;
-	}
-
-	nr = PS_show_boxed(ps, Z_STRVAL_PP(argv[1]),
-							(float) Z_DVAL_PP(argv[2]),
-							(float) Z_DVAL_PP(argv[3]),
-							(float) Z_DVAL_PP(argv[4]),
-							(float) Z_DVAL_PP(argv[5]),
-							Z_STRVAL_PP(argv[6]),
-							feature);
+	nr = PS_show_boxed(ps, text, (float) x, (float) y, (float) width, (float) height, mode, feature);
 
 	RETURN_LONG(nr);
 }
@@ -1048,18 +999,18 @@ PHP_FUNCTION(ps_show_boxed)
    Sets the position of text for the next ps_show call */
 PHP_FUNCTION(ps_set_text_pos) 
 {
-	zval **arg1, **arg2, **arg3;
+	zval *zps;
+	double x, y;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &x, &y)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	PS_set_text_pos(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3));
+	PS_set_text_pos(ps, (float) x, (float) y);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1068,17 +1019,19 @@ PHP_FUNCTION(ps_set_text_pos)
    Output text in next line */
 PHP_FUNCTION(ps_continue_text)
 {
-	zval **arg1, **arg2;
+	zval *zps;
+	char *text;
+	int text_len;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_string_ex(arg2);
-	PS_continue_text2(ps, Z_STRVAL_PP(arg2), Z_STRLEN_PP(arg2));
+	PS_continue_text2(ps, text, text_len);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1087,41 +1040,20 @@ PHP_FUNCTION(ps_continue_text)
    Returns width of text in current font */
 PHP_FUNCTION(ps_stringwidth)
 {
-	zval **arg1, **arg2, **arg3, **arg4;
-	double width, size;
+	zval *zps;
+	char *text;
+	int text_len;
+	double width, size = 0.0;
+	int font = 0;
 	PSDoc *ps;
-	int font;
 
-	switch (ZEND_NUM_ARGS()) {
-	case 2:
-		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	case 4:
-		if (zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	default:
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, font, size)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_string_ex(arg2);
-	if (ZEND_NUM_ARGS() == 2) {
-			font = 0;
-			size = 0;
-	} else {
-		convert_to_long_ex(arg3);
-		font = Z_LVAL_PP(arg3);
-		convert_to_double_ex(arg4);
-		size = Z_DVAL_PP(arg4);
-	}
-	width = (double) PS_stringwidth2(ps,
-		Z_STRVAL_PP(arg2),
-		Z_STRLEN_PP(arg2),
-		font,
-		(float)size);
+	width = (double) PS_stringwidth2(ps, text, text_len, font, (float)size);
 
 	RETURN_DOUBLE((double) width);
 }
@@ -1131,43 +1063,21 @@ PHP_FUNCTION(ps_stringwidth)
    Returns geometry of text in current font */
 PHP_FUNCTION(ps_string_geometry)
 {
-	zval **arg1, **arg2, **arg3, **arg4;
-	double width, size;
+	zval *zps;
+	char *text;
+	int text_len;
+	double width, size = 0.0;
+	int font = 0;
 	float dimension[3];
 	PSDoc *ps;
-	int font;
 
-	switch (ZEND_NUM_ARGS()) {
-	case 2:
-		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	case 4:
-		if (zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	default:
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, font, size)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_string_ex(arg2);
-	if (ZEND_NUM_ARGS() == 2) {
-			font = 0;
-			size = 0;
-	} else {
-		convert_to_long_ex(arg3);
-		font = Z_LVAL_PP(arg3);
-		convert_to_double_ex(arg4);
-		size = Z_DVAL_PP(arg4);
-	}
-	width = (double) PS_string_geometry(ps,
-		Z_STRVAL_PP(arg2),
-		Z_STRLEN_PP(arg2),
-		font,
-		(float)size,
-		dimension);
+	width = (double) PS_string_geometry(ps, text, text_len, font, (float) size, dimension);
 
 	array_init(return_value);
 	add_assoc_double(return_value, "width", (double) dimension[0]);
@@ -1180,24 +1090,18 @@ PHP_FUNCTION(ps_string_geometry)
    Sets flatness */
 PHP_FUNCTION(ps_setflat) 
 {
-	zval **arg1, **arg2;
+	zval *zps;
+	double value;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &zps, &value)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	/* pslib will do this for you, will throw some exception
-	if((Z_LVAL_PP(arg2) > 100) && (Z_LVAL_PP(arg2) < 0)) {
-		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Parameter of ps_setflat() has to between 0 and 100");
-		RETURN_FALSE;
-	}
-	*/
+	PS_setflat(ps, (float) value);
 
-	PS_setflat(ps, (float) Z_DVAL_PP(arg2));
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1206,19 +1110,18 @@ PHP_FUNCTION(ps_setflat)
    Draws a circle */
 PHP_FUNCTION(ps_circle)
 {
-	zval **arg1, **arg2, **arg3, **arg4;
+	zval *zps;
+	double x, y, radius;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 4 || zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddd", &zps, &x, &y, &radius)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	PS_circle(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4));
+	PS_circle(ps, (float) x, (float) y, (float) radius);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1227,26 +1130,17 @@ PHP_FUNCTION(ps_circle)
    Draws an arc */
 PHP_FUNCTION(ps_arc)
 {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6;
+	zval *zps;
+	double x, y, radius, start, end;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 6 || zend_get_parameters_ex(6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddd", &zps, &x, &y, &radius, start, end)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_double_ex(arg6);
-
-	PS_arc(ps, (float) Z_DVAL_PP(arg2),
-				 (float) Z_DVAL_PP(arg3),
-				 (float) Z_DVAL_PP(arg4),
-				 (float) Z_DVAL_PP(arg5),
-				 (float) Z_DVAL_PP(arg6));
+	PS_arc(ps, (float) x, (float) y, (float) radius, (float) start, (float) end);
 
 	RETURN_TRUE;
 }
@@ -1257,18 +1151,18 @@ PHP_FUNCTION(ps_arc)
    Skew the coordinate system */
 PHP_FUNCTION(ps_skew)
 {
-	zval **arg1, **arg2, **arg3;
+	zval *zps;
+	double xangle, yangle;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &xangle, &yangle)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	PS_skew(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3));
+	PS_skew(ps, (float) xangle, (float) yangle);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1277,16 +1171,17 @@ PHP_FUNCTION(ps_skew)
    Close, fill and stroke current path */
 PHP_FUNCTION(ps_closepath_fill_stroke)
 {
-	zval **arg1;
+	zval *zps;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	PS_closepath_fill_stroke(ps);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1295,16 +1190,17 @@ PHP_FUNCTION(ps_closepath_fill_stroke)
    Ends current path */
 PHP_FUNCTION(ps_endpath) 
 {
-	zval **arg1;
+	zval *zps;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	PS_endpath(ps);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1314,16 +1210,17 @@ PHP_FUNCTION(ps_endpath)
    Clips to current path */
 PHP_FUNCTION(ps_clip)
 {
-	zval **arg1;
+	zval *zps;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	PS_clip(ps);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1713,13 +1610,10 @@ PHP_FUNCTION(ps_new) {
    Deletes the PS object */
 PHP_FUNCTION(ps_delete) {
 	zval **arg1;
-	PSDoc *ps;
 
 	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
 
 	zend_list_delete(Z_LVAL_PP(arg1));
 
@@ -1770,16 +1664,16 @@ PHP_FUNCTION(ps_open_file) {
 /* {{{ proto int ps_get_buffer(int psdoc)
    Fetches the full buffer containig the generated PS data */
 PHP_FUNCTION(ps_get_buffer) {
-	zval **arg1;
+	zval *zps;
 	long size;
-	PSDoc *ps;
 	const char *buffer;
+	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	buffer = PS_get_buffer(ps, &size);
 
@@ -1838,29 +1732,17 @@ PHP_FUNCTION(ps_setpolydash) {
 /* {{{ proto void ps_concat(int ps, double a, double b, double c, double d, double e, double f)
    Concatenates a matrix to the current transformation matrix for text and graphics */
 PHP_FUNCTION(ps_concat) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7;
+	zval *zps;
+	double a, b, c, d, e, f;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 7 || zend_get_parameters_ex(7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddddd", &zps, &a, &b, &c, &d, &e, &f)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_double_ex(arg6);
-	convert_to_double_ex(arg7);
-
-	PS_concat(ps,
-	    (float) Z_DVAL_PP(arg2),
-	    (float) Z_DVAL_PP(arg3),
-	    (float) Z_DVAL_PP(arg4),
-	    (float) Z_DVAL_PP(arg5),
-	    (float) Z_DVAL_PP(arg6),
-	    (float) Z_DVAL_PP(arg7));
+	PS_concat(ps, (float) a, (float) b, (float) c, (float) d, (float) e, (float) f);
 
 	RETURN_TRUE;
 }
@@ -2151,27 +2033,17 @@ PHP_FUNCTION(ps_makespotcolor) {
 /* {{{ proto void ps_arcn(int ps, double x, double y, double r, double alpha, double beta);
  * Draw a clockwise circular arc from alpha to beta degrees. */
 PHP_FUNCTION(ps_arcn) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6;
+	zval *zps;
+	double x, y, radius, start, end;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 6 || zend_get_parameters_ex(6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddd", &zps, &x, &y, &radius, start, end)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_double_ex(arg6);
-
-	PS_arcn(ps,
-		(float) Z_DVAL_PP(arg2),
-		(float) Z_DVAL_PP(arg3),
-		(float) Z_DVAL_PP(arg4),
-		(float) Z_DVAL_PP(arg5),
-		(float) Z_DVAL_PP(arg6));
+	PS_arcn(ps, (float) x, (float) y, (float) radius, (float) start, (float) end);
 
 	RETURN_TRUE;
 } /* }}} */
@@ -2180,14 +2052,14 @@ PHP_FUNCTION(ps_arcn) {
 /* {{{ proto void ps_initgraphics(int ps);
  * Reset all implicit color and graphics state parameters to their defaults. */
 PHP_FUNCTION(ps_initgraphics) {
-	zval **arg1;
+	zval *zps;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	PS_initgraphics(ps);
 
@@ -2216,29 +2088,17 @@ PHP_FUNCTION(ps_add_thumbnail) {
 /* {{{ proto void ps_setmatrix(int ps, double a, double b, double c, double d, double e, double f)
    Explicitly set the current transformation matrix. */
 PHP_FUNCTION(ps_setmatrix) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7;
+	zval *zps;
+	double a, b, c, d, e, f;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 7 || zend_get_parameters_ex(7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddddd", &zps, &a, &b, &c, &d, &e, &f)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_double_ex(arg6);
-	convert_to_double_ex(arg7);
-
-	PS_setmatrix(ps,
-	    (float) Z_DVAL_PP(arg2),
-	    (float) Z_DVAL_PP(arg3),
-	    (float) Z_DVAL_PP(arg4),
-	    (float) Z_DVAL_PP(arg5),
-	    (float) Z_DVAL_PP(arg6),
-	    (float) Z_DVAL_PP(arg7));
+	PS_setmatrix(ps, (float) a, (float) b, (float) c, (float) d, (float) e, (float) f);
 
 	RETURN_TRUE;
 } /* }}} */
@@ -2248,25 +2108,22 @@ PHP_FUNCTION(ps_setmatrix) {
    Starts pattern */
 PHP_FUNCTION(ps_begin_pattern) 
 {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6;
+	zval *zps;
+	double width, height, xstep, ystep;
+	int painttype;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 6 || zend_get_parameters_ex(6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddl", &zps, &width, &height, &xstep, &ystep, &painttype)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_long_ex(arg6);
-	PS_begin_pattern(ps, (float) Z_DVAL_PP(arg2),
-	                     (float) Z_DVAL_PP(arg3),
-	                     (float) Z_DVAL_PP(arg4),
-	                     (float) Z_DVAL_PP(arg5),
-	                     (int) Z_LVAL_PP(arg6));
+	PS_begin_pattern(ps, (float) width,
+	                     (float) height,
+	                     (float) xstep,
+	                     (float) ystep,
+	                     (int) painttype);
 	RETURN_TRUE;
 }
 /* }}} */
@@ -2275,16 +2132,17 @@ PHP_FUNCTION(ps_begin_pattern)
    Ends pattern */
 PHP_FUNCTION(ps_end_pattern) 
 {
-	zval **arg1;
+	zval *zps;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	PS_end_pattern(ps);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -2293,18 +2151,18 @@ PHP_FUNCTION(ps_end_pattern)
    Starts template */
 PHP_FUNCTION(ps_begin_template) 
 {
-	zval **arg1, **arg2, **arg3;
+	zval *zps;
+	double width, height;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &width, &height)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	PS_begin_template(ps, (float) Z_DVAL_PP(arg2), (float) Z_DVAL_PP(arg3));
+	PS_begin_template(ps, (float) width, (float) height);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -2313,16 +2171,17 @@ PHP_FUNCTION(ps_begin_template)
    Ends template */
 PHP_FUNCTION(ps_end_template) 
 {
-	zval **arg1;
+	zval *zps;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	PS_end_template(ps);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -2332,23 +2191,23 @@ PHP_FUNCTION(ps_end_template)
 /* {{{ proto void ps_hyphenate(int ps, string word)
    Hyphenate a given word */
 PHP_FUNCTION(ps_hyphenate) {
-	zval **arg1, **arg2;
-	PSDoc *ps;
+	zval *zps;
+	char *text;
+	int text_len;
 	char *buffer;
 	int i, j;
+	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_string_ex(arg2);
-
-	if(NULL == (buffer = emalloc(strlen(Z_STRVAL_PP(arg2))+3))) {
+	if(NULL == (buffer = emalloc(text_len+3))) {
 		RETURN_FALSE;
 	}
-	if(0 > PS_hyphenate(ps, Z_STRVAL_PP(arg2), &buffer)) {
+	if(0 > PS_hyphenate(ps, text, &buffer)) {
 		efree(buffer);
 		RETURN_FALSE;
 	}
@@ -2367,18 +2226,17 @@ PHP_FUNCTION(ps_hyphenate) {
 /* {{{ proto void ps_symbol(int ps, int ord)
    Output single char by its value in the font encoding */
 PHP_FUNCTION(ps_symbol) {
-	zval **arg1, **arg2;
+	zval *zps;
+	int ord;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &ord)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_long_ex(arg2);
-
-	PS_symbol(ps, (unsigned char) Z_LVAL_PP(arg2));
+	PS_symbol(ps, (unsigned char) ord);
 
 	RETURN_TRUE;
 
@@ -2388,40 +2246,19 @@ PHP_FUNCTION(ps_symbol) {
    Returns width of a glyph in current font */
 PHP_FUNCTION(ps_symbol_width)
 {
-	zval **arg1, **arg2, **arg3, **arg4;
-	double width, size;
+	zval *zps;
+	int ord;
+	double width, size = 0.0;
+	int font = 0;
 	PSDoc *ps;
-	int font;
 
-	switch (ZEND_NUM_ARGS()) {
-	case 2:
-		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	case 4:
-		if (zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	default:
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl|ld", &zps, &ord, &font, &size)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_long_ex(arg2);
-	if (ZEND_NUM_ARGS() == 2) {
-		font = 0;
-		size = 0;
-	} else {
-		convert_to_long_ex(arg3);
-		font = Z_LVAL_PP(arg3);
-		convert_to_double_ex(arg4);
-		size = Z_DVAL_PP(arg4);
-	}
-	width = (double) PS_symbol_width(ps,
-		(unsigned char) Z_LVAL_PP(arg2),
-		font,
-		(float)size);
+	width = (double) PS_symbol_width(ps, (unsigned char) ord, font, (float) size);
 
 	RETURN_DOUBLE((double) width);
 }
@@ -2431,36 +2268,19 @@ PHP_FUNCTION(ps_symbol_width)
    Returns name of a glyph in current font */
 PHP_FUNCTION(ps_symbol_name)
 {
-	zval **arg1, **arg2, **arg3;
-	PSDoc *ps;
-	int font;
+	zval *zps;
+	int ord;
+	int font = 0;
 	char glyphname[50];
+	PSDoc *ps;
 
-	switch (ZEND_NUM_ARGS()) {
-	case 2:
-		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	case 3:
-		if (zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	default:
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl|l", &zps, &ord, &font)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_long_ex(arg2);
-	if (ZEND_NUM_ARGS() == 2) {
-			font = 0;
-	} else {
-		convert_to_long_ex(arg3);
-		font = Z_LVAL_PP(arg3);
-	}
-	PS_symbol_name(ps,
-		(unsigned char) Z_LVAL_PP(arg2),
-		font, glyphname, 50);
+	PS_symbol_name(ps, (unsigned char) ord, font, glyphname, 50);
 
 	RETURN_STRING(glyphname, 1);
 }
