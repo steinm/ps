@@ -1229,51 +1229,20 @@ PHP_FUNCTION(ps_clip)
    Adds bookmark for current page */
 PHP_FUNCTION(ps_add_bookmark)
 {
-	zval **arg1, **arg2, **arg3, **arg4;
-	int parentid, open, id;
+	zval *zps;
+	char *text;
+	int text_len;
+	int parentid = 0, open = 0, id;
 	PSDoc *ps;
 
-	switch (ZEND_NUM_ARGS()) {
-	case 2:
-		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-			WRONG_PARAM_COUNT;
-		}
-		break;
-	case 3:
-		if (zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE) {
-			WRONG_PARAM_COUNT;
-		}
-		break;
-	case 4:
-		if (zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE) {
-			WRONG_PARAM_COUNT;
-		}
-	break;
-	default:
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ll", &zps, &text, &text_len, parentid, open)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_string_ex(arg2);
-
-	if (ZEND_NUM_ARGS() > 2) {
-		convert_to_long_ex(arg3);
-		parentid = Z_LVAL_PP(arg3);
-
-		if (ZEND_NUM_ARGS() > 3) {
-			convert_to_long_ex(arg4);
-			open = Z_LVAL_PP(arg4);
-		} else {
-			open = 0;
-		}
-	} else {
-		parentid = 0;
-		open = 0;
-	}
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 	/* will never return 0 */
-	id = PS_add_bookmark(ps, Z_STRVAL_PP(arg2), parentid, open);
+	id = PS_add_bookmark(ps, text, parentid, open);
 
 	RETURN_LONG(id);
 }
@@ -1283,48 +1252,27 @@ PHP_FUNCTION(ps_add_bookmark)
    Opens an image file of the given type and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_image_file)
 {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5;
+	zval *zps;
+	char *type, *filename, *image, *stringparam = NULL;
+	int *type_len, filename_len, stringparam_len;
+	int imageid, intparam = 0;
 	PSDoc *ps;
-	int imageid;
-	int argc;
-	char *image;
 
-	switch ((argc = ZEND_NUM_ARGS())) {
-	case 3:
-		if (zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	case 5:
-		if (zend_get_parameters_ex(5, &arg1, &arg2, &arg3, &arg4, &arg5) == FAILURE)
-			WRONG_PARAM_COUNT;
-		break;
-	default:
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss|sl", &zps, &type, &type_len, &filename, &filename_len, &stringparam, &stringparam_len, intparam)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_string_ex(arg2);
-	convert_to_string_ex(arg3);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
 #ifdef VIRTUAL_DIR
-	virtual_filepath(Z_STRVAL_PP(arg3), &image);
+	virtual_filepath(filename, &image);
 #else
-	image = Z_STRVAL_PP(arg3);
+	image = filename;
 #endif
 
-	if (argc == 3) {
-		imageid = PS_open_image_file(ps, Z_STRVAL_PP(arg2), image, "", 0);
-	} else {
-		convert_to_string_ex(arg4);
-		convert_to_long_ex(arg5);
-		imageid = PS_open_image_file(ps, Z_STRVAL_PP(arg2), image, Z_STRVAL_PP(arg4), Z_LVAL_PP(arg5));
-	}
+	imageid = PS_open_image_file(ps, type, image, stringparam, intparam);
 
 	if (imageid == 0) {
-		/* pslib will do this for you, will throw some exception
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not open image: %s", image);
-		*/
 		RETURN_FALSE;
 	}
 	RETURN_LONG(imageid);
@@ -1403,17 +1351,17 @@ PHP_FUNCTION(ps_open_memory_image)
    Closes the PS image */
 PHP_FUNCTION(ps_close_image)
 {
-	zval **arg1, **arg2;
+	zval *zps;
+	int imageid;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &imageid)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-	convert_to_long_ex(arg2);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_close_image(ps, Z_LVAL_PP(arg2));
+	PS_close_image(ps, imageid);
 }
 /* }}} */
 
@@ -1421,21 +1369,19 @@ PHP_FUNCTION(ps_close_image)
    Places image in the PS document */
 PHP_FUNCTION(ps_place_image)
 {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5;
+	zval *zps;
+	int imageid;
+	double x, y, scale;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 5 || zend_get_parameters_ex(5, &arg1, &arg2, &arg3, &arg4, &arg5) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlddd", &zps, &imageid, &x, &y, &scale)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_long_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
+	PS_place_image(ps, imageid, (float) x, (float) y, (float) scale);
 
-	PS_place_image(ps, Z_LVAL_PP(arg2), (float) Z_DVAL_PP(arg3), (float) Z_DVAL_PP(arg4), (float) Z_DVAL_PP(arg5));
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1444,25 +1390,20 @@ PHP_FUNCTION(ps_place_image)
    Adds link to web resource */
 PHP_FUNCTION(ps_add_weblink)
 {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6;
+	zval *zps;
+	double llx, lly, urx, ury;
+	char *url;
+	int url_len;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 6 || zend_get_parameters_ex(6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddds", &zps, &llx, &lly, &urx, &ury, &url, &url_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_string_ex(arg6);
-	PS_add_weblink(ps, (float) Z_DVAL_PP(arg2), 
-						 (float) Z_DVAL_PP(arg3), 
-						 (float) Z_DVAL_PP(arg4), 
-						 (float) Z_DVAL_PP(arg5), 
-						 Z_STRVAL_PP(arg6));
+	PS_add_weblink(ps, (float) llx, (float) lly, (float) urx, (float) ury, url);
+
 	RETURN_TRUE;
 }
 /* }}} */
@@ -1471,29 +1412,20 @@ PHP_FUNCTION(ps_add_weblink)
    Adds link to PS document */
 PHP_FUNCTION(ps_add_pdflink)
 {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6, **arg7, **arg8;
+	zval *zps;
+	double llx, lly, urx, ury;
+	char *filename, *dest;
+	int filename_len, dest_len;
+	int page;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 8 || zend_get_parameters_ex(8, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddsls", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len, &page, &dest, &dest_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_string_ex(arg6);
-	convert_to_long_ex(arg7);
-	convert_to_string_ex(arg8);
-	PS_add_pdflink(ps, (float) Z_DVAL_PP(arg2), 
-						 (float) Z_DVAL_PP(arg3), 
-						 (float) Z_DVAL_PP(arg4), 
-						 (float) Z_DVAL_PP(arg5),
-						 Z_STRVAL_PP(arg6), 
-						 Z_LVAL_PP(arg7),
-						 Z_STRVAL_PP(arg8));
+	PS_add_pdflink(ps, llx, (float) lly, (float) urx, (float) ury, filename, page, dest);
 
 	RETURN_TRUE;
 }
@@ -1560,33 +1492,23 @@ PHP_FUNCTION(ps_set_border_dash)
 }
 /* }}} */
 
-/* {{{ proto void ps_add_annotation(int psdoc, double xll, double yll, double xur, double xur, string title, string text)
+/* {{{ proto void ps_add_annotation(int psdoc, double llx, double lly, double urx, double ury, string title, string text)
    Sets annotation (depreciated use ps_add_note instead) */
 PHP_FUNCTION(ps_add_annotation)
 {
-	zval **argv[7];
+	zval *zps;
+	double llx, lly, urx, ury;
+	char *title, *text;
+	int title_len, text_len;
 	PSDoc *ps;
 
-	if(ZEND_NUM_ARGS() != 7 || zend_get_parameters_array_ex(7, argv) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddss", &zps, &llx, &lly, &urx, &ury, &title, &title_len, &text, &text_len)) {
+		return;
 	}
-	
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, argv[0], -1, "ps document", le_psdoc);
 
-	convert_to_double_ex(argv[1]);
-	convert_to_double_ex(argv[2]);
-	convert_to_double_ex(argv[3]);
-	convert_to_double_ex(argv[4]);
-	convert_to_string_ex(argv[5]);
-	convert_to_string_ex(argv[6]);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_add_note(ps, (float) Z_DVAL_PP(argv[1]),
-					  (float) Z_DVAL_PP(argv[2]),
-					  (float) Z_DVAL_PP(argv[3]),
-					  (float) Z_DVAL_PP(argv[4]),
-					  Z_STRVAL_PP(argv[6]),
-					  Z_STRVAL_PP(argv[5]),
-					  "note", 1);
+	PS_add_note(ps, (float) llx, (float) lly, (float) urx, (float) ury, title, text, "note", 1);
 
 	RETURN_TRUE;
 }
@@ -1624,28 +1546,19 @@ PHP_FUNCTION(ps_delete) {
 /* {{{ proto int ps_open_file(int psdoc [, char filename])
    Opens a new PS document. If filename is NULL, document is created in memory. This is not yet fully supported */
 PHP_FUNCTION(ps_open_file) {
-	zval **arg1, **arg2;
+	zval *zps;
+	char *filename = NULL;
+	int filename_len;
 	int ps_file;
-	char *filename;
-	int argc;
 	PSDoc *ps;
 
-	if((argc = ZEND_NUM_ARGS()) > 2)
-		WRONG_PARAM_COUNT;
-
-	if (argc == 1) {
-		if (zend_get_parameters_ex(1, &arg1) == FAILURE)
-			WRONG_PARAM_COUNT;
-	} else {
-		if (zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE)
-			WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r|s", &zps, &filename, &filename_len)) {
+		return;
 	}
 
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
+	PSDOC_FROM_ZVAL(ps, &zps);
 
-	if (argc == 2) {
-		convert_to_string_ex(arg2);
-		filename = Z_STRVAL_PP(arg2);
+	if (filename) {
 		ps_file = PS_open_file(ps, filename);
 	} else {
 		/* open in memory */
