@@ -62,7 +62,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_new, NULL)
 	PHP_FE(ps_delete, NULL)
 	PHP_FE(ps_open_file, NULL)
-//	PHP_FE(ps_get_buffer, NULL)
+	PHP_FE(ps_get_buffer, NULL)
 	PHP_FE(ps_close, NULL)
 	PHP_FE(ps_begin_page, NULL)
 	PHP_FE(ps_end_page, NULL)
@@ -88,7 +88,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_setlinecap, NULL)
 	PHP_FE(ps_setmiterlimit, NULL)
 	PHP_FE(ps_setlinewidth, NULL)
-	PHP_FE(ps_setoverprint, NULL)
+	PHP_FE(ps_setoverprintmode, NULL)
 	PHP_FE(ps_save, NULL)
 	PHP_FE(ps_restore, NULL)
 	PHP_FE(ps_translate, NULL)
@@ -132,6 +132,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_end_pattern, NULL)
 	PHP_FE(ps_begin_template, NULL)
 	PHP_FE(ps_end_template, NULL)
+	PHP_FE(ps_shfill, NULL)
 
 #ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
@@ -662,9 +663,9 @@ PHP_FUNCTION(ps_setlinewidth)
 }
 /* }}} */
 
-/* {{{ proto void ps_setoverprint(int psdoc, long mode)
+/* {{{ proto void ps_setoverprintmode(int psdoc, long mode)
    Sets overprint mode */
-PHP_FUNCTION(ps_setoverprint)
+PHP_FUNCTION(ps_setoverprintmode)
 {
 	zval *zps;
 	int mode;
@@ -676,7 +677,7 @@ PHP_FUNCTION(ps_setoverprint)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_setoverprint(ps, mode);
+	PS_setoverprintmode(ps, mode);
 
 	RETURN_TRUE;
 }
@@ -1409,6 +1410,48 @@ PHP_FUNCTION(ps_place_image)
 }
 /* }}} */
 
+/* {{{ proto int ps_shading(int ps, string type, double x0, double y0, double x1, double y1, double c1, double c2, double c3, double c4, string optlist);
+ * Define a shading from the current fill color to another color. */
+PHP_FUNCTION(ps_shading)
+{
+	zval *zps;
+	PSDoc *ps;
+	char *type, *optlist;
+	int tlen, olen;
+	double x0, y0, x1, y1, c1, c2, c3, c4;
+	long shadingid = 0;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsdddddddds", &zps, &type, &tlen, &x0, &y0, &x1, &y1, &c1, &c2, &c3, &c4, &optlist, &olen)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	shadingid = PS_shading(ps, type, x0, y0, x1, y1, c1, c2, c3, c4, optlist);
+
+	RETURN_LONG(shadingid);
+}
+/* }}} */
+/* {{{ proto void ps_shfill(int ps, int psshading)
+   Fill an area with a gradient fill */
+PHP_FUNCTION(ps_shfill)
+{
+	zval *zps;
+	int shadingid;
+	PSDoc *ps;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &shadingid)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_shfill(ps, shadingid);
+
+	RETURN_TRUE;
+}
+/* }}} */
+
 /* {{{ proto void ps_add_weblink(int psdoc, double llx, double lly, double urx, double ury, string url)
    Adds link to web resource */
 PHP_FUNCTION(ps_add_weblink)
@@ -1597,7 +1640,6 @@ PHP_FUNCTION(ps_open_file) {
 }
 /* }}} */
 
-#ifdef notimplementedyet
 /* {{{ proto int ps_get_buffer(int psdoc)
    Fetches the full buffer containig the generated PS data */
 PHP_FUNCTION(ps_get_buffer) {
@@ -1618,7 +1660,6 @@ PHP_FUNCTION(ps_get_buffer) {
 }
 
 /* }}} */
-#endif
 
 /* {{{ proto void ps_setpolydash(int psdoc, double darray)
    Sets more complicated dash pattern */ 
