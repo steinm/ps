@@ -31,7 +31,7 @@ if test "$PHP_PS" != "no"; then
   PHP_ADD_INCLUDE($PS_DIR/include)
 
   LIBNAME=ps # you may want to change this
-  LIBSYMBOL=PS_show # you most likely want to change this 
+  LIBSYMBOL=PS_deletefont # you most likely want to change this 
 
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   [
