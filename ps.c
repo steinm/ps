@@ -29,7 +29,7 @@
 #include "ext/standard/info.h"
 #include "ext/standard/file.h"
 
-#if HAVE_LIBGD13__
+#ifdef _HAVE_LIBGD13
 /*
 #include "ext/gd/php_gd.h"
 #if HAVE_GD_BUNDLED
@@ -50,7 +50,7 @@ static int le_gd;
 # include <fcntl.h>
 #endif
 
-#if HAVE_PSLIB
+#if HAVE_PS
 
 #include "php_ps.h"
 
@@ -178,7 +178,7 @@ function_entry ps_functions[] = {
 
 	/* some more stuff for compatibility */
 //	PHP_FE(ps_add_annotation, NULL)
-#if HAVE_LIBGD13__
+#ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
 #endif
 	/* depreciatet after V4.0 of PSlib */
@@ -1257,6 +1257,8 @@ PHP_FUNCTION(ps_show_boxed)
 }
 /* }}} */
 
+/* _php_ps_set_value() {{{
+ */
 static void _php_ps_set_value(INTERNAL_FUNCTION_PARAMETERS, char *field) 
 {
 	zval **arg1, **arg2;
@@ -1273,6 +1275,7 @@ static void _php_ps_set_value(INTERNAL_FUNCTION_PARAMETERS, char *field)
 
 	RETURN_TRUE;
 }
+/* }}} */
 
 /* {{{ proto int ps_get_font(int psdoc)
    Gets the current font */
@@ -1850,6 +1853,8 @@ PHP_FUNCTION(ps_set_duration)
 }
 /* }}} */
 
+/* _php_ps_open_image() {{{
+ */
 static void _php_ps_open_image(INTERNAL_FUNCTION_PARAMETERS, char *type) 
 {
 	zval **arg1, **arg2;
@@ -1875,6 +1880,7 @@ static void _php_ps_open_image(INTERNAL_FUNCTION_PARAMETERS, char *type)
 
 	RETURN_LONG(ps_image+PSLIB_IMAGE_OFFSET);
 }
+/* }}} */
 
 /* {{{ proto int ps_open_gif(int ps, string giffile)
    Opens a GIF file and returns an image for placement in a ps document */
@@ -1961,7 +1967,7 @@ PHP_FUNCTION(ps_open_image_file)
 /* }}} */
 #endif /* notimplementedyet */
 
-#if HAVE_LIBGD13__
+#ifdef _HAVE_LIBGD13
 /* {{{ proto int ps_open_memory_image(int ps, int image)
    Takes an GD image and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_memory_image)
@@ -1992,10 +1998,25 @@ PHP_FUNCTION(ps_open_memory_image)
 	ptr = buffer;
 	for(i=0; i<im->sy; i++) {
 		for(j=0; j<im->sx; j++) {
-			color = im->pixels[i][j];
-			*ptr++ = im->red[color];
-			*ptr++ = im->green[color];
-			*ptr++ = im->blue[color];
+#ifdef HAVE_LIBGD20
+			if(gdImageTrueColor(im)) {
+				if (im->tpixels && gdImageBoundsSafe(im, j, i)) {
+					color = gdImageTrueColorPixel(im, j, i);
+					*ptr++ = (color >> 16) & 0xFF;
+					*ptr++ = (color >> 8) & 0xFF;
+					*ptr++ = color & 0xFF;
+				}
+			} else {
+#endif
+				if (im->pixels && gdImageBoundsSafe(im, j, i)) {
+					color = im->pixels[i][j];
+					*ptr++ = im->red[color];
+					*ptr++ = im->green[color];
+					*ptr++ = im->blue[color];
+				}
+#ifdef HAVE_LIBGD20
+			}
+#endif
 		}
 	}
 
@@ -2249,8 +2270,6 @@ PHP_FUNCTION(ps_add_annotation)
 /* }}} */
 #endif
 
-/* RJS: START OF NEW CODE */
-
 /* {{{ proto int ps_new()
    Creates a new PS object */
 PHP_FUNCTION(ps_new) {
@@ -2262,7 +2281,6 @@ PHP_FUNCTION(ps_new) {
 
 	ZEND_REGISTER_RESOURCE(return_value, ps, le_psdoc);
 }
-
 /* }}} */
 
 /* {{{ proto void ps_delete(int psdoc)
@@ -2282,12 +2300,10 @@ PHP_FUNCTION(ps_delete) {
 
 	RETURN_TRUE;
 }
-
 /* }}} */
 
 /* {{{ proto int ps_open_file(int psdoc [, char filename])
    Opens a new PS document. If filename is NULL, document is created in memory. This is not yet fully supported */
-
 PHP_FUNCTION(ps_open_file) {
 	zval **arg1, **arg2;
 	int ps_file;
@@ -2322,7 +2338,6 @@ PHP_FUNCTION(ps_open_file) {
 
 	RETURN_TRUE;
 }
-
 /* }}} */
 
 #ifdef notimplementedyet
@@ -2640,278 +2655,6 @@ PHP_FUNCTION(ps_add_launchlink) {
 	RETURN_TRUE;
 }
 /* }}} */
-
-#if (PSLIB_MAJORVERSION >= 4)
-
-/* {{{ proto int ps_open_pdi(int ps, string filename, string stringparam, int intparam);
- * Open an existing PS document and prepare it for later use. */
-PHP_FUNCTION(ps_open_pdi) {
-	zval **arg1, **arg2, **arg3, **arg4;
-	PSDoc *ps;
-	int pdi_handle;
-	char *file;
-
-	if (ZEND_NUM_ARGS() != 4 || zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_string_ex(arg2);
-	convert_to_string_ex(arg3);
-	convert_to_long_ex(arg4);
-
-#ifdef VIRTUAL_DIR
-	virtual_filepath(Z_STRVAL_PP(arg2), &file);
-#else
-	file = Z_STRVAL_PP(arg2);
-#endif  
-
-	pdi_handle = PS_open_pdi(ps,
-		file,
-		Z_STRVAL_PP(arg3),
-		Z_LVAL_PP(arg4));
-
-	RETURN_LONG(pdi_handle+PSLIB_PDI_OFFSET);
-} /* }}} */
-
-/* {{{ proto void ps_close_pdi(int ps, int doc);
- * Close all open page handles, and close the input PS document. */
-PHP_FUNCTION(ps_close_pdi) {
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_long_ex(arg2);
-
-	PS_close_pdi(ps,
-		Z_LVAL_PP(arg2)-PSLIB_PDI_OFFSET);
-
-	RETURN_TRUE;
-} /* }}} */
-
-/* {{{ proto int ps_open_pdi_page(int ps, int doc, int page, string label);
- * Prepare a page for later use with PS_place_image(). */
-PHP_FUNCTION(ps_open_pdi_page) {
-	zval **arg1, **arg2, **arg3, **arg4;
-	PSDoc *ps;
-	int pdi_image;
-
-	if (ZEND_NUM_ARGS() != 4 || zend_get_parameters_ex(4, &arg1, &arg2, &arg3, &arg4) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_long_ex(arg2);
-	convert_to_long_ex(arg3);
-	convert_to_string_ex(arg4);
-
-	pdi_image = PS_open_pdi_page(ps,
-		Z_LVAL_PP(arg2)-PSLIB_PDI_OFFSET,
-		Z_LVAL_PP(arg3),
-		Z_STRVAL_PP(arg4));
-
-	RETURN_LONG(pdi_image+PSLIB_IMAGE_OFFSET);
-} /* }}} */
-
-/* {{{ proto void ps_place_pdi_page(int ps, int page, double x, double y, double sx, double sy)
- * Place a PS page with the lower left corner at (x, y), and scale it. */
-PHP_FUNCTION(ps_place_pdi_page) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 6 || zend_get_parameters_ex(6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_long_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_double_ex(arg6);
-
-	PS_place_pdi_page(ps,
-		Z_LVAL_PP(arg2)-PSLIB_IMAGE_OFFSET,
-		(float) Z_DVAL_PP(arg3),
-		(float) Z_DVAL_PP(arg4),
-		(float) Z_DVAL_PP(arg5),
-		(float) Z_DVAL_PP(arg6));
-
-	RETURN_TRUE;
-} /* }}} */
-
-/* {{{ proto void ps_close_pdi_page(int ps, int page);
- * Close the page handle, and free all page-related resources. */
-PHP_FUNCTION(ps_close_pdi_page) {
-	zval **arg1, **arg2;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_long_ex(arg2);
-
-	PS_close_pdi_page(ps,
-		Z_LVAL_PP(arg2)-PSLIB_IMAGE_OFFSET);
-
-	RETURN_TRUE;
-} /* }}} */
-
-/* {{{ proto string ps_get_pdi_parameter(int ps, string key, int doc, int page, int index);
- * Get the contents of some PDI document parameter with string type. */
-PHP_FUNCTION(ps_get_pdi_parameter) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5;
-	PSDoc *ps;
-	const char *buffer;
-	int size;
-
-	if (ZEND_NUM_ARGS() != 5 || zend_get_parameters_ex(5, &arg1, &arg2, &arg3, &arg4, &arg5) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_string_ex(arg2);
-	convert_to_long_ex(arg3);
-	convert_to_long_ex(arg4);
-	convert_to_long_ex(arg5);
-
-	buffer = PS_get_pdi_parameter(ps,
-		Z_STRVAL_PP(arg2),
-		Z_LVAL_PP(arg3)-PSLIB_PDI_OFFSET,
-		Z_LVAL_PP(arg4)-PSLIB_IMAGE_OFFSET,
-		Z_LVAL_PP(arg5),
-		&size);
-
-	RETURN_STRINGL((char *)buffer, size, 1);
-} /* }}} */
-
-/* {{{ proto double ps_get_pdi_value(int ps, string key, int doc, int page, int index);
- * Get the contents of some PDI document parameter with numerical type. */
-PHP_FUNCTION(ps_get_pdi_value) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5;
-	PSDoc *ps;
-	double value;
-
-	if (ZEND_NUM_ARGS() != 5 || zend_get_parameters_ex(5, &arg1, &arg2, &arg3, &arg4, &arg5) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_string_ex(arg2);
-	convert_to_long_ex(arg3);
-	convert_to_long_ex(arg4);
-	convert_to_long_ex(arg5);
-
-	value = (double)PS_get_pdi_value(ps,
-		Z_STRVAL_PP(arg2),
-		Z_LVAL_PP(arg3)-PSLIB_PDI_OFFSET,
-		Z_LVAL_PP(arg4)-PSLIB_IMAGE_OFFSET,
-		Z_LVAL_PP(arg5));
-
-	RETURN_DOUBLE(value);
-} /* }}} */
-
-/* {{{ proto int ps_begin_pattern(int ps, double width, double height, double xstep, double ystep, int painttype);
- * Start a new pattern definition. */
-PHP_FUNCTION(ps_begin_pattern) {
-	zval **arg1, **arg2, **arg3, **arg4, **arg5, **arg6;
-	PSDoc *ps;
-	int pattern_image;
-
-	if (ZEND_NUM_ARGS() != 6 || zend_get_parameters_ex(6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-	convert_to_double_ex(arg4);
-	convert_to_double_ex(arg5);
-	convert_to_long_ex(arg6);
-
-	pattern_image = PS_begin_pattern(ps,
-		(float) Z_DVAL_PP(arg2),
-		(float) Z_DVAL_PP(arg3),
-		(float) Z_DVAL_PP(arg4),
-		(float) Z_DVAL_PP(arg5),
-		Z_LVAL_PP(arg6));
-
-	RETURN_LONG(pattern_image+PSLIB_PATTERN_OFFSET);
-} /* }}} */
-
-/* {{{ proto void ps_end_pattern(int ps);
- * Finish the pattern definition. */
-PHP_FUNCTION(ps_end_pattern) {
-	zval **arg1;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	PS_end_pattern(ps);
-
-	RETURN_TRUE;
-} /* }}} */
-
-/* {{{ proto int ps_begin_template(int ps, double width, double height);
- * Start a new template definition. */
-PHP_FUNCTION(ps_begin_template) {
-	zval **arg1, **arg2, **arg3;
-	PSDoc *ps;
-	int tmpl_image;
-
-	if (ZEND_NUM_ARGS() != 3 || zend_get_parameters_ex(3, &arg1, &arg2, &arg3) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-	convert_to_double_ex(arg2);
-	convert_to_double_ex(arg3);
-
-	tmpl_image = PS_begin_template(ps,
-		(float) Z_DVAL_PP(arg2),
-		(float) Z_DVAL_PP(arg3));
-
-	RETURN_LONG(tmpl_image+PSLIB_IMAGE_OFFSET);
-} /* }}} */
-
-/* {{{ proto void ps_end_template(int ps);
- * Finish the template definition. */
-PHP_FUNCTION(ps_end_template) {
-	zval **arg1;
-	PSDoc *ps;
-
-	if (ZEND_NUM_ARGS() != 1 || zend_get_parameters_ex(1, &arg1) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-
-
-	PS_end_template(ps);
-
-	RETURN_TRUE;
-} /* }}} */
-#endif
-
 #endif
 
 /* {{{ proto void ps_setcolor(int ps, string type, string colorspace, double c1, double c2, double c3, double c4);
@@ -3070,8 +2813,7 @@ PHP_FUNCTION(ps_setmatrix) {
 
 	RETURN_TRUE;
 } /* }}} */
-
-#endif /* PSlib >= V4 */
+#endif
 
 #endif /* 0 */
 

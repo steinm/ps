@@ -21,7 +21,7 @@
 #ifndef PHP_PS_H
 #define PHP_PS_H
 
-#if HAVE_PSLIB
+#if HAVE_PS
 
 #include <libps/pslib.h>
 
