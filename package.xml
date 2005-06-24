@@ -24,7 +24,7 @@
     <filelist>
       <file role="doc" name="CREDITS"/>
       <file role="src" name="config.m4"/>
-      <file role="doc" name="php_ps.h"/>
+      <file role="src" name="php_ps.h"/>
       <file role="src" name="ps.c"/>
       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
