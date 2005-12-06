@@ -2032,7 +2032,7 @@ PHP_FUNCTION(ps_setmatrix) {
 } /* }}} */
 #endif
 
-/* {{{ proto void ps_begin_pattern(int psdoc, double width, double height, double xstep, double ystep, int painttype)
+/* {{{ proto int ps_begin_pattern(int psdoc, double width, double height, double xstep, double ystep, int painttype)
    Starts pattern */
 PHP_FUNCTION(ps_begin_pattern) 
 {
@@ -2040,19 +2040,20 @@ PHP_FUNCTION(ps_begin_pattern)
 	double width, height, xstep, ystep;
 	int painttype;
 	PSDoc *ps;
+	int patid;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddl", &zps, &width, &height, &xstep, &ystep, &painttype)) {
-		return;
+		return FALSE;
 	}
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_begin_pattern(ps, (float) width,
+	patid = PS_begin_pattern(ps, (float) width,
 	                     (float) height,
 	                     (float) xstep,
 	                     (float) ystep,
 	                     (int) painttype);
-	RETURN_TRUE;
+	RETURN_LONG(patid);
 }
 /* }}} */
 
@@ -2075,23 +2076,24 @@ PHP_FUNCTION(ps_end_pattern)
 }
 /* }}} */
 
-/* {{{ proto void ps_begin_template(int psdoc, double width, double height)
+/* {{{ proto int ps_begin_template(int psdoc, double width, double height)
    Starts template */
 PHP_FUNCTION(ps_begin_template) 
 {
 	zval *zps;
 	double width, height;
 	PSDoc *ps;
+	int tempid;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &width, &height)) {
-		return;
+		return FALSE;
 	}
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_begin_template(ps, (float) width, (float) height);
+	tempid = PS_begin_template(ps, (float) width, (float) height);
 
-	RETURN_TRUE;
+	RETURN_LONG(tempid);
 }
 /* }}} */
 
