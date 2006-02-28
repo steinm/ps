@@ -463,7 +463,7 @@ PHP_FUNCTION(ps_get_value)
 	PSDOC_FROM_ZVAL(ps, &zps);
 
 	if(zmod) {
-		value = (double) PS_get_value(ps, name, (float) Z_DVAL_P(zmod));
+		value = (double) PS_get_value(ps, name, (float) Z_LVAL_P(zmod));
 	} else {
 		value = (double) PS_get_value(ps, name, 0.0);
 	}
@@ -2043,7 +2043,7 @@ PHP_FUNCTION(ps_begin_pattern)
 	int patid;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddl", &zps, &width, &height, &xstep, &ystep, &painttype)) {
-		return FALSE;
+		return;
 	}
 
 	PSDOC_FROM_ZVAL(ps, &zps);
@@ -2086,7 +2086,7 @@ PHP_FUNCTION(ps_begin_template)
 	int tempid;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &width, &height)) {
-		return FALSE;
+		return;
 	}
 
 	PSDOC_FROM_ZVAL(ps, &zps);
