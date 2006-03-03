@@ -101,6 +101,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_curveto, NULL)
 	PHP_FE(ps_circle, NULL)
 	PHP_FE(ps_arc, NULL)
+	PHP_FE(ps_arcn, NULL)
 	PHP_FE(ps_rect, NULL)
 	PHP_FE(ps_closepath, NULL)
 	PHP_FE(ps_stroke, NULL)
@@ -1573,7 +1574,7 @@ PHP_FUNCTION(ps_set_border_dash)
 	double black, white;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddd", &zps, &black, &white)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &black, &white)) {
 		return;
 	}
 
