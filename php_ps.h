@@ -80,6 +80,7 @@ PHP_FUNCTION(ps_lineto);
 PHP_FUNCTION(ps_curveto);
 PHP_FUNCTION(ps_circle);
 PHP_FUNCTION(ps_arc);
+PHP_FUNCTION(ps_arcn);
 PHP_FUNCTION(ps_rect);
 PHP_FUNCTION(ps_closepath);
 PHP_FUNCTION(ps_stroke);
