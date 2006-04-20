@@ -360,6 +360,15 @@ $str3 = "Text can be put into a box of any size. This one is 80x80 pixels and it
 ps_show_boxed($ps, $str3, 10, 10, 80, 80, "right", NULL);
 end_example_box($ps);
 
+begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Text with CR", $psfont);
+ps_setfont($ps, $psfont, 8.0);
+ps_set_value($ps, "leading", 11);
+ps_set_parameter($ps, "linebreak", "true");
+$str5 = "If the parameter linebreak is turned on,¶\neach line will be ended with a carriage return.¶\nCR are marked with a '¶' in this paragraph.¶\n";
+ps_show_boxed($ps, $str5, 10, 10, 80, 80, "center", NULL);
+ps_set_parameter($ps, "linebreak", "false");
+end_example_box($ps);
+
 ps_end_page($ps);
 
 ps_begin_page($ps, 596, 842);
@@ -540,6 +549,40 @@ ps_show($ps, "ÅÊÜß¹²³Æ½");
 ps_set_value($ps, "textx", 10);
 ps_set_value($ps, "texty", 53);
 ps_show($ps, "¢¡¶§×Ç");
+end_example_box($ps);
+
+begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Var. box length", $psfont);
+ps_setfont($ps, $psfont, 5.0);
+ps_set_value($ps, "leading", 7);
+$str6 = "Text can be put into a box of any size. This one has a height of 0 pixels, which makes it height as needed to contain all text.";
+ps_show_boxed($ps, $str6, 10, 90, 80, 0.0, "left");
+$texty = ps_get_value($ps, "texty", 0.0);
+$boxheight = ps_get_value($ps, "boxheight", 0.0);
+printf("texty = %f\n", $texty);
+printf("boxheight = %f\n", $boxheight);
+ps_save($ps);
+ps_setlinewidth($ps, 0.2);
+ps_moveto($ps, 10, $texty);
+ps_lineto($ps, 90, $texty);
+ps_stroke($ps);
+ps_restore($ps);
+ps_show_boxed($ps, $str6, 10, 90-$boxheight, 80, 0.0, "left", NULL);
+end_example_box($ps);
+
+begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Blind box", $psfont);
+ps_setfont($ps, $psfont, 5.0);
+ps_set_value($ps, "leading", 7);
+ps_show_boxed($ps, $str6, 10, 90, 80, 0.0, "left", "blind");
+$texty = ps_get_value($ps, "texty", 0.0);
+$boxheight = ps_get_value($ps, "boxheight", 0.0);
+printf("texty = %f\n", $texty);
+printf("boxheight = %f\n", $boxheight);
+ps_save($ps);
+ps_setlinewidth($ps, 0.2);
+ps_rect($ps, 10, 90-$boxheight, 80, $boxheight);
+ps_stroke($ps);
+ps_restore($ps);
+ps_show_boxed($ps, $str6, 10, 90-$boxheight, 80, 0.0, "left");
 end_example_box($ps);
 
 $x = 0;
