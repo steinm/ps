@@ -1007,7 +1007,7 @@ PHP_FUNCTION(ps_show_boxed)
 {
 	zval *zps;
 	double x, y, width, height;
-	char *text, *feature, *mode;
+	char *text, *feature = NULL, *mode;
 	int text_len, feature_len, mode_len;
 	int nr;
 	PSDoc *ps;
@@ -1479,6 +1479,7 @@ PHP_FUNCTION(ps_shading_pattern)
 	RETURN_LONG(patternid);
 }
 /* }}} */
+
 /* {{{ proto void ps_add_weblink(int psdoc, double llx, double lly, double urx, double ury, string url)
    Adds link to web resource */
 PHP_FUNCTION(ps_add_weblink)
