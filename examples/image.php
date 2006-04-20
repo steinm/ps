@@ -50,6 +50,9 @@ ps_setfont($ps, $psfont, 12.0);
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Indexed image without alpha channel", $psfont);
 	$psimage = ps_open_image_file($ps, "png", "indexed.png", NULL, 0);
 	ps_place_image($ps, $psimage, 10, 30, 1.0);
+	$buffer = sprintf("%.0f x %.0f pixel", ps_get_value($ps, "imagewidth", $psimage), ps_get_value($ps, "imageheight", $psimage));
+	ps_setfont($ps, $psfont, 10.0);
+	ps_show_xy($ps, $buffer, EXAMPLE_BOX_WIDTH-10-ps_stringwidth($ps, $buffer, $psfont, 10), 10);
 	end_example_box($ps);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "RGB image without alpha channel", $psfont);
@@ -71,7 +74,10 @@ ps_setfont($ps, $psfont, 12.0);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Jpeg gray scale image", $psfont);
 	$psimage = ps_open_image_file($ps, "jpeg", "gnu-head.jpg", NULL, 0);
-	ps_place_image($ps, $psimage, 10, 10, 0.45);
+	ps_place_image($ps, $psimage, 10, 20, 0.45);
+	$buffer = sprintf("%.0f x %.0f pixel", ps_get_value($ps, "imagewidth", $psimage), ps_get_value($ps, "imageheight", $psimage));
+	ps_setfont($ps, $psfont, 10.0);
+	ps_show_xy($ps, $buffer, EXAMPLE_BOX_WIDTH-10-ps_stringwidth($ps, $buffer, $psfont, 10), 10);
 	end_example_box($ps);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "", $psfont);
@@ -118,9 +124,14 @@ ps_setfont($ps, $psfont, 12.0);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Jpeg cmyk image, rotated", $psfont);
 	$psimage = ps_open_image_file($ps, "jpeg", "cne-cmyk.jpg", NULL, 0);
+	ps_save($ps);
 	ps_translate($ps, 72, 10);
 	ps_rotate($ps, 45);
 	ps_place_image($ps, $psimage, 0, 0, 0.45);
+	ps_restore($ps);
+	$buffer = sprintf("%.0f x %.0f pixel", ps_get_value($ps, "imagewidth", $psimage), ps_get_value($ps, "imageheight", $psimage));
+	ps_setfont($ps, $psfont, 10.0);
+	ps_show_xy($ps, $buffer, EXAMPLE_BOX_WIDTH-10-ps_stringwidth($ps, $buffer, $psfont, 10), 10);
 	end_example_box($ps);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "EPS read from memory", $psfont);
