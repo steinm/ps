@@ -101,6 +101,7 @@ PHP_FUNCTION(ps_shading_pattern);
 PHP_FUNCTION(ps_add_bookmark);
 PHP_FUNCTION(ps_set_info);
 PHP_FUNCTION(ps_attach_file);
+PHP_FUNCTION(ps_include_file);
 PHP_FUNCTION(ps_add_note);
 PHP_FUNCTION(ps_add_pdflink);
 PHP_FUNCTION(ps_add_locallink);

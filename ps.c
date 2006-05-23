@@ -119,6 +119,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_add_bookmark, NULL)
 	PHP_FE(ps_set_info, NULL)
 //	PHP_FE(ps_attach_file, NULL)
+	PHP_FE(ps_include_file, NULL)
 	PHP_FE(ps_add_note, NULL)
 	PHP_FE(ps_add_pdflink, NULL)
 	PHP_FE(ps_add_locallink, NULL)
@@ -1854,6 +1855,28 @@ PHP_FUNCTION(ps_attach_file) {
 }
 /* }}} */
 #endif
+
+
+/* {{{ proto void ps_include_file(int psdoc, string file)
+   Reads an external file with raw PostScript code */
+PHP_FUNCTION(ps_include_file) {
+	zval *zps;
+        char *filename;
+	int filename_len;
+	PSDoc *ps;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &filename, &filename_len)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_include_file(ps, filename);
+
+	RETURN_TRUE;
+}
+/* }}} */
+
 
 /* {{{ proto void ps_add_note(int psdoc, double llx, double lly, double urx, double ury, string contents, string title, string icon, int open)
    Sets annotation */
