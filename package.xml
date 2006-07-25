@@ -17,10 +17,13 @@
     <date>2006-04-21</date>
     <license>PHP License</license>
     <state>stable</state>
-    <notes>Made ps_arcn() available. ps_set_border_dash() checks now for 3 parameters instead of 4. Fixed segm fault when the optional parameter of ps_show_boxed() is not passed. Added some more examples.</notes>
+    <notes>Made ps_arcn() available. ps_set_border_dash() checks now for 3 parameters instead of 4. Fixed segm fault when the optional parameter of ps_show_boxed() is not passed. Added some more examples. New function ps_include_file().</notes>
     <deps>
       <dep type="php" rel="ge" version="4.3.10"/>
     </deps>
+    <configureoptions>
+      <configureoption name="with-ps" prompt="path to pslib installation?"/>
+    </configureoptions>
     <filelist>
       <file role="doc" name="CREDITS"/>
       <file role="src" name="config.m4"/>
@@ -331,10 +334,18 @@
     <release>
       <version>1.0</version>
       <date>2003-02-15</date>
+      <license>PHP License</license>
       <state>stable</state>
-      <notes>Initial Release in PECL
-            
-</notes>
+      <notes>Initial Release in PECL</notes>
+      <deps>
+        <dep type="php" rel="ge" version="4.3.0"/>
+      </deps>
+      <filelist>
+        <file role="doc" name="CREDITS"/>
+        <file role="src" name="config.m4"/>
+        <file role="doc" name="php_ps.h"/>
+        <file role="src" name="ps.c"/>
+      </filelist>
     </release>
   </changelog>
 </package>
