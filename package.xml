@@ -4,6 +4,7 @@
   <name>ps</name>
   <summary>An extension to create PostScript files</summary>
   <description>ps is an extension similar to the pdf extension but for creating PostScript files. Its api is modelled after the pdf extension.</description>
+  <license>PHP License</license>
   <maintainers>
     <maintainer>
       <user>steinm</user>
