@@ -40,7 +40,7 @@ if test "$PHP_PS" != "no"; then
   ],[
     AC_MSG_ERROR([wrong pslib lib version or lib not found])
   ],[
-    -L$PS_DIR/lib -lm -ldl
+    -L$PS_DIR/lib $PS_SHARED_LIBADD -lm
   ])
 
   PHP_SUBST(PS_SHARED_LIBADD)
