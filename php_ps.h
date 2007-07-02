@@ -116,12 +116,19 @@ PHP_FUNCTION(ps_begin_pattern);
 PHP_FUNCTION(ps_end_pattern);
 PHP_FUNCTION(ps_begin_template);
 PHP_FUNCTION(ps_end_template);
+PHP_FUNCTION(ps_begin_font);
+PHP_FUNCTION(ps_end_font);
+PHP_FUNCTION(ps_begin_glyph);
+PHP_FUNCTION(ps_end_glyph);
 
 /* Function without an equivalent in pdflib */
 PHP_FUNCTION(ps_hyphenate);
 PHP_FUNCTION(ps_symbol);
 PHP_FUNCTION(ps_symbol_name);
 PHP_FUNCTION(ps_symbol_width);
+PHP_FUNCTION(ps_glyph_show);
+PHP_FUNCTION(ps_add_kerning);
+PHP_FUNCTION(ps_add_ligature);
 
 /* old way of starting a PS document */
 PHP_FUNCTION(ps_open);			/* deprecated */

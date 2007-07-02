@@ -137,6 +137,10 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_shfill, NULL)
 	PHP_FE(ps_shading, NULL)
 	PHP_FE(ps_shading_pattern, NULL)
+	PHP_FE(ps_begin_font, NULL)
+	PHP_FE(ps_end_font, NULL)
+	PHP_FE(ps_begin_glyph, NULL)
+	PHP_FE(ps_end_glyph, NULL)
 
 #ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
@@ -146,6 +150,9 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_symbol, NULL)
 	PHP_FE(ps_symbol_name, NULL)
 	PHP_FE(ps_symbol_width, NULL)
+	PHP_FE(ps_glyph_show, NULL)
+	PHP_FE(ps_add_kerning, NULL)
+	PHP_FE(ps_add_ligature, NULL)
 
 	{NULL, NULL, NULL}
 };
@@ -2141,6 +2148,151 @@ PHP_FUNCTION(ps_end_template)
 }
 /* }}} */
 
+#ifdef HAVE_PSBEGINFONT
+/* {{{ proto int ps_begin_font(int psdoc, string fontname, double a, double b, double c, double d, double e, double f [, array optlist])
+   Starts pattern */
+PHP_FUNCTION(ps_begin_font) 
+{
+	zval *zps;
+	char *optlist = NULL, *fontname;
+	int olen, flen;
+	double a, b, c, d, e, f;
+	int painttype;
+	PSDoc *ps;
+	int fontid;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsdddddd|s", &zps, &fontname, &flen, &a, &b, &c, &d, &e, &f, &optlist, &olen)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	fontid = PS_begin_font(ps,
+											 fontname,
+											 0,
+	                     (double) a,
+	                     (double) b,
+	                     (double) c,
+	                     (double) d,
+	                     (double) e,
+	                     (double) f,
+	                     optlist);
+	RETURN_LONG(fontid);
+}
+/* }}} */
+
+/* {{{ proto void ps_end_font(int psdoc)
+   Ends font */
+PHP_FUNCTION(ps_end_font) 
+{
+	zval *zps;
+	PSDoc *ps;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_end_font(ps);
+
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto int ps_begin_glyph(int psdoc, string glyphname, double wx, double llx, double lly, double urx, double ury)
+   Starts pattern */
+PHP_FUNCTION(ps_begin_glyph) 
+{
+	zval *zps;
+	char *glyphname;
+	int glen;
+	double wx, llx, lly, urx, ury;
+	PSDoc *ps;
+	int fontid;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsddddd", &zps, &glyphname, &glen, &wx, &llx, &lly, &urx, &ury)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_begin_glyph(ps,
+								 glyphname,
+	               (double) wx,
+	               (double) llx,
+	               (double) lly,
+	               (double) urx,
+	               (double) ury);
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto void ps_end_glyph(int psdoc)
+   Ends glyph */
+PHP_FUNCTION(ps_end_glyph) 
+{
+	zval *zps;
+	PSDoc *ps;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_end_glyph(ps);
+
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto void ps_add_kerning(int psdoc, string glyphname1, string glyphname2, int kern [, int font])
+   Adds a new kerning pair to the font */
+PHP_FUNCTION(ps_add_kerning) 
+{
+	zval *zps;
+	PSDoc *ps;
+	char *glyphname1, *glyphname2;
+	int glen1, glen2;
+	int font = 0;
+	int kern = 0;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssl|l", &zps, &glyphname1, &glen1, &glyphname2, &glen2, &kern, &font)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_add_kerning(ps, font, glyphname1, glyphname2, kern);
+
+	RETURN_TRUE;
+}
+/* }}} */
+
+/* {{{ proto void ps_add_ligature(int psdoc, string glyphname1, string glyphname2, string glyphname3 [, int font])
+   Adds a new ligature to the font */
+PHP_FUNCTION(ps_add_ligature) 
+{
+	zval *zps;
+	PSDoc *ps;
+	char *glyphname1, *glyphname2, *glyphname3;
+	int glen1, glen2, glen3;
+	int font = 0;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsss|l", &zps, &glyphname1, &glen1, &glyphname2, &glen2, &glyphname3, &glen3, &font)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_add_ligature(ps, font, glyphname1, glyphname2, glyphname3);
+
+	RETURN_TRUE;
+}
+/* }}} */
+#endif
+
 /* Function without an equivalent in pdflib */
 
 /* {{{ proto void ps_hyphenate(int ps, string word)
@@ -2240,6 +2392,28 @@ PHP_FUNCTION(ps_symbol_name)
 	RETURN_STRING(glyphname, 1);
 }
 /* }}} */
+
+#ifdef HAVE_PSGLYPHSHOW
+/* {{{ proto void ps_glyhp_show(int ps, string name)
+   Output glyph by its name */
+PHP_FUNCTION(ps_glyph_show) {
+	zval *zps;
+	char *text;
+	int text_len;
+	char *buffer;
+	int i, j;
+	PSDoc *ps;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	PS_glyph_show(ps, text);
+
+} /* }}} */
+#endif
 
 #endif /* 0 */
 
