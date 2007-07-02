@@ -68,8 +68,8 @@ ps_setfont($ps, $psfont, 12.0);
 	$x = 0;
 	$y = 405;
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "RGB image with alpha channel", $psfont);
-//	psimage = ps_open_image_file($ps, "png", "rgb-alpha.png", NULL, 0);
-//	ps_place_image($ps, psimage, 10, 30, 1.0);
+	$psimage = ps_open_image_file($ps, "png", "rgb-alpha.png", NULL, 0);
+	ps_place_image($ps, $psimage, 10, 30, 1.0);
 	end_example_box($ps);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Jpeg gray scale image", $psfont);
@@ -141,6 +141,43 @@ ps_setfont($ps, $psfont, 12.0);
 	$buffer = sprintf("%.0f x %.0f pixel", ps_get_value($ps, "imagewidth", $psimage), ps_get_value($ps, "imageheight", $psimage));
 	ps_setfont($ps, $psfont, 10.0);
 	ps_show_xy($ps, $buffer, EXAMPLE_BOX_WIDTH-10-ps_stringwidth($ps, $buffer, $psfont, 10), 10);
+	end_example_box($ps);
+
+ps_end_page($ps);
+
+ps_begin_page($ps, 596, 842);
+$psfont = ps_findfont($ps, "Helvetica", "", 0);
+ps_setfont($ps, $psfont, 12.0);
+
+	$x = 0;
+	$y = 625;
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Gif image", $psfont);
+	$psimage = ps_open_image_file($ps, "gif", "debian.gif", NULL, 0);
+	ps_place_image($ps, $psimage, 25, 10, 2.0);
+	end_example_box($ps);
+
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Gif image with transparency", $psfont);
+	$psimage = ps_open_image_file($ps, "gif", "debian-transparent.gif", NULL, 0);
+	ps_place_image($ps, $psimage, 25, 10, 2.0);
+	end_example_box($ps);
+
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Gif image interlaced", $psfont);
+	$psimage = ps_open_image_file($ps, "gif", "interlaced.gif", NULL, 0);
+	ps_place_image($ps, $psimage, 10, 10, 0.65);
+	end_example_box($ps);
+
+	$x = 0;
+	$y = 405;
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Tiff image", $psfont);
+	$psimage = ps_open_image_file($ps, "tiff", "debian.tiff", NULL, 0);
+	ps_place_image($ps, $psimage, 25, 10, 2.0);
+	end_example_box($ps);
+
+	$x = 0;
+	$y = 185;
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Bmp image", $psfont);
+	$psimage = ps_open_image_file($ps, "bmp", "debian.bmp", NULL, 0);
+	ps_place_image($ps, $psimage, 25, 10, 2.0);
 	end_example_box($ps);
 
 ps_end_page($ps);
