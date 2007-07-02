@@ -35,6 +35,8 @@ if test "$PHP_PS" != "no"; then
 
   PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
   [
+  	AC_CHECK_LIB($LIBNAME, PS_begin_font, AC_DEFINE(HAVE_PSBEGINFONT,1,[pslib 0.4.0 or later]))
+  	AC_CHECK_LIB($LIBNAME, PS_glyph_show, AC_DEFINE(HAVE_PSGLYPHSHOW,1,[pslib 0.4.0 or later]))
     PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $PS_DIR/lib, PS_SHARED_LIBADD)
     AC_DEFINE(HAVE_PS,1,[ ])
   ],[
