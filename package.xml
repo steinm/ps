@@ -44,13 +44,13 @@
       <file role="doc" baseinstalldir="/" name="examples/rgb.png"/>
       <file role="doc" baseinstalldir="/" name="examples/gnu-head.jpg"/>
       <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-      <file role="doc" baseinstalldir="/" name="rgb-alpha.png"/>
-      <file role="doc" baseinstalldir="/" name="debian.tiff"/>
-      <file role="doc" baseinstalldir="/" name="debian.bmp"/>
-      <file role="doc" baseinstalldir="/" name="interlaced.gif"/>
-      <file role="doc" baseinstalldir="/" name="debian-transparent.gif"/>
-      <file role="doc" baseinstalldir="/" name="debian.gif"/>
-      <file role="doc" baseinstalldir="/" name="cne-cmyk.jpg"/>
+      <file role="doc" baseinstalldir="/" name="examples/rgb-alpha.png"/>
+      <file role="doc" baseinstalldir="/" name="examples/debian.tiff"/>
+      <file role="doc" baseinstalldir="/" name="examples/debian.bmp"/>
+      <file role="doc" baseinstalldir="/" name="examples/interlaced.gif"/>
+      <file role="doc" baseinstalldir="/" name="examples/debian-transparent.gif"/>
+      <file role="doc" baseinstalldir="/" name="examples/debian.gif"/>
+      <file role="doc" baseinstalldir="/" name="examples/cne-cmyk.jpg"/>
       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
       <file role="doc" baseinstalldir="/" name="examples/Helvetica.pro"/>
       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
