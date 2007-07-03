@@ -116,19 +116,25 @@ PHP_FUNCTION(ps_begin_pattern);
 PHP_FUNCTION(ps_end_pattern);
 PHP_FUNCTION(ps_begin_template);
 PHP_FUNCTION(ps_end_template);
+#ifdef HAVE_PSBEGINFONT
 PHP_FUNCTION(ps_begin_font);
 PHP_FUNCTION(ps_end_font);
 PHP_FUNCTION(ps_begin_glyph);
 PHP_FUNCTION(ps_end_glyph);
+#endif
 
 /* Function without an equivalent in pdflib */
 PHP_FUNCTION(ps_hyphenate);
 PHP_FUNCTION(ps_symbol);
 PHP_FUNCTION(ps_symbol_name);
 PHP_FUNCTION(ps_symbol_width);
+#ifdef HAVE_PSGLYPHSHOW
 PHP_FUNCTION(ps_glyph_show);
+#endif
+#ifdef HAVE_PSBEGINFONT
 PHP_FUNCTION(ps_add_kerning);
 PHP_FUNCTION(ps_add_ligature);
+#endif
 
 /* old way of starting a PS document */
 PHP_FUNCTION(ps_open);			/* deprecated */
@@ -137,10 +143,6 @@ PHP_FUNCTION(ps_open);			/* deprecated */
 #if HAVE_LIBGD13
 PHP_FUNCTION(ps_open_memory_image);
 #endif
-
-ZEND_BEGIN_MODULE_GLOBALS(ps)
-	long dummy;
-ZEND_END_MODULE_GLOBALS(ps)
 
 #ifdef ZTS
 # define PsSG(v) TSRMG(ps_globals_id, zend_ps_globals *, v)
