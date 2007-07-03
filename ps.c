@@ -137,10 +137,12 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_shfill, NULL)
 	PHP_FE(ps_shading, NULL)
 	PHP_FE(ps_shading_pattern, NULL)
+#ifdef HAVE_PSBEGINFONT
 	PHP_FE(ps_begin_font, NULL)
 	PHP_FE(ps_end_font, NULL)
 	PHP_FE(ps_begin_glyph, NULL)
 	PHP_FE(ps_end_glyph, NULL)
+#endif
 
 #ifdef _HAVE_LIBGD13
 	PHP_FE(ps_open_memory_image, NULL)
@@ -150,9 +152,13 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_symbol, NULL)
 	PHP_FE(ps_symbol_name, NULL)
 	PHP_FE(ps_symbol_width, NULL)
+#ifdef HAVE_PSGLYPHSHOW
 	PHP_FE(ps_glyph_show, NULL)
+#endif
+#ifdef HAVE_PSBEGINFONT
 	PHP_FE(ps_add_kerning, NULL)
 	PHP_FE(ps_add_ligature, NULL)
+#endif
 
 	{NULL, NULL, NULL}
 };
