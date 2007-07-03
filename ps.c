@@ -1440,7 +1440,7 @@ PHP_FUNCTION(ps_shading)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	shadingid = PS_shading(ps, type, x0, y0, x1, y1, c1, c2, c3, c4, optlist);
+	shadingid = PS_shading(ps, type, (float) x0, (float) y0, (float) x1, (float) y1, (float) c1, (float) c2, (float) c3, (float) c4, optlist);
 
 	RETURN_LONG(shadingid);
 }
@@ -1527,7 +1527,7 @@ PHP_FUNCTION(ps_add_pdflink)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_add_pdflink(ps, llx, (float) lly, (float) urx, (float) ury, filename, page, dest);
+	PS_add_pdflink(ps, (float) llx, (float) lly, (float) urx, (float) ury, filename, page, dest);
 
 	RETURN_TRUE;
 }
@@ -1977,10 +1977,10 @@ PHP_FUNCTION(ps_makespotcolor) {
 	char *spotname;
 	int spotname_len;
 	int spot;
-	double reserved = 0.0;
+	int reserved = 0;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|d", &zps, &spotname, &spotname_len, &reserved)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|l", &zps, &spotname, &spotname_len, &reserved)) {
 		return;
 	}
 
@@ -2302,7 +2302,7 @@ PHP_FUNCTION(ps_hyphenate) {
 	char *text;
 	int text_len;
 	char *buffer;
-	int i, j;
+	unsigned int i, j;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
