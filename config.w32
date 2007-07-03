@@ -1,0 +1,17 @@
+// $Id$
+// vim:ft=javascript
+
+ARG_WITH("ps", "Include Postscript support", "no");
+
+if (PHP_PS != "no") {
+	if (CHECK_LIB("libps_a.lib", "ps", PHP_PS) &&
+			CHECK_HEADER_ADD_INCLUDE("pslib.h", "CFLAGS_PS", PHP_PS + ";" + PHP_PHP_BUILD + "\\include\\libps")) {
+
+		EXTENSION("ps", "ps.c");
+
+		AC_DEFINE('HAVE_PS', 1, 'Have Postscript library');
+//		ADD_FLAG('CFLAGS_PS', "/D HAVE_PSBEGINFONT=1 /D HAVE_PSGLYPHSHOW=1 ");s
+	} else {
+		WARNING("ps not enabled; libraries and headers not found");
+	}
+}
