@@ -130,6 +130,8 @@ PHP_FUNCTION(ps_symbol_name);
 PHP_FUNCTION(ps_symbol_width);
 #ifdef HAVE_PSGLYPHSHOW
 PHP_FUNCTION(ps_glyph_show);
+PHP_FUNCTION(ps_glyph_width);
+PHP_FUNCTION(ps_glyph_list);
 #endif
 #ifdef HAVE_PSBEGINFONT
 PHP_FUNCTION(ps_add_kerning);

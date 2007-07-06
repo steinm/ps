@@ -154,6 +154,8 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_symbol_width, NULL)
 #ifdef HAVE_PSGLYPHSHOW
 	PHP_FE(ps_glyph_show, NULL)
+	PHP_FE(ps_glyph_width, NULL)
+	PHP_FE(ps_glyph_list, NULL)
 #endif
 #ifdef HAVE_PSBEGINFONT
 	PHP_FE(ps_add_kerning, NULL)
@@ -2163,7 +2165,6 @@ PHP_FUNCTION(ps_begin_font)
 	char *optlist = NULL, *fontname;
 	int olen, flen;
 	double a, b, c, d, e, f;
-	int painttype;
 	PSDoc *ps;
 	int fontid;
 
@@ -2215,7 +2216,6 @@ PHP_FUNCTION(ps_begin_glyph)
 	int glen;
 	double wx, llx, lly, urx, ury;
 	PSDoc *ps;
-	int fontid;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsddddd", &zps, &glyphname, &glen, &wx, &llx, &lly, &urx, &ury)) {
 		return;
@@ -2373,7 +2373,7 @@ PHP_FUNCTION(ps_symbol_width)
 
 	width = (double) PS_symbol_width(ps, (unsigned char) ord, font, (float) size);
 
-	RETURN_DOUBLE((double) width);
+	RETURN_DOUBLE(width);
 }
 /* }}} */
 
@@ -2400,14 +2400,12 @@ PHP_FUNCTION(ps_symbol_name)
 /* }}} */
 
 #ifdef HAVE_PSGLYPHSHOW
-/* {{{ proto void ps_glyhp_show(int ps, string name)
+/* {{{ proto void ps_glyhp_show(int ps, string name [, int fontid])
    Output glyph by its name */
 PHP_FUNCTION(ps_glyph_show) {
 	zval *zps;
 	char *text;
 	int text_len;
-	char *buffer;
-	int i, j;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
@@ -2418,6 +2416,54 @@ PHP_FUNCTION(ps_glyph_show) {
 
 	PS_glyph_show(ps, text);
 
+} /* }}} */
+
+/* {{{ proto void ps_glyhp_width(int ps, string name [, int font])
+   Return width of glyph by its name */
+PHP_FUNCTION(ps_glyph_width) {
+	zval *zps;
+	char *text;
+	int text_len;
+	double width;
+	PSDoc *ps;
+	int font;
+	double size;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, &font, &size)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	width = PS_glyph_width(ps, text, font, size);
+
+	RETURN_DOUBLE(width);
+
+} /* }}} */
+
+/* {{{ proto array ps_glyhp_list(int ps, [, int font])
+   Return array of glyph names */
+PHP_FUNCTION(ps_glyph_list) {
+	zval *zps;
+	PSDoc *ps;
+	int font;
+	char **glyphlist;
+	int i, listlen;
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r|l", &zps, &font)) {
+		return;
+	}
+
+	PSDOC_FROM_ZVAL(ps, &zps);
+
+	if(PS_glyph_list(ps, font, &glyphlist, &listlen)) {
+		array_init(return_value);
+		for(i=0; i<listlen; i++) {
+			add_index_string(return_value, i, glyphlist[i], 0);
+		}
+	} else {
+		RETURN_FALSE;
+	}
 } /* }}} */
 #endif
 
