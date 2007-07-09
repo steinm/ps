@@ -1871,7 +1871,6 @@ PHP_FUNCTION(ps_attach_file) {
 /* }}} */
 #endif
 
-
 /* {{{ proto void ps_include_file(int psdoc, string file)
    Reads an external file with raw PostScript code */
 PHP_FUNCTION(ps_include_file) {
@@ -1891,7 +1890,6 @@ PHP_FUNCTION(ps_include_file) {
 	RETURN_TRUE;
 }
 /* }}} */
-
 
 /* {{{ proto void ps_add_note(int psdoc, double llx, double lly, double urx, double ury, string contents, string title, string icon, int open)
    Sets annotation */
@@ -2156,6 +2154,8 @@ PHP_FUNCTION(ps_end_template)
 }
 /* }}} */
 
+/* Function without an equivalent in pdflib */
+
 #ifdef HAVE_PSBEGINFONT
 /* {{{ proto int ps_begin_font(int psdoc, string fontname, double a, double b, double c, double d, double e, double f [, array optlist])
    Starts pattern */
@@ -2298,8 +2298,6 @@ PHP_FUNCTION(ps_add_ligature)
 }
 /* }}} */
 #endif
-
-/* Function without an equivalent in pdflib */
 
 /* {{{ proto void ps_hyphenate(int ps, string word)
    Hyphenate a given word */
