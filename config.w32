@@ -5,7 +5,7 @@ ARG_WITH("ps", "Include Postscript support", "no");
 
 if (PHP_PS != "no") {
 	if (CHECK_LIB("libps_a.lib", "ps", PHP_PS) &&
-			CHECK_HEADER_ADD_INCLUDE("pslib.h", "CFLAGS_PS", PHP_PS + ";" + PHP_PHP_BUILD + "\\include\\libps")) {
+			CHECK_HEADER_ADD_INCLUDE("libps/pslib.h", "CFLAGS_PS", PHP_PS )) {
 
 		EXTENSION("ps", "ps.c");
 
