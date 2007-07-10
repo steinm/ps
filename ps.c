@@ -278,6 +278,11 @@ PHP_MINFO_FUNCTION(ps)
 	php_info_print_table_row(2, "PS Support", "enabled" );
 	php_info_print_table_row(2, "PSlib Version", tmp );
 	php_info_print_table_row(2, "Revision", "$Revision$" );
+#ifdef HAVE_LIBGD
+	php_info_print_table_row(2, "GD Support", "enabled" );
+#else
+	php_info_print_table_row(2, "GD Support", "disabled" );
+#endif
 	php_info_print_table_end();
 
 }
