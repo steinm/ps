@@ -226,7 +226,7 @@ ps_begin_page($ps, 596, 842);
 	end_example_box($ps);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Jpeg gray scale image", $psfont);
-	$gdim = imagecreatefromjpeg("gnu-head.png");
+	$gdim = imagecreatefromjpeg("gnu-head.jpg");
 	if($gdim) {
 		$psimage = ps_open_memory_image($ps, $gdim);
 		ps_place_image($ps, $psimage, 10, 20, 0.45);
@@ -237,7 +237,7 @@ ps_begin_page($ps, 596, 842);
 	end_example_box($ps);
 
 	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "", $psfont);
-	$gdim = imagecreatefromjpeg("exiftest.png");
+	$gdim = imagecreatefromjpeg("exiftest.jpg");
 	if($gdim) {
 		$psimage = ps_open_memory_image($ps, $gdim);
 		ps_place_image($ps, $psimage, 30, 10, 0.30);
