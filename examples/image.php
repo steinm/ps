@@ -42,8 +42,8 @@ ps_set_info($ps, "Author", "Uwe Steinmann");
 ps_set_info($ps, "Title", "Image examples");
 
 ps_begin_page($ps, 596, 842);
-$psfont = ps_findfont($ps, "Helvetica", "", 0);
-ps_setfont($ps, $psfont, 12.0);
+	$psfont = ps_findfont($ps, "Helvetica", "", 0);
+	ps_setfont($ps, $psfont, 12.0);
 
 	$x = 0;
 	$y = 625;
@@ -182,6 +182,69 @@ ps_setfont($ps, $psfont, 12.0);
 
 ps_end_page($ps);
 
+ps_begin_page($ps, 596, 842);
+	$psfont = ps_findfont($ps, "Helvetica", "", 0);
+	ps_setfont($ps, $psfont, 12.0);
+
+	$x = 0;
+	$y = 625;
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "GD-Image: Indexed image without alpha channel", $psfont);
+	$gdim = imagecreatefrompng("indexed.png");
+	if($gdim) {
+		$psimage = ps_open_memory_image($ps, $gdim);
+		ps_place_image($ps, $psimage, 10, 30, 1.0);
+		$buffer = sprintf("%.0f x %.0f pixel", ps_get_value($ps, "imagewidth", $psimage), ps_get_value($ps, "imageheight", $psimage));
+		ps_setfont($ps, $psfont, 10.0);
+		ps_show_xy($ps, $buffer, EXAMPLE_BOX_WIDTH-10-ps_stringwidth($ps, $buffer, $psfont, 10), 10);
+	}
+	end_example_box($ps);
+
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "RGB image without alpha channel", $psfont);
+	$gdim = imagecreatefrompng("rgb.png");
+	if($gdim) {
+		$psimage = ps_open_memory_image($ps, $gdim);
+		ps_place_image($ps, $psimage, 10, 30, 1.0);
+	}
+	end_example_box($ps);
+
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Indexed image with alpha channel", $psfont);
+	$gdim = imagecreatefrompng("indexed-alpha.png");
+	if($gdim) {
+		$psimage = ps_open_memory_image($ps, $gdim);
+		ps_place_image($ps, $psimage, 10, 30, 1.0);
+	}
+	end_example_box($ps);
+
+	$x = 0;
+	$y = 405;
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "RGB image with alpha channel", $psfont);
+	$gdim = imagecreatefrompng("rgb-alpha.png");
+	if($gdim) {
+		$psimage = ps_open_memory_image($ps, $gdim);
+		ps_place_image($ps, $psimage, 10, 30, 1.0);
+	}
+	end_example_box($ps);
+
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "Jpeg gray scale image", $psfont);
+	$gdim = imagecreatefromjpeg("gnu-head.png");
+	if($gdim) {
+		$psimage = ps_open_memory_image($ps, $gdim);
+		ps_place_image($ps, $psimage, 10, 20, 0.45);
+		$buffer = sprintf("%.0f x %.0f pixel", ps_get_value($ps, "imagewidth", $psimage), ps_get_value($ps, "imageheight", $psimage));
+		ps_setfont($ps, $psfont, 10.0);
+		ps_show_xy($ps, $buffer, EXAMPLE_BOX_WIDTH-10-ps_stringwidth($ps, $buffer, $psfont, 10), 10);
+	}
+	end_example_box($ps);
+
+	begin_example_box($ps, LEFT_BORDER+(EXAMPLE_BOX_WIDTH+30)*($x++), $y, "", $psfont);
+	$gdim = imagecreatefromjpeg("exiftest.png");
+	if($gdim) {
+		$psimage = ps_open_memory_image($ps, $gdim);
+		ps_place_image($ps, $psimage, 30, 10, 0.30);
+	}
+	end_example_box($ps);
+
+ps_end_page($ps);
 ps_close($ps);
 ps_delete($ps);
 ?>
