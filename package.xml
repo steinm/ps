@@ -18,7 +18,7 @@
     <date>2007-07-06</date>
     <license>PHP License</license>
     <state>stable</state>
-    <notes>Added configuration file for win32. New example to list all glyphs in a font. New examples for creating Type3 fonts and postscript files in memory. Tests for more image types in example/image.php. Added new functions to create Type3 fonts and to modify kerning and ligatures of an existing font. Added new function ps_glyph_name() and ps_glyph_show(). New function ps_include_file().</notes>
+    <notes>Reenable reading gd images. Added configuration file for win32. New example to list all glyphs in a font. New examples for creating Type3 fonts and postscript files in memory. Tests for more image types in example/image.php. Added new functions to create Type3 fonts and to modify kerning and ligatures of an existing font. Added new function ps_glyph_name() and ps_glyph_show(). New function ps_include_file().</notes>
     <deps>
       <dep type="php" rel="ge" version="4.3.10"/>
     </deps>
@@ -31,6 +31,7 @@
       <file role="src" name="config.w32"/>
       <file role="src" name="php_ps.h"/>
       <file role="src" name="ps.c"/>
+      <file role="src" name="pslib.dsp"/>
       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
