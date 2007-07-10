@@ -142,7 +142,7 @@ PHP_FUNCTION(ps_add_ligature);
 PHP_FUNCTION(ps_open);			/* deprecated */
 
 /* some more stuff for compatibility */
-#if HAVE_LIBGD13
+#if HAVE_LIBGD
 PHP_FUNCTION(ps_open_memory_image);
 #endif
 

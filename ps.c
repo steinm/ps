@@ -29,16 +29,13 @@
 #include "ext/standard/info.h"
 #include "ext/standard/file.h"
 
-#ifdef _HAVE_LIBGD13
-/*
+#ifdef HAVE_LIBGD
 #include "ext/gd/php_gd.h"
 #if HAVE_GD_BUNDLED
 #include "ext/gd/libgd/gd.h"
 #else
 #include "gd.h"
 #endif
-*/
-#include "gd.h"
 static int le_gd;
 #endif
 
@@ -144,7 +141,7 @@ function_entry ps_functions[] = {
 	PHP_FE(ps_end_glyph, NULL)
 #endif
 
-#ifdef _HAVE_LIBGD13
+#ifdef HAVE_LIBGD
 	PHP_FE(ps_open_memory_image, NULL)
 #endif
 	/* Function without an equivalent in pdflib */
@@ -1324,7 +1321,7 @@ PHP_FUNCTION(ps_open_image_file)
 }
 /* }}} */
 
-#ifdef _HAVE_LIBGD13
+#ifdef HAVE_LIBGD
 /* {{{ proto int ps_open_memory_image(int ps, int image)
    Takes an GD image and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_memory_image)
@@ -1377,7 +1374,7 @@ PHP_FUNCTION(ps_open_memory_image)
 		}
 	}
 
-	imageid = PS_open_image(ps, "raw", "memory", buffer, im->sx*im->sy*3, im->sx, im->sy, 3, 8, NULL);
+	imageid = PS_open_image(ps, "memory", "memory", (const char *) buffer, im->sx*im->sy*3, im->sx, im->sy, 3, 8, NULL);
 	efree(buffer);
 
 	if(imageid == 0) {
@@ -1390,7 +1387,7 @@ PHP_FUNCTION(ps_open_memory_image)
 	RETURN_LONG(imageid);
 }
 /* }}} */
-#endif /* HAVE_LIBGD13 */
+#endif /* HAVE_LIBGD */
 
 /* {{{ proto void ps_close_image(int ps, int psimage)
    Closes the PS image */
