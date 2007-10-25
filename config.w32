@@ -4,13 +4,13 @@
 ARG_WITH("ps", "Include Postscript support", "no");
 
 if (PHP_PS != "no") {
-	if (CHECK_LIB("libps.lib", "ps", PHP_PS) &&
+	if (CHECK_LIB("pslib.lib", "ps", PHP_PS) &&
 			CHECK_HEADER_ADD_INCLUDE("libps/pslib.h", "CFLAGS_PS", PHP_PS )) {
 
 		EXTENSION("ps", "ps.c");
 
 		AC_DEFINE('HAVE_PS', 1, 'Have Postscript library');
-//		ADD_FLAG('CFLAGS_PS', "/D HAVE_PSBEGINFONT=1 /D HAVE_PSGLYPHSHOW=1 ");s
+		ADD_FLAG('CFLAGS_PS', "/D HAVE_PS /D HAVE_PSBEGINFONT=1 /D HAVE_PSGLYPHSHOW=1 ");
 	} else {
 		WARNING("ps not enabled; libraries and headers not found");
 	}
