@@ -1,412 +1,271 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
-<!DOCTYPE package SYSTEM "http://pear.php.net/dtd/package-1.0">
-<package version="1.0">
-  <name>ps</name>
-  <summary>An extension to create PostScript files</summary>
-  <description>ps is an extension similar to the pdf extension but for creating PostScript files. Its api is modelled after the pdf extension.</description>
-  <license>PHP License</license>
-  <maintainers>
-    <maintainer>
-      <user>steinm</user>
-      <name>Uwe Steinmann</name>
-      <email>steinm@php.net</email>
-      <role>lead</role>
-    </maintainer>
-  </maintainers>
+<?xml version="1.0" encoding="UTF-8"?>
+<package packagerversion="1.6.1" version="2.0" xmlns="http://pear.php.net/dtd/package-2.0" xmlns:tasks="http://pear.php.net/dtd/tasks-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pear.php.net/dtd/tasks-1.0
+http://pear.php.net/dtd/tasks-1.0.xsd
+http://pear.php.net/dtd/package-2.0
+http://pear.php.net/dtd/package-2.0.xsd">
+ <name>ps</name>
+ <channel>pecl.php.net</channel>
+ <summary>An extension to create PostScript files</summary>
+ <description>ps is an extension similar to the pdf extension but for creating PostScript files. Its api is modelled after the pdf extension.
+ </description>
+ <lead>
+  <name>Uwe Steinmann</name>
+  <user>steinm</user>
+  <email>steinm@php.net</email>
+  <active>yes</active>
+ </lead>
+ <date>2007-11-26</date>
+ <time>20:21:14</time>
+ <version>
+  <release>1.3.6</release>
+  <api>1.3.6</api>
+ </version>
+ <stability>
+  <release>stable</release>
+  <api>stable</api>
+ </stability>
+ <license uri="http://www.php.net/license">PHP License</license>
+ <notes>fixed various build problems on win32
+ </notes>
+ <contents>
+  <dir name="/">
+   <dir name="examples">
+    <file baseinstalldir="/" name="cne-cmyk.jpg" role="doc" />
+    <file baseinstalldir="/" name="debian-transparent.gif" role="doc" />
+    <file baseinstalldir="/" name="debian.bmp" role="doc" />
+    <file baseinstalldir="/" name="debian.gif" role="doc" />
+    <file baseinstalldir="/" name="debian.png" role="doc" />
+    <file baseinstalldir="/" name="debian.tiff" role="doc" />
+    <file baseinstalldir="/" name="dice.afm" role="doc" />
+    <file baseinstalldir="/" name="dice.pfb" role="doc" />
+    <file baseinstalldir="/" name="draw.php" role="doc" />
+    <file baseinstalldir="/" name="Dustismo.afm" role="doc" />
+    <file baseinstalldir="/" name="Dustismo.pfb" role="doc" />
+    <file baseinstalldir="/" name="exiftest.jpg" role="doc" />
+    <file baseinstalldir="/" name="fontcreate.php" role="doc" />
+    <file baseinstalldir="/" name="fontsample.php" role="doc" />
+    <file baseinstalldir="/" name="glyphlist.php" role="doc" />
+    <file baseinstalldir="/" name="gnu-head.jpg" role="doc" />
+    <file baseinstalldir="/" name="Helvetica.afm" role="doc" />
+    <file baseinstalldir="/" name="Helvetica.pro" role="doc" />
+    <file baseinstalldir="/" name="hyperlinks.php" role="doc" />
+    <file baseinstalldir="/" name="hyph_en.dic" role="doc" />
+    <file baseinstalldir="/" name="image.php" role="doc" />
+    <file baseinstalldir="/" name="indexed-alpha.png" role="doc" />
+    <file baseinstalldir="/" name="indexed.png" role="doc" />
+    <file baseinstalldir="/" name="interlaced.gif" role="doc" />
+    <file baseinstalldir="/" name="memory.php" role="doc" />
+    <file baseinstalldir="/" name="overprint.php" role="doc" />
+    <file baseinstalldir="/" name="picture.eps" role="doc" />
+    <file baseinstalldir="/" name="psclock.php" role="doc" />
+    <file baseinstalldir="/" name="rgb-alpha.png" role="doc" />
+    <file baseinstalldir="/" name="rgb.png" role="doc" />
+    <file baseinstalldir="/" name="shading.php" role="doc" />
+    <file baseinstalldir="/" name="spotcolor.php" role="doc" />
+    <file baseinstalldir="/" name="text.php" role="doc" />
+   </dir> <!-- /examples -->
+   <dir name="tests">
+    <file name="001.phpt" role="test" />
+    <file name="002.phpt" role="test" />
+    <file name="003.phpt" role="test" />
+    <file name="004.phpt" role="test" />
+    <file name="005.phpt" role="test" />
+    <file name="hyph_de.dic" role="test" />
+   </dir> <!-- /tests -->
+   <file name="config.m4" role="src" />
+   <file name="config.w32" role="src" />
+   <file name="CREDITS" role="doc" />
+   <file name="php_ps.h" role="src" />
+   <file name="ps.c" role="src" />
+   <file name="pslib.dsp" role="src" />
+  </dir> <!-- / -->
+ </contents>
+ <dependencies>
+  <required>
+   <php>
+    <min>4.3.10</min>
+   </php>
+   <pearinstaller>
+    <min>1.4.0b1</min>
+   </pearinstaller>
+  </required>
+ </dependencies>
+ <providesextension>ps</providesextension>
+ <extsrcrelease>
+  <configureoption name="with-ps" prompt="path to pslib installation?" />
+ </extsrcrelease>
+ <changelog>
   <release>
-    <version>1.3.5</version>
-    <date>2007-07-12</date>
-    <license>PHP License</license>
-    <state>stable</state>
-    <notes>Reenablee reading of gd images. Added configuration file for win32. New example to list all glyphs in a font. New examples for creating Type3 fonts and postscript files in memory. Tests for more image types in example/image.php. Added new functions to create Type3 fonts and to modify kerning and ligatures of an existing font. Added new function ps_glyph_name() and ps_glyph_show(). New function ps_include_file().</notes>
-    <deps>
-      <dep type="php" rel="ge" version="4.3.10"/>
-    </deps>
-    <configureoptions>
-      <configureoption name="with-ps" prompt="path to pslib installation?"/>
-    </configureoptions>
-    <filelist>
-      <file role="doc" name="CREDITS"/>
-      <file role="src" name="config.m4"/>
-      <file role="src" name="config.w32"/>
-      <file role="src" name="php_ps.h"/>
-      <file role="src" name="ps.c"/>
-      <file role="src" name="pslib.dsp"/>
-      <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-      <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-      <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
-      <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
-      <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
-      <file role="doc" baseinstalldir="/" name="examples/exiftest.jpg"/>
-      <file role="doc" baseinstalldir="/" name="examples/indexed-alpha.png"/>
-      <file role="doc" baseinstalldir="/" name="examples/indexed.png"/>
-      <file role="doc" baseinstalldir="/" name="examples/rgb.png"/>
-      <file role="doc" baseinstalldir="/" name="examples/gnu-head.jpg"/>
-      <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-      <file role="doc" baseinstalldir="/" name="examples/rgb-alpha.png"/>
-      <file role="doc" baseinstalldir="/" name="examples/debian.tiff"/>
-      <file role="doc" baseinstalldir="/" name="examples/debian.bmp"/>
-      <file role="doc" baseinstalldir="/" name="examples/interlaced.gif"/>
-      <file role="doc" baseinstalldir="/" name="examples/debian-transparent.gif"/>
-      <file role="doc" baseinstalldir="/" name="examples/debian.gif"/>
-      <file role="doc" baseinstalldir="/" name="examples/cne-cmyk.jpg"/>
-      <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
-      <file role="doc" baseinstalldir="/" name="examples/Helvetica.pro"/>
-      <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
-      <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/glyphlist.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/shading.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/image.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/overprint.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/hyperlinks.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/fontcreate.php"/>
-      <file role="doc" baseinstalldir="/" name="examples/memory.php"/>
-      <file role="test" name="tests/001.phpt"/>
-      <file role="test" name="tests/002.phpt"/>
-      <file role="test" name="tests/003.phpt"/>
-      <file role="test" name="tests/004.phpt"/>
-      <file role="test" name="tests/005.phpt"/>
-      <file role="test" name="tests/hyph_de.dic"/>
-    </filelist>
+   <version>
+    <release>1.3.5</release>
+    <api>1.3.5</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2007-09-27</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Reenablee reading of gd images. Added configuration file for win32. New example to list all glyphs in a font. New examples for creating Type3 fonts and postscript files in memory. Tests for more image types in example/image.php. Added new functions to create Type3 fonts and to modify kerning and ligatures of an existing font. Added new function ps_glyph_name() and ps_glyph_show(). New function ps_include_file().
+   </notes>
   </release>
-  <changelog>
-   <release>
-     <version>1.3.4</version>
-     <date>2006-04-21</date>
-     <license>PHP License</license>
-     <state>stable</state>
-     <notes>Made ps_arcn() available. ps_set_border_dash() checks now for 3 parameters instead of 4. Fixed segm fault if the optional parameter of ps_show_boxed() is not passed. Added some more examples.</notes>
-     <deps>
-       <dep type="php" rel="ge" version="4.3.10"/>
-     </deps>
-     <configureoptions>
-       <configureoption name="with-ps" prompt="path to pslib installation?"/>
-     </configureoptions>
-     <filelist>
-       <file role="doc" name="CREDITS"/>
-       <file role="src" name="config.m4"/>
-       <file role="src" name="php_ps.h"/>
-       <file role="src" name="ps.c"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/exiftest.jpg"/>
-       <file role="doc" baseinstalldir="/" name="examples/indexed-alpha.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/indexed.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/rgb.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/gnu-head.jpg"/>
-       <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/Helvetica.pro"/>
-       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
-       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/shading.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/image.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/overprint.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/hyperlinks.php"/>
-       <file role="test" name="tests/001.phpt"/>
-       <file role="test" name="tests/002.phpt"/>
-       <file role="test" name="tests/003.phpt"/>
-       <file role="test" name="tests/004.phpt"/>
-       <file role="test" name="tests/005.phpt"/>
-       <file role="test" name="tests/hyph_de.dic"/>
-     </filelist>
-   </release>
-   <release>
-     <version>1.3.3</version>
-     <date>2005-12-06</date>
-     <license>PHP License</license>
-     <state>stable</state>
-     <notes>fixed stupid compile warning.</notes>
-     <deps>
-       <dep type="php" rel="ge" version="4.3.10"/>
-     </deps>
-     <filelist>
-       <file role="doc" name="CREDITS"/>
-       <file role="src" name="config.m4"/>
-       <file role="src" name="php_ps.h"/>
-       <file role="src" name="ps.c"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
-       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/shading.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/image.php"/>
-       <file role="test" name="tests/001.phpt"/>
-       <file role="test" name="tests/002.phpt"/>
-       <file role="test" name="tests/003.phpt"/>
-       <file role="test" name="tests/004.phpt"/>
-       <file role="test" name="tests/005.phpt"/>
-       <file role="test" name="tests/hyph_de.dic"/>
-     </filelist>
-   </release>
-   <release>
-     <version>1.3.2</version>
-     <date>2005-12-06</date>
-     <license>PHP License</license>
-     <state>stable</state>
-     <notes>ps_begin_template() and ps_begin_pattern() now return the id.</notes>
-     <deps>
-       <dep type="php" rel="ge" version="4.3.10"/>
-     </deps>
-     <filelist>
-       <file role="doc" name="CREDITS"/>
-       <file role="src" name="config.m4"/>
-       <file role="src" name="php_ps.h"/>
-       <file role="src" name="ps.c"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
-       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/shading.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/image.php"/>
-       <file role="test" name="tests/001.phpt"/>
-       <file role="test" name="tests/002.phpt"/>
-       <file role="test" name="tests/003.phpt"/>
-       <file role="test" name="tests/004.phpt"/>
-       <file role="test" name="tests/005.phpt"/>
-       <file role="test" name="tests/hyph_de.dic"/>
-     </filelist>
-   </release>
-   <release>
-     <version>1.3.1</version>
-     <date>2005-02-08</date>
-     <license>PHP License</license>
-     <state>stable</state>
-     <notes>Fixed varios compile errors related to php 4.3.10</notes>
-     <deps>
-       <dep type="php" rel="ge" version="4.3.10"/>
-     </deps>
-     <filelist>
-       <file role="doc" name="CREDITS"/>
-       <file role="src" name="config.m4"/>
-       <file role="src" name="php_ps.h"/>
-       <file role="src" name="ps.c"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
-       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/shading.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/image.php"/>
-       <file role="test" name="tests/001.phpt"/>
-       <file role="test" name="tests/002.phpt"/>
-       <file role="test" name="tests/003.phpt"/>
-       <file role="test" name="tests/004.phpt"/>
-       <file role="test" name="tests/005.phpt"/>
-       <file role="test" name="tests/hyph_de.dic"/>
-     </filelist>
-   </release>
-   <release>
-     <version>1.3.0</version>
-     <date>2004-07-27</date>
-     <license>PHP License</license>
-     <state>stable</state>
-     <notes>Added function ps_shfill(), ps_shading(), ps_shading_pattern(), ps_get_buffer(). New example files shading.php and image.php. Renamed undocumented function ps_setoverprint() to ps_setoverprintmode(). </notes>
-     <deps>
-       <dep type="php" rel="ge" version="4.3.0"/>
-     </deps>
-     <filelist>
-       <file role="doc" name="CREDITS"/>
-       <file role="src" name="config.m4"/>
-       <file role="doc" name="php_ps.h"/>
-       <file role="src" name="ps.c"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
-       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/shading.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/image.php"/>
-       <file role="test" name="tests/001.phpt"/>
-       <file role="test" name="tests/002.phpt"/>
-       <file role="test" name="tests/003.phpt"/>
-       <file role="test" name="tests/004.phpt"/>
-       <file role="test" name="tests/005.phpt"/>
-       <file role="test" name="tests/hyph_de.dic"/>
-     </filelist>
-   </release>
-   <release>
-     <version>1.2.2</version>
-     <date>2004-06-02</date>
-     <license>PHP License</license>
-     <state>stable</state>
-     <notes>Added function ps_makespotcolor().</notes>
-     <deps>
-       <dep type="php" rel="ge" version="4.3.0"/>
-     </deps>
-     <filelist>
-       <file role="doc" name="CREDITS"/>
-       <file role="src" name="config.m4"/>
-       <file role="doc" name="php_ps.h"/>
-       <file role="src" name="ps.c"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
-       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/spotcolor.php"/>
-       <file role="test" name="tests/001.phpt"/>
-       <file role="test" name="tests/002.phpt"/>
-       <file role="test" name="tests/003.phpt"/>
-       <file role="test" name="tests/004.phpt"/>
-       <file role="test" name="tests/005.phpt"/>
-       <file role="test" name="tests/hyph_de.dic"/>
-     </filelist>
-   </release>
-   <release>
-     <version>1.2.1</version>
-     <date>2004-06-02</date>
-     <license>PHP License</license>
-     <state>stable</state>
-     <notes>ps_hyphenate() did not return an array but true. Added more tests
-       and examples. Many internal changes.</notes>
-     <deps>
-       <dep type="php" rel="ge" version="4.3.0"/>
-     </deps>
-     <filelist>
-       <file role="doc" name="CREDITS"/>
-       <file role="src" name="config.m4"/>
-       <file role="doc" name="php_ps.h"/>
-       <file role="src" name="ps.c"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/draw.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/dice.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/debian.png"/>
-       <file role="doc" baseinstalldir="/" name="examples/picture.eps"/>
-       <file role="doc" baseinstalldir="/" name="examples/Helvetica.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/hyph_en.dic"/>
-       <file role="doc" baseinstalldir="/" name="examples/fontsample.php"/>
-       <file role="test" name="tests/001.phpt"/>
-       <file role="test" name="tests/002.phpt"/>
-       <file role="test" name="tests/003.phpt"/>
-       <file role="test" name="tests/004.phpt"/>
-       <file role="test" name="tests/005.phpt"/>
-       <file role="test" name="tests/hyph_de.dic"/>
-     </filelist>
-   </release>
-   <release>
-     <version>1.2.0</version>
-     <date>2004-04-26</date>
-     <license>PHP License</license>
-     <state>stable</state>
-     <notes>Added new function ps_string_geometry(), ps_set_text_pos(),
+  <release>
+   <version>
+    <release>1.3.4</release>
+    <api>1.3.4</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2006-04-21</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Made ps_arcn() available. ps_set_border_dash() checks now for 3 parameters instead of 4. Fixed segm fault if the optional parameter of ps_show_boxed() is not passed. Added some more examples.
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.3.3</release>
+    <api>1.3.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2005-12-06</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>fixed stupid compile warning.
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.3.2</release>
+    <api>1.3.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2005-12-06</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>ps_begin_template() and ps_begin_pattern() now return the id.
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.3.1</release>
+    <api>1.3.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2005-02-08</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Fixed varios compile errors related to php 4.3.10
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.3.0</release>
+    <api>1.3.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-07-27</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Added function ps_shfill(), ps_shading(), ps_shading_pattern(), ps_get_buffer(). New example files shading.php and image.php. Renamed undocumented function ps_setoverprint() to ps_setoverprintmode(). 
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.2.2</release>
+    <api>1.2.2</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-06-02</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Added function ps_makespotcolor().
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.2.1</release>
+    <api>1.2.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-06-02</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>ps_hyphenate() did not return an array but true. Added more tests
+       and examples. Many internal changes.
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.2.0</release>
+    <api>1.2.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-04-26</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Added new function ps_string_geometry(), ps_set_text_pos(),
  ps_symbol(), ps_symbol_name(), ps_symbol_width(), ps_begin_pattern(),
- ps_end_pattern(), ps_begin_template(), ps_end_template().</notes>
-     <deps>
-       <dep type="php" rel="ge" version="4.3.0"/>
-     </deps>
-     <filelist>
-       <file role="doc" name="CREDITS"/>
-       <file role="src" name="config.m4"/>
-       <file role="doc" name="php_ps.h"/>
-       <file role="src" name="ps.c"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-       <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-       <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-       <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-       <file role="test" name="tests/001.phpt"/>
-     </filelist>
-   </release>
-    <release>
-      <version>1.1.1</version>
-      <date>2004-04-21</date>
-      <license>PHP License</license>
-      <state>stable</state>
-      <notes>Added new function ps_hyphenate().</notes>
-      <deps>
-        <dep type="php" rel="ge" version="4.3.0"/>
-      </deps>
-      <filelist>
-        <file role="doc" name="CREDITS"/>
-        <file role="src" name="config.m4"/>
-        <file role="doc" name="php_ps.h"/>
-        <file role="src" name="ps.c"/>
-        <file role="doc" baseinstalldir="/" name="examples/Dustismo.pfb"/>
-        <file role="doc" baseinstalldir="/" name="examples/Dustismo.afm"/>
-        <file role="doc" baseinstalldir="/" name="examples/psclock.php"/>
-        <file role="doc" baseinstalldir="/" name="examples/text.php"/>
-        <file role="test" name="tests/001.phpt"/>
-      </filelist>
-    </release>
-    <release>
-      <version>1.1.0</version>
-      <date>2004-03-34</date>
-      <license>PHP License</license>
-      <state>stable</state>
-      <notes>Complete rework. Many old function has been removed. Font and image
-  handling is now working without memory leaks.</notes>
-    </release>
-    <release>
-      <version>1.0</version>
-      <date>2003-02-15</date>
-      <license>PHP License</license>
-      <state>stable</state>
-      <notes>Initial Release in PECL</notes>
-      <deps>
-        <dep type="php" rel="ge" version="4.3.0"/>
-      </deps>
-      <filelist>
-        <file role="doc" name="CREDITS"/>
-        <file role="src" name="config.m4"/>
-        <file role="doc" name="php_ps.h"/>
-        <file role="src" name="ps.c"/>
-      </filelist>
-    </release>
-  </changelog>
+ ps_end_pattern(), ps_begin_template(), ps_end_template().
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.1.1</release>
+    <api>1.1.1</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-04-21</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Added new function ps_hyphenate().
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.1.0</release>
+    <api>1.1.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2004-03-34</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Complete rework. Many old function has been removed. Font and image
+  handling is now working without memory leaks.
+   </notes>
+  </release>
+  <release>
+   <version>
+    <release>1.0</release>
+    <api>1.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2003-02-15</date>
+   <license uri="http://www.php.net/license">PHP License</license>
+   <notes>Initial Release in PECL
+   </notes>
+  </release>
+ </changelog>
 </package>
