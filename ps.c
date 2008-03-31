@@ -174,7 +174,7 @@ zend_module_entry ps_module_entry = {
 	NULL, 
 	NULL, 
 	PHP_MINFO(ps), 
-	NO_VERSION_YET,
+	PHP_PS_VERSION,
 	STANDARD_MODULE_PROPERTIES 
 };
 /* }}} */
@@ -275,8 +275,9 @@ PHP_MINFO_FUNCTION(ps)
 	tmp[31]=0;
 
 	php_info_print_table_start();
-	php_info_print_table_row(2, "PS Support", "enabled" );
+	php_info_print_table_header(2, "PS Support", "enabled" );
 	php_info_print_table_row(2, "PSlib Version", tmp );
+	php_info_print_table_row(2, "Extension Version", PHP_PS_VERSION);
 	php_info_print_table_row(2, "Revision", "$Revision$" );
 #ifdef HAVE_LIBGD
 	php_info_print_table_row(2, "GD Support", "enabled" );

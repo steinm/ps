@@ -21,6 +21,8 @@
 #ifndef PHP_PS_H
 #define PHP_PS_H
 
+#define PHP_PS_VERSION "1.3.7-dev"
+
 #ifdef PHP_WIN32
 #define PHP_PS_API __declspec(dllexport)
 #else
