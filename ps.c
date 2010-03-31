@@ -55,7 +55,7 @@ static int le_psdoc;
 
 /* {{{ ps_functions[]
  */
-function_entry ps_functions[] = {
+zend_function_entry ps_functions[] = {
 	PHP_FE(ps_new, NULL)
 	PHP_FE(ps_delete, NULL)
 	PHP_FE(ps_open_file, NULL)
