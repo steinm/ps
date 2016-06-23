@@ -519,7 +519,8 @@ PHP_FUNCTION(ps_show2)
 {
 	zval *zps;
 	char *text;
-	int text_len, len;
+	int text_len;
+        long len;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsl", &zps, &text, &text_len, &len)) {
@@ -528,7 +529,7 @@ PHP_FUNCTION(ps_show2)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_show2(ps, text, len);
+	PS_show2(ps, text, (int)len);
 
 	RETURN_TRUE;
 }
@@ -562,7 +563,8 @@ PHP_FUNCTION(ps_show_xy2)
 {
 	zval *zps;
 	char *text;
-	int text_len, len;
+	int text_len;
+        long len;
 	double x, y;
 	PSDoc *ps;
 
@@ -572,7 +574,7 @@ PHP_FUNCTION(ps_show_xy2)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_show_xy2(ps, text, len, (float) x, (float) y);
+	PS_show_xy2(ps, text, (int)len, (float) x, (float) y);
 
 	RETURN_TRUE;
 }
@@ -612,7 +614,7 @@ PHP_FUNCTION(ps_findfont) {
 PHP_FUNCTION(ps_setfont) {
 	zval *zps;
 	double fontsize;
-	int font;
+	long font;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rld", &zps, &font, &fontsize)) {
@@ -621,7 +623,7 @@ PHP_FUNCTION(ps_setfont) {
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_setfont(ps, font, (float) fontsize);
+	PS_setfont(ps, (int)font, (float) fontsize);
 
 	RETURN_TRUE;
 }
@@ -692,7 +694,7 @@ PHP_FUNCTION(ps_setlinewidth)
 PHP_FUNCTION(ps_setoverprintmode)
 {
 	zval *zps;
-	int mode;
+	long mode;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &mode)) {
@@ -701,7 +703,7 @@ PHP_FUNCTION(ps_setoverprintmode)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_setoverprintmode(ps, mode);
+	PS_setoverprintmode(ps, (int)mode);
 
 	RETURN_TRUE;
 }
@@ -945,7 +947,7 @@ PHP_FUNCTION(ps_scale)
 PHP_FUNCTION(ps_setlinejoin) 
 {
 	zval *zps;
-	int value;
+	long value;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &value)) {
@@ -954,7 +956,7 @@ PHP_FUNCTION(ps_setlinejoin)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_setlinejoin(ps, value);
+	PS_setlinejoin(ps, (int)value);
 
 	RETURN_TRUE;
 }
@@ -965,7 +967,7 @@ PHP_FUNCTION(ps_setlinejoin)
 PHP_FUNCTION(ps_setlinecap) 
 {
 	zval *zps;
-	int value;
+	long value;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &value)) {
@@ -974,7 +976,7 @@ PHP_FUNCTION(ps_setlinecap)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_setlinecap(ps, value);
+	PS_setlinecap(ps, (int)value);
 
 	RETURN_TRUE;
 }
@@ -1092,7 +1094,7 @@ PHP_FUNCTION(ps_stringwidth)
 	char *text;
 	int text_len;
 	double width, size = 0.0;
-	int font = 0;
+	long font = 0;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, &font, &size)) {
@@ -1101,7 +1103,7 @@ PHP_FUNCTION(ps_stringwidth)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	width = (double) PS_stringwidth2(ps, text, text_len, font, (float)size);
+	width = (double) PS_stringwidth2(ps, text, text_len, (int)font, (float)size);
 
 	RETURN_DOUBLE((double) width);
 }
@@ -1115,7 +1117,7 @@ PHP_FUNCTION(ps_string_geometry)
 	char *text;
 	int text_len;
 	double width, size = 0.0;
-	int font = 0;
+	long font = 0;
 	float dimension[3];
 	PSDoc *ps;
 
@@ -1125,7 +1127,7 @@ PHP_FUNCTION(ps_string_geometry)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	width = (double) PS_string_geometry(ps, text, text_len, font, (float) size, dimension);
+	width = (double) PS_string_geometry(ps, text, text_len, (int)font, (float) size, dimension);
 
 	array_init(return_value);
 	add_assoc_double(return_value, "width", (double) dimension[0]);
@@ -1280,7 +1282,7 @@ PHP_FUNCTION(ps_add_bookmark)
 	zval *zps;
 	char *text;
 	int text_len;
-	int parentid = 0, open = 0, id;
+	long parentid = 0, open = 0, id;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ll", &zps, &text, &text_len, &parentid, &open)) {
@@ -1290,7 +1292,7 @@ PHP_FUNCTION(ps_add_bookmark)
 	PSDOC_FROM_ZVAL(ps, &zps);
 
 	/* will never return 0 */
-	id = PS_add_bookmark(ps, text, parentid, open);
+	id = PS_add_bookmark(ps, text, (int)parentid, (int)open);
 
 	RETURN_LONG(id);
 }
@@ -1303,7 +1305,7 @@ PHP_FUNCTION(ps_open_image_file)
 	zval *zps;
 	char *type, *filename, *image, *stringparam = NULL;
 	int type_len, filename_len, stringparam_len;
-	int imageid, intparam = 0;
+	long imageid, intparam = 0;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss|sl", &zps, &type, &type_len, &filename, &filename_len, &stringparam, &stringparam_len, &intparam)) {
@@ -1318,7 +1320,7 @@ PHP_FUNCTION(ps_open_image_file)
 	image = filename;
 #endif
 
-	imageid = PS_open_image_file(ps, type, image, stringparam, intparam);
+	imageid = PS_open_image_file(ps, type, image, stringparam, (int)intparam);
 
 	if (imageid == 0) {
 		RETURN_FALSE;
@@ -1400,7 +1402,7 @@ PHP_FUNCTION(ps_open_memory_image)
 PHP_FUNCTION(ps_close_image)
 {
 	zval *zps;
-	int imageid;
+	long imageid;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &imageid)) {
@@ -1409,7 +1411,7 @@ PHP_FUNCTION(ps_close_image)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_close_image(ps, imageid);
+	PS_close_image(ps, (int)imageid);
 }
 /* }}} */
 
@@ -1418,7 +1420,7 @@ PHP_FUNCTION(ps_close_image)
 PHP_FUNCTION(ps_place_image)
 {
 	zval *zps;
-	int imageid;
+	long imageid;
 	double x, y, scale;
 	PSDoc *ps;
 
@@ -1428,7 +1430,7 @@ PHP_FUNCTION(ps_place_image)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_place_image(ps, imageid, (float) x, (float) y, (float) scale);
+	PS_place_image(ps, (int)imageid, (float) x, (float) y, (float) scale);
 
 	RETURN_TRUE;
 }
@@ -1462,7 +1464,7 @@ PHP_FUNCTION(ps_shading)
 PHP_FUNCTION(ps_shfill)
 {
 	zval *zps;
-	int shadingid;
+	long shadingid;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &shadingid)) {
@@ -1471,7 +1473,7 @@ PHP_FUNCTION(ps_shfill)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_shfill(ps, shadingid);
+	PS_shfill(ps, (int)shadingid);
 
 	RETURN_TRUE;
 }
@@ -1482,7 +1484,7 @@ PHP_FUNCTION(ps_shfill)
 PHP_FUNCTION(ps_shading_pattern)
 {
 	zval *zps;
-	int patternid, shadingid;
+	long patternid, shadingid;
 	char *optlist;
 	int olen;
 	PSDoc *ps;
@@ -1493,7 +1495,7 @@ PHP_FUNCTION(ps_shading_pattern)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	patternid = PS_shading_pattern(ps, shadingid, optlist);
+	patternid = PS_shading_pattern(ps, (int)shadingid, optlist);
 
 	RETURN_LONG(patternid);
 }
@@ -1529,7 +1531,7 @@ PHP_FUNCTION(ps_add_pdflink)
 	double llx, lly, urx, ury;
 	char *filename, *dest;
 	int filename_len, dest_len;
-	int page;
+	long page;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddsls", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len, &page, &dest, &dest_len)) {
@@ -1538,7 +1540,7 @@ PHP_FUNCTION(ps_add_pdflink)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_add_pdflink(ps, (float) llx, (float) lly, (float) urx, (float) ury, filename, page, dest);
+	PS_add_pdflink(ps, (float) llx, (float) lly, (float) urx, (float) ury, filename, (int)page, dest);
 
 	RETURN_TRUE;
 }
@@ -1819,8 +1821,8 @@ PHP_FUNCTION(ps_open_image) {
 	zval *zps;
 	char *type, *params, *source, *data;
 	int type_len, params_len, source_len, data_len;
-	int length, width, height, components, bpc;
-	int imageid;
+	long length, width, height, components, bpc;
+	long imageid;
 	char *image;
 	PSDoc *ps;
 
@@ -1836,7 +1838,7 @@ PHP_FUNCTION(ps_open_image) {
 	image = data;
 #endif
 
-	imageid = PS_open_image(ps, type, source, image, length, width, height, components, bpc, params);
+	imageid = PS_open_image(ps, type, source, image, (int)length, (int)width, (int)height, (int)components, (int)bpc, params);
 
 	RETURN_LONG(imageid);
 }
@@ -1901,7 +1903,7 @@ PHP_FUNCTION(ps_add_note) {
 	double llx, lly, urx, ury;
 	char *contents, *title, *icon;
 	int contents_len, title_len, icon_len;
-	int open;
+	long open;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddsssl", &zps, &llx, &lly, &urx, &ury, &contents, &contents_len, &title, &title_len, &icon, &icon_len, &open)) {
@@ -1910,7 +1912,7 @@ PHP_FUNCTION(ps_add_note) {
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_add_note(ps, (float) llx, (float) lly, (float) urx, (float) ury, contents, title, icon, open);
+	PS_add_note(ps, (float) llx, (float) lly, (float) urx, (float) ury, contents, title, icon, (int)open);
 
 	RETURN_TRUE;
 }
@@ -1923,7 +1925,7 @@ PHP_FUNCTION(ps_add_locallink) {
 	double llx, lly, urx, ury;
 	char *dest;
 	int dest_len;
-	int page;
+	long page;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddls", &zps, &llx, &lly, &urx, &ury, &page, &dest, &dest_len)) {
@@ -1932,7 +1934,7 @@ PHP_FUNCTION(ps_add_locallink) {
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_add_locallink(ps, (float) llx, (float) lly, (float) urx, (float) ury, page, dest);
+	PS_add_locallink(ps, (float) llx, (float) lly, (float) urx, (float) ury, (int)page, dest);
 
 	RETURN_TRUE;
 }
@@ -1986,7 +1988,7 @@ PHP_FUNCTION(ps_makespotcolor) {
 	char *spotname;
 	int spotname_len;
 	int spot;
-	int reserved = 0;
+	long reserved = 0;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|l", &zps, &spotname, &spotname_len, &reserved)) {
@@ -1995,7 +1997,7 @@ PHP_FUNCTION(ps_makespotcolor) {
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	spot = PS_makespotcolor(ps, spotname, reserved);
+	spot = PS_makespotcolor(ps, spotname, (int)reserved);
 
 	RETURN_LONG(spot);
 } /* }}} */
@@ -2040,7 +2042,7 @@ PHP_FUNCTION(ps_initgraphics) {
  * Add an existing image as thumbnail for the current page. */
 PHP_FUNCTION(ps_add_thumbnail) {
 	zval *zps;
-	int imageid;
+	long imageid;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &imageid)) {
@@ -2049,7 +2051,7 @@ PHP_FUNCTION(ps_add_thumbnail) {
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_add_thumbnail(ps, imageid);
+	PS_add_thumbnail(ps, (int)imageid);
 
 	RETURN_TRUE;
 } /* }}} */
@@ -2079,7 +2081,7 @@ PHP_FUNCTION(ps_begin_pattern)
 {
 	zval *zps;
 	double width, height, xstep, ystep;
-	int painttype;
+	long painttype;
 	PSDoc *ps;
 	int patid;
 
@@ -2264,8 +2266,8 @@ PHP_FUNCTION(ps_add_kerning)
 	PSDoc *ps;
 	char *glyphname1, *glyphname2;
 	int glen1, glen2;
-	int font = 0;
-	int kern = 0;
+	long font = 0;
+	long kern = 0;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssl|l", &zps, &glyphname1, &glen1, &glyphname2, &glen2, &kern, &font)) {
 		return;
@@ -2273,7 +2275,7 @@ PHP_FUNCTION(ps_add_kerning)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_add_kerning(ps, font, glyphname1, glyphname2, kern);
+	PS_add_kerning(ps, (int)font, glyphname1, glyphname2, (int)kern);
 
 	RETURN_TRUE;
 }
@@ -2287,7 +2289,7 @@ PHP_FUNCTION(ps_add_ligature)
 	PSDoc *ps;
 	char *glyphname1, *glyphname2, *glyphname3;
 	int glen1, glen2, glen3;
-	int font = 0;
+	long font = 0;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsss|l", &zps, &glyphname1, &glen1, &glyphname2, &glen2, &glyphname3, &glen3, &font)) {
 		return;
@@ -2295,7 +2297,7 @@ PHP_FUNCTION(ps_add_ligature)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_add_ligature(ps, font, glyphname1, glyphname2, glyphname3);
+	PS_add_ligature(ps, (int)font, glyphname1, glyphname2, glyphname3);
 
 	RETURN_TRUE;
 }
@@ -2341,7 +2343,7 @@ PHP_FUNCTION(ps_hyphenate) {
    Output single char by its value in the font encoding */
 PHP_FUNCTION(ps_symbol) {
 	zval *zps;
-	int ord;
+	long ord;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &ord)) {
@@ -2361,9 +2363,9 @@ PHP_FUNCTION(ps_symbol) {
 PHP_FUNCTION(ps_symbol_width)
 {
 	zval *zps;
-	int ord;
+	long ord;
 	double width, size = 0.0;
-	int font = 0;
+	long font = 0;
 	PSDoc *ps;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl|ld", &zps, &ord, &font, &size)) {
@@ -2372,7 +2374,7 @@ PHP_FUNCTION(ps_symbol_width)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	width = (double) PS_symbol_width(ps, (unsigned char) ord, font, (float) size);
+	width = (double) PS_symbol_width(ps, (unsigned char) ord, (int)font, (float) size);
 
 	RETURN_DOUBLE(width);
 }
@@ -2383,8 +2385,8 @@ PHP_FUNCTION(ps_symbol_width)
 PHP_FUNCTION(ps_symbol_name)
 {
 	zval *zps;
-	int ord;
-	int font = 0;
+	long ord;
+	long font = 0;
 	char glyphname[50];
 	PSDoc *ps;
 
@@ -2394,7 +2396,7 @@ PHP_FUNCTION(ps_symbol_name)
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	PS_symbol_name(ps, (unsigned char) ord, font, glyphname, 50);
+	PS_symbol_name(ps, (unsigned char) ord, (int)font, glyphname, 50);
 
 	RETURN_STRING(glyphname, 1);
 }
@@ -2427,7 +2429,7 @@ PHP_FUNCTION(ps_glyph_width) {
 	int text_len;
 	double width;
 	PSDoc *ps;
-	int font;
+	long font;
 	double size;
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, &font, &size)) {
@@ -2436,7 +2438,7 @@ PHP_FUNCTION(ps_glyph_width) {
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	width = PS_glyph_width(ps, text, font, size);
+	width = PS_glyph_width(ps, text, (int)font, size);
 
 	RETURN_DOUBLE(width);
 
@@ -2447,7 +2449,7 @@ PHP_FUNCTION(ps_glyph_width) {
 PHP_FUNCTION(ps_glyph_list) {
 	zval *zps;
 	PSDoc *ps;
-	int font;
+	long font;
 	char **glyphlist;
 	int i, listlen;
 
@@ -2457,7 +2459,7 @@ PHP_FUNCTION(ps_glyph_list) {
 
 	PSDOC_FROM_ZVAL(ps, &zps);
 
-	if(PS_glyph_list(ps, font, &glyphlist, &listlen)) {
+	if(PS_glyph_list(ps, (int)font, &glyphlist, &listlen)) {
 		array_init(return_value);
 		for(i=0; i<listlen; i++) {
 			add_index_string(return_value, i, glyphlist[i], 0);
