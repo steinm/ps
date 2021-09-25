@@ -21,7 +21,7 @@
 #ifndef PHP_PS_H
 #define PHP_PS_H
 
-#define PHP_PS_VERSION "1.4.0"
+#define PHP_PS_VERSION "1.4.2"
 
 #ifdef PHP_WIN32
 #define PHP_PS_API __declspec(dllexport)
@@ -30,6 +30,16 @@
 #endif
 
 #if HAVE_PS
+
+#if PHP_VERSION_ID >= 80000
+  #define HAVE_LOCALE_H
+  #define TSRMLS_C
+  #define TSRMLS_CC
+  #define TSRMLS_D
+  #define TSRMLS_DC
+  #define TSRMLS_FETCH()
+  #define TSRMLS_SET_CTX(ctx)
+#endif
 
 #include <libps/pslib.h>
 
