@@ -14,19 +14,19 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>steinm@php.net</email>
   <active>yes</active>
  </lead>
- <date>2016-11-28</date>
- <time>15:56:46</time>
+ <date>2017-07-31</date>
+ <time>11:49:24</time>
  <version>
-  <release>1.4.0</release>
+  <release>1.4.1</release>
   <api>1.4.0</api>
  </version>
  <stability>
   <release>stable</release>
   <api>stable</api>
  </stability>
- <license uri="http://www.php.net/license">PHP License</license>
+ <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
  <notes>
-support for php 7
+Change license to BSD style, fixed dependency on php
  </notes>
  <contents>
   <dir name="/">
@@ -84,7 +84,7 @@ support for php 7
  <dependencies>
   <required>
    <php>
-    <min>4.3.10</min>
+    <min>7.0.0</min>
    </php>
    <pearinstaller>
     <min>1.4.0b1</min>
@@ -96,6 +96,22 @@ support for php 7
   <configureoption name="with-ps" prompt="path to pslib installation?" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <date>2016-06-24</date>
+   <time>18:21:28</time>
+   <version>
+    <release>1.4.0</release>
+    <api>1.4.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.php.net/license">PHP License</license>
+	 <notes>
+add support for phpng and drop support for php5
+   </notes>
+	</release>
   <release>
    <date>2013-08-17</date>
    <time>07:51:29</time>
