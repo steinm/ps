@@ -21,7 +21,7 @@
 #ifndef PHP_PS_H
 #define PHP_PS_H
 
-#define PHP_PS_VERSION "1.3.7"
+#define PHP_PS_VERSION "1.4.0"
 
 #ifdef PHP_WIN32
 #define PHP_PS_API __declspec(dllexport)
@@ -154,7 +154,8 @@ PHP_FUNCTION(ps_open_memory_image);
 # define PsSG(v) (ps_globals.v)
 #endif
 
-#define PSDOC_FROM_ZVAL(psdoc, zv)    ZEND_FETCH_RESOURCE(psdoc, PSDoc *, zv, -1, "ps document", le_psdoc)
+//#define PSDOC_FROM_ZVAL(psdoc, zv)    ZEND_FETCH_RESOURCE(psdoc, PSDoc *, &zv, -1, "ps document", le_psdoc)
+#define PSDOC_FROM_ZVAL(psdoc, zv)    if ((psdoc = (PSDoc *) zend_fetch_resource(Z_RES_P(zv), "ps document", le_psdoc)) == NULL) { RETURN_FALSE; }
 
 #else
 #define ps_module_ptr NULL
