@@ -1721,22 +1721,36 @@ PHP_FUNCTION(ps_open_memory_image)
 {
 	zval *zps;
 	zval *zgd;
-	zend_class_entry *gd_image_ce;
 	int i, j, color, count;
 	int imageid;
 	gdImagePtr im;
 	unsigned char *buffer, *ptr;
 	PSDoc *ps;
 
+#if PHP_VERSION_ID < 80000
+	int le_gd;
+
+	le_gd = phpi_get_le_gd();
+
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &zps, &zgd)) {
+		return;
+	}
+	if ((im = (gdImagePtr)zend_fetch_resource(Z_RES_P(zgd), "Image", le_gd)) == NULL) {
+		RETURN_FALSE;
+	}
+#else
+	zend_class_entry *gd_image_ce;
+
 	gd_image_ce = zend_hash_str_find_ptr(CG(class_table), ZEND_STRL("gdimage"));
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rO", &zps, &zgd, gd_image_ce)) {
 		return;
 	}
-	
-	PSDOC_FROM_ZVAL(ps, zps);
 
 	im = php_gd_libgdimageptr_from_zval_p(zgd);
+#endif
+
+	PSDOC_FROM_ZVAL(ps, zps);
 
 	count = 3 * im->sx * im->sy;
 	if(NULL == (buffer = (unsigned char *) emalloc(count))) {
