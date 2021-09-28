@@ -1719,6 +1719,8 @@ PHP_FUNCTION(ps_open_memory_image)
 	unsigned char *buffer, *ptr;
 	PSDoc *ps;
 
+	gd_image_ce = zend_hash_str_find_ptr(CG(class_table), ZEND_STRL("gdimage"));
+
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rO", &zps, &zgd, gd_image_ce)) {
 		return;
 	}
