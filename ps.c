@@ -538,10 +538,19 @@ zend_function_entry ps_functions[] = {
 };
 /* }}} */
 
+static const zend_module_dep ps_deps[] = {
+#ifdef HAVE_LIBGD
+    ZEND_MOD_REQUIRED("gd")
+#endif
+	ZEND_MOD_END
+};
+
 /* {{{ ps_module_entry
  */
 zend_module_entry ps_module_entry = {
-	STANDARD_MODULE_HEADER,
+	STANDARD_MODULE_HEADER_EX,
+	NULL,
+	ps_deps,
 	"ps", 
 	ps_functions, 
 	PHP_MINIT(ps), 
@@ -1718,6 +1727,8 @@ PHP_FUNCTION(ps_open_memory_image)
 	gdImagePtr im;
 	unsigned char *buffer, *ptr;
 	PSDoc *ps;
+
+	gd_image_ce = zend_hash_str_find_ptr(CG(class_table), ZEND_STRL("gdimage"));
 
 	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rO", &zps, &zgd, gd_image_ce)) {
 		return;
