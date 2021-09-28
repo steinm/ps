@@ -1,13 +1,13 @@
 /*
    +----------------------------------------------------------------------+
-   | PHP version 4.0                                                      |
+   | PHP version 5                                                        |
    +----------------------------------------------------------------------+
-   | Copyright (c) 1997-2001 The PHP Group                                |
+   | Copyright (c) 2003-2021 Uwe Steinmann                                |
    +----------------------------------------------------------------------+
-   | This source file is subject to version 2.02 of the PHP license,      |
+   | This source file is subject to version 3.01 of the PHP license,      |
    | that is bundled with this package in the file LICENSE, and is        |
-   | available at through the world-wide-web at                           |
-   | http://www.php.net/license/2_02.txt.                                 |
+   | available through the world-wide-web at the following url:           |
+   | http://www.php.net/license/3_01.txt                                  |
    | If you did not receive a copy of the PHP license and are unable to   |
    | obtain it through the world-wide-web, please send a note to          |
    | license@php.net so we can mail you a copy immediately.               |
@@ -36,7 +36,6 @@
 #else
 #include "gd.h"
 #endif
-static int le_gd;
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -1709,25 +1708,22 @@ PHP_FUNCTION(ps_open_image_file)
    Takes an GD image and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_memory_image)
 {
-	zval **arg1, **arg2;
+	zval *zps;
+	zval *zgd;
+	zend_class_entry *gd_image_ce;
 	int i, j, color, count;
 	int imageid;
 	gdImagePtr im;
 	unsigned char *buffer, *ptr;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rO", &zps, &zgd, gd_image_ce)) {
+		return;
 	}
 	
-//	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-	if ((ps = (PSDoc *) zend_fetch_resource(Z_RES_P(arg1), "ps document", le_psdoc)) == NULL) { RETURN_FALSE; }
-	ZEND_GET_RESOURCE_TYPE_ID(le_gd, "gd");
-	if(!le_gd) {
-		php_error_docref(NULL, E_ERROR, "Unable to find handle for GD image stream. Please check the GD extension is loaded.");
-	}
-//	ZEND_FETCH_RESOURCE(im, gdImagePtr, arg2, -1, "Image", le_gd);
-	if ((im = (gdImagePtr) zend_fetch_resource(Z_RES_P(arg2), "Image", le_gd)) == NULL) { RETURN_FALSE; }
+	PSDOC_FROM_ZVAL(ps, zps);
+
+	im = php_gd_libgdimageptr_from_zval_p(zgd);
 
 	count = 3 * im->sx * im->sy;
 	if(NULL == (buffer = (unsigned char *) emalloc(count))) {

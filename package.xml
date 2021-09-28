@@ -14,19 +14,21 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>steinm@php.net</email>
   <active>yes</active>
  </lead>
- <date>2021-09-25</date>
- <time>19:03:18</time>
+ <date>2021-09-28</date>
+ <time>09:35:35</time>
  <version>
-  <release>1.4.2</release>
-  <api>1.4.0</api>
+  <release>1.4.3</release>
+  <api>1.4.3</api>
  </version>
  <stability>
   <release>stable</release>
   <api>stable</api>
  </stability>
- <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+ <license uri="https://www.php.net/license/3_01.txt">PHP 3.0.1 License</license>
  <notes>
-added support for php8
+return to PHP 3.0.1 License
+readd support for gd
+add license file
  </notes>
  <contents>
   <dir name="/">
@@ -76,6 +78,7 @@ added support for php8
    <file name="config.m4" role="src" />
    <file name="config.w32" role="src" />
    <file name="CREDITS" role="doc" />
+   <file name="LICENSE" role="doc" />
    <file name="php_ps.h" role="src" />
    <file name="ps.c" role="src" />
    <file name="pslib.dsp" role="src" />
@@ -96,6 +99,22 @@ added support for php8
   <configureoption name="with-ps" prompt="path to pslib installation?" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <date>2021-09-25</date>
+   <time>19:03:18</time>
+   <version>
+    <release>1.4.2</release>
+    <api>1.4.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="http://www.opensource.org/licenses/bsd-license.php">BSD style</license>
+   <notes>
+added support for php8
+   </notes>
+ </release>
   <release>
    <date>2017-07-31</date>
    <time>11:49:24</time>
