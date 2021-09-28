@@ -33,12 +33,6 @@
 
 #if PHP_VERSION_ID >= 80000
   #define HAVE_LOCALE_H
-  #define TSRMLS_C
-  #define TSRMLS_CC
-  #define TSRMLS_D
-  #define TSRMLS_DC
-  #define TSRMLS_FETCH()
-  #define TSRMLS_SET_CTX(ctx)
 #endif
 
 #include <libps/pslib.h>

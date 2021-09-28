@@ -561,7 +561,7 @@ ZEND_GET_MODULE(ps)
 
 /* {{{ _free_ps_doc
  */
-static void _free_ps_doc(zend_resource *rsrc TSRMLS_DC)
+static void _free_ps_doc(zend_resource *rsrc)
 {
 	PSDoc *psdoc = (PSDoc *)rsrc->ptr;
 	PS_delete(psdoc);
@@ -572,10 +572,9 @@ static void _free_ps_doc(zend_resource *rsrc TSRMLS_DC)
  */
 static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg, void *data)
 {
-	TSRMLS_FETCH();
 	switch (type){
 		case PS_Warning:
-				php_error_docref(NULL TSRMLS_CC, E_WARNING,"PSlib warning: %s", shortmsg);
+				php_error_docref(NULL, E_WARNING,"PSlib warning: %s", shortmsg);
 			break;
 #ifdef notimplemnetedyet
 		case PS_NonfatalError:
@@ -586,7 +585,7 @@ static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg, void *
 			 * ps_set_parameter($p, "warning" 0) to switch off
 			 * the warnings inside PSlib
 			 */
-			php_error_docref(NULL TSRMLS_CC, E_WARNING,"Internal PSlib warning: %s", shortmsg);
+			php_error_docref(NULL, E_WARNING,"Internal PSlib warning: %s", shortmsg);
 			return;
 		case PS_MemoryError: /* give up in all other cases */
 		case PS_IOError:
@@ -601,7 +600,7 @@ static void custom_errorhandler(PSDoc *p, int type, const char *shortmsg, void *
 		case PS_UnknownError:
 #endif
 		default:
-			php_error_docref(NULL TSRMLS_CC, E_ERROR,"PSlib error: %s", shortmsg);
+			php_error_docref(NULL, E_ERROR,"PSlib error: %s", shortmsg);
 		}
 }
 /* }}} */
@@ -635,8 +634,7 @@ static void ps_efree(PSDoc *p, void *mem)
  */
 static size_t ps_flushwrite(PSDoc *p, void *data, size_t size)
 {
-	TSRMLS_FETCH();
-	return(php_write(data, size TSRMLS_CC));
+	return(php_write(data, size));
 	return 0;
 }
 /* }}} */
@@ -701,7 +699,7 @@ PHP_FUNCTION(ps_set_info)
 	zend_long name_len, value_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &zps, &name, &name_len, &value, &value_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rss", &zps, &name, &name_len, &value, &value_len)) {
 		return;
 	}
 
@@ -720,7 +718,7 @@ PHP_FUNCTION(ps_close)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -741,7 +739,7 @@ PHP_FUNCTION(ps_begin_page)
 	double width, height;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &width, &height)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &width, &height)) {
 		return;
 	}
 
@@ -760,7 +758,7 @@ PHP_FUNCTION(ps_end_page)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -781,7 +779,7 @@ PHP_FUNCTION(ps_set_parameter)
 	size_t name_len, value_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss", &zps, &name, &name_len, &value, &value_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rss", &zps, &name, &name_len, &value, &value_len)) {
 		return;
 	}
 
@@ -803,7 +801,7 @@ PHP_FUNCTION(ps_get_parameter)
 	PSDoc *ps;
 	char *value;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|z", &zps, &name, &name_len, &zmod)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs|z", &zps, &name, &name_len, &zmod)) {
 		return;
 	}
 
@@ -830,7 +828,7 @@ PHP_FUNCTION(ps_set_value)
 	double value;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsd", &zps, &name, &name_len, &value)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsd", &zps, &name, &name_len, &value)) {
 		return;
 	}
 
@@ -852,7 +850,7 @@ PHP_FUNCTION(ps_get_value)
 	PSDoc *ps;
 	double value;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|z", &zps, &name, &name_len, &zmod)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs|z", &zps, &name, &name_len, &zmod)) {
 		return;
 	}
 
@@ -877,7 +875,7 @@ PHP_FUNCTION(ps_show)
 	size_t text_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs", &zps, &text, &text_len)) {
 		return;
 	}
 
@@ -899,7 +897,7 @@ PHP_FUNCTION(ps_show2)
 	zend_long len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsl", &zps, &text, &text_len, &len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsl", &zps, &text, &text_len, &len)) {
 		return;
 	}
 
@@ -921,7 +919,7 @@ PHP_FUNCTION(ps_show_xy)
 	double x, y;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsdd", &zps, &text, &text_len, &x, &y)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsdd", &zps, &text, &text_len, &x, &y)) {
 		return;
 	}
 
@@ -944,7 +942,7 @@ PHP_FUNCTION(ps_show_xy2)
 	double x, y;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsldd", &zps, &text, &text_len, &len, &x, &y)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsldd", &zps, &text, &text_len, &len, &x, &y)) {
 		return;
 	}
 
@@ -966,7 +964,7 @@ PHP_FUNCTION(ps_findfont) {
 	PSDoc *ps;
 	int font;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss|b", &zps, &fontname, &fontname_len, &encoding, &encoding_len, &embed)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rss|b", &zps, &fontname, &fontname_len, &encoding, &encoding_len, &embed)) {
 		return;
 	}
 
@@ -976,7 +974,7 @@ PHP_FUNCTION(ps_findfont) {
 
 	if (font == 0) {
 		/* pslib will do this for you, will throw some exception
-		php_error_docref(NULL TSRMLS_CC, E_WARNING,"Font %s not found", fontname);
+		php_error_docref(NULL, E_WARNING,"Font %s not found", fontname);
 		*/
 		RETURN_FALSE;
 	}
@@ -993,7 +991,7 @@ PHP_FUNCTION(ps_setfont) {
 	zend_long font;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rld", &zps, &font, &fontsize)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rld", &zps, &font, &fontsize)) {
 		return;
 	}
 
@@ -1013,7 +1011,7 @@ PHP_FUNCTION(ps_rotate)
 	double angle;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &zps, &angle)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rd", &zps, &angle)) {
 		return;
 	}
 
@@ -1033,7 +1031,7 @@ PHP_FUNCTION(ps_rect)
 	double x, y, width, height;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddd", &zps, &x, &y, &width, &height)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdddd", &zps, &x, &y, &width, &height)) {
 		return;
 	}
 
@@ -1053,7 +1051,7 @@ PHP_FUNCTION(ps_setlinewidth)
 	double width;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &zps, &width)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rd", &zps, &width)) {
 		return;
 	}
 
@@ -1073,7 +1071,7 @@ PHP_FUNCTION(ps_setoverprintmode)
 	zend_long mode;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &mode)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &zps, &mode)) {
 		return;
 	}
 
@@ -1093,7 +1091,7 @@ PHP_FUNCTION(ps_setdash)
 	double black, white;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &black, &white)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &black, &white)) {
 		return;
 	}
 
@@ -1112,7 +1110,7 @@ PHP_FUNCTION(ps_stroke)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1131,7 +1129,7 @@ PHP_FUNCTION(ps_fill)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1150,7 +1148,7 @@ PHP_FUNCTION(ps_fill_stroke)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1169,7 +1167,7 @@ PHP_FUNCTION(ps_save)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1188,7 +1186,7 @@ PHP_FUNCTION(ps_restore)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1208,7 +1206,7 @@ PHP_FUNCTION(ps_lineto)
 	double x, y;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &x, &y)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &x, &y)) {
 		return;
 	}
 
@@ -1228,7 +1226,7 @@ PHP_FUNCTION(ps_moveto)
 	double x, y;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &x, &y)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &x, &y)) {
 		return;
 	}
 
@@ -1247,7 +1245,7 @@ PHP_FUNCTION(ps_closepath)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1266,7 +1264,7 @@ PHP_FUNCTION(ps_closepath_stroke)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1286,7 +1284,7 @@ PHP_FUNCTION(ps_translate)
 	double x, y;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &x, &y)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &x, &y)) {
 		return;
 	}
 
@@ -1306,7 +1304,7 @@ PHP_FUNCTION(ps_scale)
 	double x, y;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &x, &y)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &x, &y)) {
 		return;
 	}
 
@@ -1326,7 +1324,7 @@ PHP_FUNCTION(ps_setlinejoin)
 	zend_long value;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &value)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &zps, &value)) {
 		return;
 	}
 
@@ -1346,7 +1344,7 @@ PHP_FUNCTION(ps_setlinecap)
 	zend_long value;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &value)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &zps, &value)) {
 		return;
 	}
 
@@ -1366,7 +1364,7 @@ PHP_FUNCTION(ps_setmiterlimit)
 	double value;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &zps, &value)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rd", &zps, &value)) {
 		return;
 	}
 
@@ -1386,7 +1384,7 @@ PHP_FUNCTION(ps_curveto)
 	double x1, y1, x2, y2, x3, y3;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddddd", &zps, &x1, &y1, &x2, &y2, &x3, &y3)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdddddd", &zps, &x1, &y1, &x2, &y2, &x3, &y3)) {
 		return;
 	}
 
@@ -1409,7 +1407,7 @@ PHP_FUNCTION(ps_show_boxed)
 	int nr;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsdddds|s", &zps, &text, &text_len, &x, &y, &width, &height, &mode, &mode_len, &feature, &feature_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsdddds|s", &zps, &text, &text_len, &x, &y, &width, &height, &mode, &mode_len, &feature, &feature_len)) {
 		return;
 	}
 
@@ -1429,7 +1427,7 @@ PHP_FUNCTION(ps_set_text_pos)
 	double x, y;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &x, &y)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &x, &y)) {
 		return;
 	}
 
@@ -1450,7 +1448,7 @@ PHP_FUNCTION(ps_continue_text)
 	size_t text_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs", &zps, &text, &text_len)) {
 		return;
 	}
 
@@ -1473,7 +1471,7 @@ PHP_FUNCTION(ps_stringwidth)
 	zend_long font = 0;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, &font, &size)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs|ld", &zps, &text, &text_len, &font, &size)) {
 		return;
 	}
 
@@ -1497,7 +1495,7 @@ PHP_FUNCTION(ps_string_geometry)
 	float dimension[3];
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, &font, &size)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs|ld", &zps, &text, &text_len, &font, &size)) {
 		return;
 	}
 
@@ -1520,7 +1518,7 @@ PHP_FUNCTION(ps_setflat)
 	double value;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rd", &zps, &value)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rd", &zps, &value)) {
 		return;
 	}
 
@@ -1540,7 +1538,7 @@ PHP_FUNCTION(ps_circle)
 	double x, y, radius;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddd", &zps, &x, &y, &radius)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddd", &zps, &x, &y, &radius)) {
 		return;
 	}
 
@@ -1560,7 +1558,7 @@ PHP_FUNCTION(ps_arc)
 	double x, y, radius, start, end;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddd", &zps, &x, &y, &radius, &start, &end)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddddd", &zps, &x, &y, &radius, &start, &end)) {
 		return;
 	}
 
@@ -1581,7 +1579,7 @@ PHP_FUNCTION(ps_skew)
 	double xangle, yangle;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &xangle, &yangle)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &xangle, &yangle)) {
 		return;
 	}
 
@@ -1600,7 +1598,7 @@ PHP_FUNCTION(ps_closepath_fill_stroke)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1619,7 +1617,7 @@ PHP_FUNCTION(ps_endpath)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1639,7 +1637,7 @@ PHP_FUNCTION(ps_clip)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -1661,7 +1659,7 @@ PHP_FUNCTION(ps_add_bookmark)
 	zend_long parentid = 0, open = 0, id;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ll", &zps, &text, &text_len, &parentid, &open)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs|ll", &zps, &text, &text_len, &parentid, &open)) {
 		return;
 	}
 
@@ -1685,14 +1683,14 @@ PHP_FUNCTION(ps_open_image_file)
 	zend_long intparam = 0;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rss|sl", &zps, &type, &type_len, &filename, &filename_len, &stringparam, &stringparam_len, &intparam)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rss|sl", &zps, &type, &type_len, &filename, &filename_len, &stringparam, &stringparam_len, &intparam)) {
 		return;
 	}
 
 	PSDOC_FROM_ZVAL(ps, zps);
 
 #ifdef VIRTUAL_DIR
-	virtual_filepath(filename, &image TSRMLS_CC);
+	virtual_filepath(filename, &image);
 #else
 	image = filename;
 #endif
@@ -1726,7 +1724,7 @@ PHP_FUNCTION(ps_open_memory_image)
 	if ((ps = (PSDoc *) zend_fetch_resource(Z_RES_P(arg1), "ps document", le_psdoc)) == NULL) { RETURN_FALSE; }
 	ZEND_GET_RESOURCE_TYPE_ID(le_gd, "gd");
 	if(!le_gd) {
-		php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to find handle for GD image stream. Please check the GD extension is loaded.");
+		php_error_docref(NULL, E_ERROR, "Unable to find handle for GD image stream. Please check the GD extension is loaded.");
 	}
 //	ZEND_FETCH_RESOURCE(im, gdImagePtr, arg2, -1, "Image", le_gd);
 	if ((im = (gdImagePtr) zend_fetch_resource(Z_RES_P(arg2), "Image", le_gd)) == NULL) { RETURN_FALSE; }
@@ -1766,7 +1764,7 @@ PHP_FUNCTION(ps_open_memory_image)
 
 	if(imageid == 0) {
 		/* pslib will do this for you, will throw some exception
-		php_error_docref(NULL TSRMLS_CC, E_WARNING, "Could not open image");
+		php_error_docref(NULL, E_WARNING, "Could not open image");
 		*/
 		RETURN_FALSE;
 	}
@@ -1784,7 +1782,7 @@ PHP_FUNCTION(ps_close_image)
 	long imageid;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &imageid)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &zps, &imageid)) {
 		return;
 	}
 
@@ -1803,7 +1801,7 @@ PHP_FUNCTION(ps_place_image)
 	double x, y, scale;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rlddd", &zps, &imageid, &x, &y, &scale)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rlddd", &zps, &imageid, &x, &y, &scale)) {
 		return;
 	}
 
@@ -1826,7 +1824,7 @@ PHP_FUNCTION(ps_shading)
 	double x0, y0, x1, y1, c1, c2, c3, c4;
 	long shadingid = 0;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsdddddddds", &zps, &type, &tlen, &x0, &y0, &x1, &y1, &c1, &c2, &c3, &c4, &optlist, &olen)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsdddddddds", &zps, &type, &tlen, &x0, &y0, &x1, &y1, &c1, &c2, &c3, &c4, &optlist, &olen)) {
 		return;
 	}
 
@@ -1846,7 +1844,7 @@ PHP_FUNCTION(ps_shfill)
 	zend_long shadingid;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &shadingid)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &zps, &shadingid)) {
 		return;
 	}
 
@@ -1868,7 +1866,7 @@ PHP_FUNCTION(ps_shading_pattern)
 	size_t olen;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rls", &zps, &shadingid, &optlist, &olen)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rls", &zps, &shadingid, &optlist, &olen)) {
 		return;
 	}
 
@@ -1890,7 +1888,7 @@ PHP_FUNCTION(ps_add_weblink)
 	size_t url_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddds", &zps, &llx, &lly, &urx, &ury, &url, &url_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdddds", &zps, &llx, &lly, &urx, &ury, &url, &url_len)) {
 		return;
 	}
 
@@ -1913,7 +1911,7 @@ PHP_FUNCTION(ps_add_pdflink)
 	zend_long page;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddsls", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len, &page, &dest, &dest_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddddsls", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len, &page, &dest, &dest_len)) {
 		return;
 	}
 
@@ -1935,7 +1933,7 @@ PHP_FUNCTION(ps_set_border_style)
 	double width;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsd", &zps, &style, &style_len, &width)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsd", &zps, &style, &style_len, &width)) {
 		return;
 	}
 
@@ -1955,7 +1953,7 @@ PHP_FUNCTION(ps_set_border_color)
 	double red, green, blue;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddd", &zps, &red, &green, &blue)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddd", &zps, &red, &green, &blue)) {
 		return;
 	}
 
@@ -1975,7 +1973,7 @@ PHP_FUNCTION(ps_set_border_dash)
 	double black, white;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &black, &white)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &black, &white)) {
 		return;
 	}
 
@@ -1997,7 +1995,7 @@ PHP_FUNCTION(ps_add_annotation)
 	size_t title_len, text_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddss", &zps, &llx, &lly, &urx, &ury, &title, &title_len, &text, &text_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddddss", &zps, &llx, &lly, &urx, &ury, &title, &title_len, &text, &text_len)) {
 		return;
 	}
 
@@ -2029,7 +2027,7 @@ PHP_FUNCTION(ps_new) {
 PHP_FUNCTION(ps_delete) {
 	zval *zps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -2050,7 +2048,7 @@ PHP_FUNCTION(ps_open_file) {
 	int ps_file;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "z|s", &zps, &filename, &filename_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "z|s", &zps, &filename, &filename_len)) {
 		return;
 	}
 
@@ -2079,7 +2077,7 @@ PHP_FUNCTION(ps_get_buffer) {
 	const char *buffer;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -2119,7 +2117,7 @@ PHP_FUNCTION(ps_setpolydash) {
 		} else if (Z_TYPE_P(tmp) == IS_LONG) {
 			darray[i] = (float) Z_LVAL_P(tmp);
 		} else {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING,"PSlib set_polydash: illegal darray value");
+			php_error_docref(NULL, E_WARNING,"PSlib set_polydash: illegal darray value");
 		}
 		i++;
 	}  ZEND_HASH_FOREACH_END();
@@ -2136,7 +2134,7 @@ PHP_FUNCTION(ps_setpolydash) {
 		} else if (keydata->type == IS_LONG) {
 			darray[i] = (float) keydata->value.lval;
 		} else {
-			php_error_docref(NULL TSRMLS_CC, E_WARNING,"PSlib set_polydash: illegal darray value");
+			php_error_docref(NULL, E_WARNING,"PSlib set_polydash: illegal darray value");
 		}
 		zend_hash_move_forward(array);
 	} */
@@ -2156,7 +2154,7 @@ PHP_FUNCTION(ps_concat) {
 	double a, b, c, d, e, f;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddddd", &zps, &a, &b, &c, &d, &e, &f)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdddddd", &zps, &a, &b, &c, &d, &e, &f)) {
 		return;
 	}
 
@@ -2185,7 +2183,7 @@ PHP_FUNCTION(ps_open_ccitt) {
 
 	convert_to_string_ex(arg2);
 #ifdef VIRTUAL_DIR
-	virtual_filepath(Z_STRVAL_PP(arg2), &image TSRMLS_CC);
+	virtual_filepath(Z_STRVAL_PP(arg2), &image);
 #else
 	image = Z_STRVAL_PP(arg2);
 #endif
@@ -2220,14 +2218,14 @@ PHP_FUNCTION(ps_open_image) {
 	char *image;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsssllllls", &zps, &type, &type_len, &source, &source_len, &data, &data_len, &length, &width, &height, &components, &bpc, &params, &params_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsssllllls", &zps, &type, &type_len, &source, &source_len, &data, &data_len, &length, &width, &height, &components, &bpc, &params, &params_len)) {
 		return;
 	}
 
 	PSDOC_FROM_ZVAL(ps, zps);
 
 #ifdef VIRTUAL_DIR
-	virtual_filepath(data, &image TSRMLS_CC);
+	virtual_filepath(data, &image);
 #else
 	image = data;
 #endif
@@ -2248,7 +2246,7 @@ PHP_FUNCTION(ps_attach_file) {
 	size_t filename_len, description_len, author_len, mimetype_len, icon_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddsssss", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len, &description, &description_len, &author, &author_len, &mimetype, &mimetype_len, &icon, &icon_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddddsssss", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len, &description, &description_len, &author, &author_len, &mimetype, &mimetype_len, &icon, &icon_len)) {
 		return;
 	}
 
@@ -2278,7 +2276,7 @@ PHP_FUNCTION(ps_include_file) {
 	size_t filename_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &filename, &filename_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs", &zps, &filename, &filename_len)) {
 		return;
 	}
 
@@ -2300,7 +2298,7 @@ PHP_FUNCTION(ps_add_note) {
 	zend_long open;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddsssl", &zps, &llx, &lly, &urx, &ury, &contents, &contents_len, &title, &title_len, &icon, &icon_len, &open)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddddsssl", &zps, &llx, &lly, &urx, &ury, &contents, &contents_len, &title, &title_len, &icon, &icon_len, &open)) {
 		return;
 	}
 
@@ -2322,7 +2320,7 @@ PHP_FUNCTION(ps_add_locallink) {
 	zend_long page;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddls", &zps, &llx, &lly, &urx, &ury, &page, &dest, &dest_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddddls", &zps, &llx, &lly, &urx, &ury, &page, &dest, &dest_len)) {
 		return;
 	}
 
@@ -2343,7 +2341,7 @@ PHP_FUNCTION(ps_add_launchlink) {
 	size_t filename_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddds", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdddds", &zps, &llx, &lly, &urx, &ury, &filename, &filename_len)) {
 		return;
 	}
 
@@ -2364,7 +2362,7 @@ PHP_FUNCTION(ps_setcolor) {
 	size_t type_len, colorspace_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssdddd", &zps, &type, &type_len, &colorspace, &colorspace_len, &c1, &c2, &c3, &c4)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rssdddd", &zps, &type, &type_len, &colorspace, &colorspace_len, &c1, &c2, &c3, &c4)) {
 		return;
 	}
 
@@ -2385,7 +2383,7 @@ PHP_FUNCTION(ps_makespotcolor) {
 	zend_long reserved = 0;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|l", &zps, &spotname, &spotname_len, &reserved)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs|l", &zps, &spotname, &spotname_len, &reserved)) {
 		return;
 	}
 
@@ -2403,7 +2401,7 @@ PHP_FUNCTION(ps_arcn) {
 	double x, y, radius, start, end;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddd", &zps, &x, &y, &radius, &start, &end)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddddd", &zps, &x, &y, &radius, &start, &end)) {
 		return;
 	}
 
@@ -2421,7 +2419,7 @@ PHP_FUNCTION(ps_initgraphics) {
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -2439,7 +2437,7 @@ PHP_FUNCTION(ps_add_thumbnail) {
 	long imageid;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &imageid)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &zps, &imageid)) {
 		return;
 	}
 
@@ -2457,7 +2455,7 @@ PHP_FUNCTION(ps_setmatrix) {
 	double a, b, c, d, e, f;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdddddd", &zps, &a, &b, &c, &d, &e, &f)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdddddd", &zps, &a, &b, &c, &d, &e, &f)) {
 		return;
 	}
 
@@ -2479,7 +2477,7 @@ PHP_FUNCTION(ps_begin_pattern)
 	PSDoc *ps;
 	int patid;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rddddl", &zps, &width, &height, &xstep, &ystep, &painttype)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rddddl", &zps, &width, &height, &xstep, &ystep, &painttype)) {
 		return;
 	}
 
@@ -2501,7 +2499,7 @@ PHP_FUNCTION(ps_end_pattern)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -2522,7 +2520,7 @@ PHP_FUNCTION(ps_begin_template)
 	PSDoc *ps;
 	int tempid;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rdd", &zps, &width, &height)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rdd", &zps, &width, &height)) {
 		return;
 	}
 
@@ -2541,7 +2539,7 @@ PHP_FUNCTION(ps_end_template)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -2567,7 +2565,7 @@ PHP_FUNCTION(ps_begin_font)
 	PSDoc *ps;
 	int fontid;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsdddddd|s", &zps, &fontname, &flen, &a, &b, &c, &d, &e, &f, &optlist, &olen)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsdddddd|s", &zps, &fontname, &flen, &a, &b, &c, &d, &e, &f, &optlist, &olen)) {
 		return;
 	}
 
@@ -2594,7 +2592,7 @@ PHP_FUNCTION(ps_end_font)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -2616,7 +2614,7 @@ PHP_FUNCTION(ps_begin_glyph)
 	double wx, llx, lly, urx, ury;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsddddd", &zps, &glyphname, &glen, &wx, &llx, &lly, &urx, &ury)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsddddd", &zps, &glyphname, &glen, &wx, &llx, &lly, &urx, &ury)) {
 		return;
 	}
 
@@ -2640,7 +2638,7 @@ PHP_FUNCTION(ps_end_glyph)
 	zval *zps;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r", &zps)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r", &zps)) {
 		return;
 	}
 
@@ -2663,7 +2661,7 @@ PHP_FUNCTION(ps_add_kerning)
 	zend_long font = 0;
 	zend_long kern = 0;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rssl|l", &zps, &glyphname1, &glen1, &glyphname2, &glen2, &kern, &font)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rssl|l", &zps, &glyphname1, &glen1, &glyphname2, &glen2, &kern, &font)) {
 		return;
 	}
 
@@ -2685,7 +2683,7 @@ PHP_FUNCTION(ps_add_ligature)
 	size_t glen1, glen2, glen3;
 	zend_long font = 0;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rsss|l", &zps, &glyphname1, &glen1, &glyphname2, &glen2, &glyphname3, &glen3, &font)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rsss|l", &zps, &glyphname1, &glen1, &glyphname2, &glen2, &glyphname3, &glen3, &font)) {
 		return;
 	}
 
@@ -2708,7 +2706,7 @@ PHP_FUNCTION(ps_hyphenate) {
 	unsigned int i, j;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs", &zps, &text, &text_len)) {
 		return;
 	}
 
@@ -2740,7 +2738,7 @@ PHP_FUNCTION(ps_symbol) {
 	zend_long ord;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl", &zps, &ord)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl", &zps, &ord)) {
 		return;
 	}
 
@@ -2762,7 +2760,7 @@ PHP_FUNCTION(ps_symbol_width)
 	zend_long font = 0;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl|ld", &zps, &ord, &font, &size)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl|ld", &zps, &ord, &font, &size)) {
 		return;
 	}
 
@@ -2784,7 +2782,7 @@ PHP_FUNCTION(ps_symbol_name)
 	char glyphname[50];
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rl|l", &zps, &ord, &font)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rl|l", &zps, &ord, &font)) {
 		return;
 	}
 
@@ -2805,7 +2803,7 @@ PHP_FUNCTION(ps_glyph_show) {
 	size_t text_len;
 	PSDoc *ps;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs", &zps, &text, &text_len)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs", &zps, &text, &text_len)) {
 		return;
 	}
 
@@ -2826,7 +2824,7 @@ PHP_FUNCTION(ps_glyph_width) {
 	zend_long font;
 	double size;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rs|ld", &zps, &text, &text_len, &font, &size)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rs|ld", &zps, &text, &text_len, &font, &size)) {
 		return;
 	}
 
@@ -2847,7 +2845,7 @@ PHP_FUNCTION(ps_glyph_list) {
 	char **glyphlist;
 	int i, listlen;
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "r|l", &zps, &font)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "r|l", &zps, &font)) {
 		return;
 	}
 
