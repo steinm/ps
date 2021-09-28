@@ -11,13 +11,20 @@ if test "$PHP_PS" != "no"; then
   AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
 
   AC_MSG_CHECKING(for libps)
-  if test -x "$PKG_CONFIG" && $PKG_CONFIG --exists libps; then
+  if test -x "$PKG_CONFIG" && $PKG_CONFIG libps --exists ; then
     LIBPS_INC=`$PKG_CONFIG libps --cflags`
     LIBPS_LIB=`$PKG_CONFIG libps --libs`
     LIBPS_VER=`$PKG_CONFIG libps --modversion`
+
     AC_MSG_RESULT(version $LIBPS_VER)
+    if $PKG_CONFIG libps --atleast-version 0.4.0; then
+      AC_DEFINE(HAVE_PSBEGINFONT,1,[pslib 0.4.0 or later])
+      AC_DEFINE(HAVE_PSGLYPHSHOW,1,[pslib 0.4.0 or later])
+    else
+      AC_WARN(libps 0.4.0 or later is recommended)
+    fi
   else
-    AC_MSG_ERROR(cannot find libps using pkg-config)
+    AC_MSG_ERROR([cannot find libps using pkg-config (0.4.0 or later recommended)])
   fi
   PHP_EVAL_LIBLINE($LIBPS_LIB, PS_SHARED_LIBADD)
   PHP_EVAL_INCLINE($LIBPS_INC)
