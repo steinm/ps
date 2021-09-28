@@ -1730,7 +1730,7 @@ PHP_FUNCTION(ps_open_memory_image)
 
 	le_gd = phpi_get_le_gd();
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rr", &zps, &zgd)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rr", &zps, &zgd)) {
 		return;
 	}
 	if ((im = (gdImagePtr)zend_fetch_resource(Z_RES_P(zgd), "Image", le_gd)) == NULL) {
@@ -1741,7 +1741,7 @@ PHP_FUNCTION(ps_open_memory_image)
 
 	gd_image_ce = zend_hash_str_find_ptr(CG(class_table), ZEND_STRL("gdimage"));
 
-	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rO", &zps, &zgd, gd_image_ce)) {
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS(), "rO", &zps, &zgd, gd_image_ce)) {
 		return;
 	}
 
