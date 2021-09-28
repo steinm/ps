@@ -538,10 +538,19 @@ zend_function_entry ps_functions[] = {
 };
 /* }}} */
 
+static const zend_module_dep ps_deps[] = {
+#ifdef HAVE_LIBGD
+    ZEND_MOD_REQUIRED("gd")
+#endif
+	ZEND_MOD_END
+};
+
 /* {{{ ps_module_entry
  */
 zend_module_entry ps_module_entry = {
-	STANDARD_MODULE_HEADER,
+	STANDARD_MODULE_HEADER_EX,
+	NULL,
+	ps_deps,
 	"ps", 
 	ps_functions, 
 	PHP_MINIT(ps), 
