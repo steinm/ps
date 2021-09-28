@@ -50,3 +50,16 @@ if test "$PHP_PS" != "no"; then
   AC_DEFINE(HAVE_PS,1,[Whether to include the ps extension])
   PHP_NEW_EXTENSION(ps, ps.c, $ext_shared)
 fi
+
+PHP_ARG_ENABLE([gd],
+  [for GD support],
+  [AS_HELP_STRING([--enable-gd],
+    [Include GD support])])
+
+if test "$PHP_GD" != "no"; then
+  PKG_CHECK_MODULES([GDLIB], [gdlib >= 2.1.0])
+  PHP_EVAL_LIBLINE($GDLIB_LIBS, GD_SHARED_LIBADD)
+  PHP_EVAL_INCLINE($GDLIB_CFLAGS)
+  AC_DEFINE(HAVE_LIBGD, 1, [Whether libgd was found on the system])
+fi
+

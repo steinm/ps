@@ -36,7 +36,6 @@
 #else
 #include "gd.h"
 #endif
-static int le_gd;
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -1711,25 +1710,22 @@ PHP_FUNCTION(ps_open_image_file)
    Takes an GD image and returns an image for placement in a PS document */
 PHP_FUNCTION(ps_open_memory_image)
 {
-	zval **arg1, **arg2;
+	zval *zps;
+	zval *zgd;
+	zend_class_entry *gd_image_ce;
 	int i, j, color, count;
 	int imageid;
 	gdImagePtr im;
 	unsigned char *buffer, *ptr;
 	PSDoc *ps;
 
-	if (ZEND_NUM_ARGS() != 2 || zend_get_parameters_ex(2, &arg1, &arg2) == FAILURE) {
-		WRONG_PARAM_COUNT;
+	if (FAILURE == zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "rO", &zps, &zgd, gd_image_ce)) {
+		return;
 	}
 	
-//	ZEND_FETCH_RESOURCE(ps, PSDoc *, arg1, -1, "ps document", le_psdoc);
-	if ((ps = (PSDoc *) zend_fetch_resource(Z_RES_P(arg1), "ps document", le_psdoc)) == NULL) { RETURN_FALSE; }
-	ZEND_GET_RESOURCE_TYPE_ID(le_gd, "gd");
-	if(!le_gd) {
-		php_error_docref(NULL TSRMLS_CC, E_ERROR, "Unable to find handle for GD image stream. Please check the GD extension is loaded.");
-	}
-//	ZEND_FETCH_RESOURCE(im, gdImagePtr, arg2, -1, "Image", le_gd);
-	if ((im = (gdImagePtr) zend_fetch_resource(Z_RES_P(arg2), "Image", le_gd)) == NULL) { RETURN_FALSE; }
+	PSDOC_FROM_ZVAL(ps, zps);
+
+	im = php_gd_libgdimageptr_from_zval_p(zgd);
 
 	count = 3 * im->sx * im->sy;
 	if(NULL == (buffer = (unsigned char *) emalloc(count))) {
