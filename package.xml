@@ -14,10 +14,10 @@ http://pear.php.net/dtd/package-2.0.xsd">
   <email>steinm@php.net</email>
   <active>yes</active>
  </lead>
- <date>2021-09-28</date>
+ <date>2021-09-29</date>
  <time>09:35:35</time>
  <version>
-  <release>1.4.3</release>
+  <release>1.4.4</release>
   <api>1.4.3</api>
  </version>
  <stability>
@@ -26,9 +26,7 @@ http://pear.php.net/dtd/package-2.0.xsd">
  </stability>
  <license uri="https://www.php.net/license/3_01.txt">PHP 3.0.1 License</license>
  <notes>
-return to PHP 3.0.1 License
-readd support for gd
-add license file
+fix remaining issues when compiling with gd support
  </notes>
  <contents>
   <dir name="/">
@@ -99,6 +97,24 @@ add license file
   <configureoption name="with-ps" prompt="path to pslib installation?" />
  </extsrcrelease>
  <changelog>
+  <release>
+   <date>2021-09-28</date>
+   <time>09:35:35</time>
+   <version>
+    <release>1.4.3</release>
+    <api>1.4.3</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <license uri="https://www.php.net/license/3_01.txt">PHP 3.0.1 License</license>
+   <notes>
+return to PHP 3.0.1 License
+readd support for gd
+add license file
+   </notes>
+  </release>
   <release>
    <date>2021-09-25</date>
    <time>19:03:18</time>
