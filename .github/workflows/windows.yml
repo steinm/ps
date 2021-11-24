@@ -1,0 +1,52 @@
+name: Build and Test on Windows
+on: [push, pull_request]
+jobs:
+  windows:
+    defaults:
+      run:
+        shell: cmd
+    strategy:
+      matrix:
+          version: ["8.0", "8.1"]
+          arch: [x64, x86]
+          ts: [nts, ts]
+    runs-on: windows-2019
+    steps:
+      - name: Checkout ps
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        id: setup-php
+        uses: cmb69/setup-php-sdk@v0.2
+        with:
+          version: ${{matrix.version}}
+          arch: ${{matrix.arch}}
+          ts: ${{matrix.ts}}
+      - name: Download deps
+        run: |
+          curl -LO https://windows.php.net/downloads/pecl/deps/pslib-0.4.6-vs16-${{matrix.arch}}.zip
+          7z x pslib-0.4.6-vs16-${{matrix.arch}}.zip -o..\deps
+      - name: Enable Developer Command Prompt
+        uses: ilammy/msvc-dev-cmd@v1
+        with:
+          arch: ${{matrix.arch}}
+          toolset: ${{steps.setup-php.outputs.toolset}}
+      - name: phpize
+        run: phpize
+      - name: configure
+        run: set CFLAGS=/D HAVE_GD_BUNDLED && configure --with-ps --with-prefix=${{steps.setup-php.outputs.prefix}}
+      - name: make
+        run: nmake
+      - name: test
+        run: |
+          set TEST_PHP_EXECUTABLE=${{steps.setup-php.outputs.prefix}}\php.exe
+          set TEST_PHP_ARGS=-d extension=${{steps.setup-php.outputs.prefix}}\ext\php_gd.dll
+          if exist x64\Release_TS (
+              set TEST_PHP_ARGS=%TEST_PHP_ARGS% -d extension=${{github.workspace}}\x64\Release_TS\php_ps.dll
+          ) else if exist x64\Release (
+              set TEST_PHP_ARGS=%TEST_PHP_ARGS% -d extension=${{github.workspace}}\x64\Release\php_ps.dll
+          ) else if exist Release_TS (
+              set TEST_PHP_ARGS=%TEST_PHP_ARGS% -d extension=${{github.workspace}}\Release_TS\php_ps.dll
+          ) else if exist Release (
+              set TEST_PHP_ARGS=%TEST_PHP_ARGS% -d extension=${{github.workspace}}\Release\php_ps.dll
+          )
+          %TEST_PHP_EXECUTABLE% run-tests.php -j2 --show-diff -g FAIL tests
