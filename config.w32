@@ -8,7 +8,7 @@ if (PHP_PS != "no") {
 			CHECK_HEADER_ADD_INCLUDE("libps/pslib.h", "CFLAGS_PS", PHP_PS )) {
 
 		EXTENSION("ps", "ps.c");
-
+		ADD_EXTENSION_DEP("ps", "gd", true);
 		AC_DEFINE('HAVE_PS', 1, 'Have Postscript library');
 		ADD_FLAG('CFLAGS_PS', "/D HAVE_PS /D HAVE_PSBEGINFONT=1 /D HAVE_PSGLYPHSHOW=1 ");
 	} else {
